@@ -15,7 +15,7 @@ if dpkg-query -W -f='${db:Status-Status}' usbguard 2>/dev/null | grep -qx instal
 fi
 
 install_project_dir=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
-install_package="$install_project_dir/dist/usbguard-control_0.1.0-1_all.deb"
+install_package="$install_project_dir/dist/usbguard-control_0.2.0-1_all.deb"
 if [ ! -f "$install_package" ]; then
     echo "Primero construye el paquete con python3 scripts/build_deb.py." >&2
     exit 1

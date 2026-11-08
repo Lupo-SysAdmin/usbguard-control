@@ -1,8 +1,10 @@
-# Validación y límites de la versión 0.1.0
+# Validación y límites de la versión 0.2.0
 
 ## Resultado local — 8 de noviembre de 2026
 
-- **28 pruebas automatizadas aprobadas** con `sh scripts/check.sh` en Kali 2026.3, Python 3.14.8 y PySide6 6.10.3; incluyen regresiones de Bluetooth y avisos obsoletos tras desconectar un dispositivo.
+- **38 pruebas automatizadas aprobadas** con `sh scripts/check.sh` en Kali 2026.3, Python 3.14.8 y PySide6 6.10.3; incluyen regresiones de Bluetooth y avisos obsoletos tras desconectar un dispositivo.
+- Controles de servicios verificados contra un systemd simulado en un bus privado: firmas reales, autenticación interactiva, orden de inicio/parada, persistencia opcional, cancelación/denegación, cambios externos, jobs fallidos y fallos parciales.
+- Configuración renderizada en ES/EN a 1040×780 y 900×620; comprobación de ancho y alto del texto de las casillas, y del flujo detener/iniciar con la conexión simulada cerrada.
 - Capturas renderizadas desde QML en español latinoamericano e inglés estadounidense; revisión visual de la ventana normal, compacta y los diálogos.
 - Lanzador `.desktop` validado y `.deb` construido sin privilegios.
 - Demostración abierta desde el contenido extraído del `.deb` usando Python aislado; paquete no instalado en el sistema.
@@ -73,4 +75,6 @@ Ejecutar `sh scripts/check.sh`. La prueba D-Bus usa un servicio simulado; no val
 
 ## Alcance
 
-La ventana muestra actividad de la sesión, no un historial persistente de auditoría. No contiene editor de reglas, pausa global, revocación gráfica ni configuración automática de privilegios. El modo demo no prueba el daemon. La protección de HID de esta interfaz no puede impedir que otra herramienta modifique el mismo dispositivo.
+La ventana muestra actividad de la sesión, no un historial persistente de auditoría. No contiene editor de reglas, autorización global, revocación gráfica ni configuración automática de privilegios. Los controles explícitos de servicio no equivalen a permitir todos los dispositivos. El modo demo no prueba el daemon. La protección de HID de esta interfaz no puede impedir que otra herramienta modifique el mismo dispositivo.
+
+Para 0.2.0 se consultaron las unidades systemd reales sin modificar su estado: ambas activas y habilitadas. La parada/inicio con autenticación real desde los nuevos botones y el arranque tras un reinicio siguen pendientes de prueba física; las pruebas automatizadas no detienen la protección del equipo de desarrollo.

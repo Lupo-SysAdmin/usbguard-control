@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.0 — 2026-11-08
+
+- Configuración con casillas multilínea, ancho limitado y desplazamiento en ventanas pequeñas.
+- Controles explícitos para iniciar y detener USBGuard y su puente D-Bus, con confirmación y autenticación de systemd/Polkit.
+- Elección opcional persistente al arrancar; estados de ejecución y arranque consultados por separado.
+- Verificación de jobs, detección de cambios externos y errores parciales, sin retirar máscaras ni modificar reglas USB.
+- Flujo completo de servicios simulado, traducciones ES/EN y pruebas aisladas de transporte D-Bus.
+
 ## 0.1.0 — 2026-11-08
 
 - Primera interfaz Qt Quick en español latinoamericano e inglés estadounidense con autoría de Jan Herrera.

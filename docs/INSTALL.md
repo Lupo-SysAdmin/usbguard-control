@@ -24,7 +24,7 @@ O construye e instala el paquete de la interfaz:
 
 ```bash
 python3 scripts/build_deb.py
-sudo apt install ./dist/usbguard-control_0.1.0-1_all.deb
+sudo apt install ./dist/usbguard-control_0.2.0-1_all.deb
 usbguard-control --demo
 ```
 
@@ -86,6 +86,18 @@ Ejecuta como usuario normal en una sesión local activa con agente Polkit. Las a
 “Permitir ahora” no guarda una regla: al reconectar o reiniciar se reevalúa la política. “Permitir siempre” pide a USBGuard guardar una regla; fallará si su almacenamiento de reglas no es escribible o no está configurado. “Bloquear ahora” tampoco elimina reglas persistentes. Para revocar una regla guardada, revisa `sudo usbguard list-rules` y administra la regla correcta con las herramientas oficiales; el editor gráfico está pendiente.
 
 Antes de bloquear almacenamiento, desmonta el volumen. Bloquear autorización USB no es una operación de expulsión segura. Esta versión no administra montajes.
+
+### Iniciar, detener y recordar la elección
+
+En **Configuración**, las tarjetas muestran por separado el estado actual y el inicio automático de la protección USB y de su conexión con la interfaz.
+
+- **Iniciar servicio** inicia ambos componentes con las reglas existentes.
+- **Detener servicio** detiene ambos componentes sin borrar las reglas. No equivale a desbloquear todos los USB: algunos dispositivos pueden seguir sin autorización.
+- **Recordar esta elección al iniciar el sistema**, marcada por defecto, hace que Iniciar habilite ambos servicios al arrancar y que Detener deshabilite su inicio automático. Desmárcala para cambiar solo el estado actual.
+
+El diálogo confirma el alcance antes de solicitar los permisos de systemd mediante Polkit. Puede aparecer más de una solicitud de autenticación. La preferencia vive en systemd y no depende de mantener la interfaz abierta. Otros administradores aún pueden iniciar los servicios o cambiar esta configuración.
+
+Estos controles requieren una instalación ya preparada, systemd y un agente Polkit. No retiran máscaras de la primera instalación ni modifican configuraciones especiales como unidades estáticas o habilitadas únicamente en `/run`. Si una operación falla a mitad, se muestran los estados consultados de nuevo y el error; revisa ambos antes de reintentar. Detener USBGuard no deshabilita otros mecanismos de protección USB, como el de GNOME.
 
 ## Diagnóstico y recuperación
 

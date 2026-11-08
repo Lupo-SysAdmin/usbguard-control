@@ -70,7 +70,7 @@ ApplicationWindow {
                     ToolTip.text: "English (United States)"; ToolTip.visible: hovered
                 }
             }
-            ActionButton { text: qsTr("Configuración"); onClicked: settings.open() }
+            ActionButton { objectName: "settingsButton"; text: qsTr("Configuración"); onClicked: settings.open() }
         }
 
         Rectangle {
@@ -278,7 +278,7 @@ ApplicationWindow {
         RowLayout {
             UiText { text: qsTr("Desarrollado por Jan Herrera"); font.pixelSize: 10; color: "#8295af" }
             Item { Layout.fillWidth: true }
-            UiText { text: qsTr("Cliente independiente  ·  v0.1.0  ·  GPL-3.0-or-later"); font.pixelSize: 10; color: "#8295af" }
+            UiText { text: qsTr("Cliente independiente  ·  v0.2.0  ·  GPL-3.0-or-later"); font.pixelSize: 10; color: "#8295af" }
         }
     }
 
@@ -330,7 +330,7 @@ ApplicationWindow {
             Image { source: "../assets/shield.svg"; Layout.preferredWidth: 56; Layout.preferredHeight: 56 }
             UiText { text: "Jan Herrera"; font.pixelSize: 23; font.weight: Font.DemiBold }
             UiText { text: qsTr("Desarrollador de la interfaz · Lupo-SysAdmin"); color: "#a3b9d6" }
-            UiText { Layout.fillWidth: true; text: qsTr("USBGuard Control 0.1.0\nCopyright © 2026 Jan Herrera\nGPL-3.0-or-later · Software libre, sin garantía.\n\nCliente independiente. El motor USBGuard pertenece a sus respectivos autores. Qt y PySide6 pertenecen a sus respectivos titulares."); wrapMode: Text.WordWrap; elide: Text.ElideNone }
+            UiText { Layout.fillWidth: true; text: qsTr("USBGuard Control 0.2.0\nCopyright © 2026 Jan Herrera\nGPL-3.0-or-later · Software libre, sin garantía.\n\nCliente independiente. El motor USBGuard pertenece a sus respectivos autores. Qt y PySide6 pertenecen a sus respectivos titulares."); wrapMode: Text.WordWrap; elide: Text.ElideNone }
             RowLayout {
                 ActionButton { text: qsTr("GitHub de Jan"); onClicked: Qt.openUrlExternally("https://github.com/Lupo-SysAdmin") }
                 ActionButton { text: qsTr("Leer licencia"); onClicked: Qt.openUrlExternally("https://www.gnu.org/licenses/gpl-3.0.html") }
@@ -338,7 +338,9 @@ ApplicationWindow {
         }
     }
     Dialog {
-        id: settings; anchors.centerIn: parent; width: 510; modal: true; title: qsTr("Configuración y conexión")
+        id: settings; objectName: "settingsDialog"; anchors.centerIn: parent
+        width: Math.min(600, window.width - 40); height: Math.min(730, window.height - 48)
+        modal: true; title: qsTr("Configuración y conexión")
         padding: 20
         header: UiText { text: settings.title; padding: 20; bottomPadding: 8; font.pixelSize: 15; font.weight: Font.DemiBold }
         Overlay.modal: Rectangle { color: "#b000080f" }
@@ -347,14 +349,98 @@ ApplicationWindow {
             ActionButton { anchors.right: parent.right; anchors.rightMargin: 20; text: qsTr("Cerrar"); onClicked: settings.close() }
         }
         background: Rectangle { color: "#1c2839"; border.color: "#465e7e"; radius: 12 }
+        contentItem: ScrollView {
+            id: settingsScroll; objectName: "settingsScroll"
+            clip: true; contentWidth: availableWidth; rightPadding: 12
+            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+            ScrollBar.vertical.policy: ScrollBar.AsNeeded
+            ScrollBar.vertical.active: true
+            ColumnLayout {
+                objectName: "settingsContent"
+                width: settingsScroll.availableWidth
+                spacing: 12
+                UiText { text: qsTr("Servicio del sistema"); font.weight: Font.Bold }
+                UiText { visible: control.demo; text: qsTr("Esta acción es simulada."); color: "#e4cc8a"; Layout.fillWidth: true; wrapMode: Text.Wrap; elide: Text.ElideNone }
+                Repeater {
+                    model: control.serviceState.units || []
+                    delegate: Rectangle {
+                        required property var modelData
+                        Layout.fillWidth: true; implicitHeight: unitInfo.implicitHeight + 24
+                        color: "#121e2c"; radius: 8
+                        ColumnLayout {
+                            id: unitInfo; anchors.left: parent.left; anchors.right: parent.right
+                            anchors.top: parent.top; anchors.margins: 12; spacing: 5
+                            RowLayout {
+                                Layout.fillWidth: true
+                                UiText { text: modelData.name === "usbguard.service" ? qsTr("Protección USB") : qsTr("Conexión con la interfaz"); Layout.fillWidth: true; font.weight: Font.DemiBold }
+                                UiText { text: modelData.activeLabel; color: modelData.active === "active" ? "#73e2bb" : "#f1ba8c" }
+                            }
+                            UiText { text: modelData.bootLabel; color: "#a3b9d6"; Layout.fillWidth: true; wrapMode: Text.Wrap; elide: Text.ElideNone }
+                        }
+                    }
+                }
+                UiText { visible: !control.serviceState.manageable; text: qsTr("Revisa la guía de instalación: los servicios deben estar instalados, sin máscaras ni configuraciones de arranque especiales."); color: "#efd09a"; Layout.fillWidth: true; wrapMode: Text.Wrap; elide: Text.ElideNone }
+                WrapCheckBox {
+                    id: rememberService; objectName: "rememberService"
+                    Layout.fillWidth: true; Layout.minimumWidth: 0
+                    text: qsTr("Recordar esta elección al iniciar el sistema"); checked: true
+                }
+                UiText { Layout.fillWidth: true; text: qsTr("Con esta opción, Iniciar habilita el arranque automático y Detener lo deshabilita. Sin marcarla, solo cambia el estado actual."); color: "#a3b9d6"; wrapMode: Text.Wrap; elide: Text.ElideNone; font.pixelSize: 12 }
+                RowLayout {
+                    ActionButton { objectName: "startServiceButton"; text: qsTr("Iniciar servicio"); tone: "primary"; enabled: control.serviceState.manageable && !control.busy; onClicked: control.prepareService("start", rememberService.checked) }
+                    ActionButton { objectName: "stopServiceButton"; text: qsTr("Detener servicio"); tone: "danger"; enabled: control.serviceState.manageable && !control.busy; onClicked: control.prepareService("stop", rememberService.checked) }
+                }
+                UiText { visible: control.serviceWorking; text: qsTr("Aplicando cambios… Completa la autenticación del sistema si se solicita."); Layout.fillWidth: true; wrapMode: Text.Wrap; elide: Text.ElideNone; color: "#b3c7e3" }
+                UiText { visible: !!control.serviceState.error; text: qsTr("No se completó la solicitud. Algunos cambios pueden haberse aplicado; revisa los estados mostrados."); Layout.fillWidth: true; wrapMode: Text.Wrap; elide: Text.ElideNone; color: "#f5bba0" }
+                UiText { visible: !!control.serviceState.error; text: control.serviceState.error || ""; Layout.fillWidth: true; wrapMode: Text.Wrap; elide: Text.ElideNone; color: "#f5bba0"; font.pixelSize: 12 }
+                UiText { visible: !!control.notice; text: control.notice; Layout.fillWidth: true; wrapMode: Text.Wrap; elide: Text.ElideNone; color: "#73e2bb"; font.pixelSize: 12 }
+                Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: "#34445a" }
+                UiText { text: qsTr("Preferencias de la interfaz"); font.weight: Font.Bold }
+                WrapCheckBox { objectName: "hubsCheckBox"; Layout.fillWidth: true; Layout.minimumWidth: 0; text: qsTr("Mostrar concentradores USB (vista avanzada)"); checked: control.advanced; onToggled: control.showInfrastructure(checked) }
+                WrapCheckBox { objectName: "notificationsCheckBox"; Layout.fillWidth: true; Layout.minimumWidth: 0; text: qsTr("Notificaciones agrupadas mientras la aplicación está abierta"); checked: control.notifications; enabled: !control.demo; onToggled: control.setNotifications(checked) }
+                UiText { text: qsTr("Política actual"); font.weight: Font.Bold }
+                UiText { text: control.policy; Layout.fillWidth: true; wrapMode: Text.Wrap; elide: Text.ElideNone; color: "#b3c7e3" }
+                UiText { Layout.fillWidth: true; text: qsTr("Cerrar esta ventana no detiene USBGuard. Las reglas guardadas se conservan al iniciar o detener el servicio."); wrapMode: Text.Wrap; elide: Text.ElideNone; font.pixelSize: 12; color: "#a3b9d6" }
+                ActionButton { text: qsTr("Volver a comprobar conexión"); enabled: !control.busy; onClicked: control.refresh() }
+            }
+        }
+    }
+    Dialog {
+        id: serviceConfirm; objectName: "serviceConfirmDialog"
+        anchors.centerIn: parent; width: Math.min(510, window.width - 40)
+        modal: true; padding: 20; closePolicy: Popup.CloseOnEscape
+        title: control.serviceConfirmation.action === "start" ? qsTr("Iniciar servicio") : qsTr("Detener servicio")
+        header: UiText { text: serviceConfirm.title; padding: 20; bottomPadding: 8; font.pixelSize: 15; font.weight: Font.DemiBold }
+        Overlay.modal: Rectangle { color: "#b000080f" }
+        background: Rectangle { color: "#1c2839"; border.color: "#465e7e"; radius: 12 }
         contentItem: ColumnLayout {
-            spacing: 12
-            CheckBox { text: qsTr("Mostrar concentradores USB (vista avanzada)"); checked: control.advanced; onToggled: control.showInfrastructure(checked) }
-            CheckBox { text: qsTr("Notificaciones agrupadas mientras la aplicación está abierta"); checked: control.notifications; enabled: !control.demo; onToggled: control.setNotifications(checked) }
-            UiText { text: qsTr("Política actual"); font.weight: Font.Bold }
-            UiText { text: control.policy; Layout.fillWidth: true; wrapMode: Text.WordWrap; elide: Text.ElideNone; color: "#b3c7e3" }
-            UiText { Layout.fillWidth: true; text: qsTr("Antes de activar USBGuard:\n1. Conecta solo periféricos de confianza.\n2. Genera y revisa la política inicial.\n3. Conserva un respaldo y un acceso de recuperación.\n4. Inicia USBGuard y su puente D-Bus.\n\nEsta interfaz no inicia ni detiene servicios. Cerrar la ventana no modifica la política de USBGuard."); wrapMode: Text.WordWrap; elide: Text.ElideNone; font.pixelSize: 12 }
-            ActionButton { text: qsTr("Volver a comprobar conexión"); enabled: !control.busy; onClicked: control.refresh() }
+            spacing: 16
+            UiText {
+                Layout.fillWidth: true; wrapMode: Text.Wrap; elide: Text.ElideNone
+                text: control.serviceConfirmation.action === "start"
+                    ? qsTr("Se iniciarán USBGuard y su conexión con la interfaz usando las reglas existentes. Antes de continuar, confirma que tu teclado, mouse y otros dispositivos necesarios están contemplados en esas reglas.")
+                    : qsTr("Se detendrán USBGuard y su conexión con la interfaz. La protección dejará de gestionar nuevas conexiones. Los dispositivos ya bloqueados pueden seguir bloqueados; detener el servicio no equivale a autorizar todos los USB.")
+            }
+            UiText {
+                Layout.fillWidth: true; wrapMode: Text.Wrap; elide: Text.ElideNone; color: "#efd09a"
+                text: !control.serviceConfirmation.remember ? qsTr("Se conservará la configuración de arranque actual.")
+                    : control.serviceConfirmation.action === "start" ? qsTr("Ambos servicios se iniciarán automáticamente al encender el equipo.")
+                    : qsTr("Ambos servicios quedarán sin inicio automático al encender el equipo.")
+            }
+            UiText { visible: control.demo; text: qsTr("Esta acción es simulada."); color: "#e4cc8a" }
+            RowLayout {
+                Item { Layout.fillWidth: true }
+                ActionButton { text: qsTr("Cancelar"); onClicked: control.cancelService() }
+                ActionButton { objectName: "confirmServiceButton"; text: qsTr("Confirmar"); enabled: !control.busy; tone: control.serviceConfirmation.action === "stop" ? "danger" : "primary"; onClicked: control.confirmService() }
+            }
+        }
+        onRejected: control.cancelService()
+    }
+    Connections {
+        target: control
+        function onServiceConfirmationChanged() {
+            if (control.serviceConfirmation.action !== undefined) serviceConfirm.open()
+            else serviceConfirm.close()
         }
     }
     FileDialog {

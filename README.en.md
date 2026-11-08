@@ -12,7 +12,7 @@ An independent Python / PySide6 / Qt Quick client for USBGuard. USBGuard remains
 
 ## Status
 
-**0.1.0 alpha.** Functional demo, real D-Bus client, isolated integration tests and a Debian package. Initial physical validation with USBGuard 1.1.4 passed on Kali 2026.3 / GNOME Shell 50.4 / Wayland: temporary and persistent iPhone authorization, reconnection, and a saved mouse receiver rule. Failure/recovery scenarios and Plasma, Xfce and X11 remain unvalidated. Developed with Python 3.14 and PySide6 6.10.3. Available in Latin American Spanish and US English.
+**0.2.0 alpha.** Functional demo, real D-Bus client, isolated integration tests and a Debian package. Initial physical validation with USBGuard 1.1.4 passed on Kali 2026.3 / GNOME Shell 50.4 / Wayland: temporary and persistent iPhone authorization, reconnection, and a saved mouse receiver rule. Failure/recovery scenarios and Plasma, Xfce and X11 remain unvalidated. Developed with Python 3.14 and PySide6 6.10.3. Available in Latin American Spanish and US English.
 
 ## Features
 
@@ -23,7 +23,8 @@ An independent Python / PySide6 / Qt Quick client for USBGuard. USBGuard remains
 - D-Bus events, reconnect attempts and grouped desktop notifications.
 - Session activity export (up to 200 events; not a complete audit log).
 - Standalone demo with simulated hotplug and policy persistence.
-- No root GUI, shell commands, direct system policy writes or service activation.
+- Settings with wrapped text and scrolling, explicit service start/stop, and optional startup persistence through systemd and Polkit.
+- No root GUI, shell commands, direct system policy writes, or implicit service activation.
 
 ## Run
 
@@ -37,6 +38,8 @@ Use **ES / EN** in the toolbar to switch between `es-419` and `en-US` and save y
 
 Omit `--demo` only when USBGuard is already configured. Run as a regular user. The app relies on the existing USBGuard D-Bus bridge and its Polkit policy; it never changes permissions to bypass authentication.
 
+In Settings, **Remember this choice at system startup** makes Start enable both USBGuard services at boot and Stop disable their automatic startup. Uncheck it to change only the current state. Every operation requires confirmation and may request desktop authentication. Current and startup states are read from systemd, including after partial failures. Masked, missing, or specially configured units require manual setup. Stopping USBGuard preserves saved rules and does not necessarily unblock connected devices. Opening or closing the app does not change the service state.
+
 Kali's USBGuard package may start services during installation. Prepare and review initial rules to avoid disabling input devices; see the setup guide before installing the daemon.
 
 ## Validate and package
@@ -47,7 +50,7 @@ python3 scripts/diagnose.py
 python3 scripts/build_deb.py
 ```
 
-Tests use an isolated bus and a mock service, never USB hardware. The package is written to `dist/usbguard-control_0.1.0-1_all.deb`. USBGuard is a suggested dependency, intentionally installed and configured separately. A GitHub Actions workflow is included but has not yet run remotely.
+Tests use an isolated bus and a mock service, never USB hardware. The package is written to `dist/usbguard-control_0.2.0-1_all.deb`. USBGuard is a suggested dependency, intentionally installed and configured separately. A GitHub Actions workflow is included but has not yet run remotely.
 
 The [validation checklist](docs/VALIDATION.md) distinguishes completed checks from pending physical and desktop-session tests.
 

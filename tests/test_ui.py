@@ -19,6 +19,77 @@ def spin(app, predicate, timeout=3):
     assert predicate()
 
 
+def test_settings_wrap_scroll_and_service_choices_in_both_languages(tmp_path):
+    app = QGuiApplication.instance() or QGuiApplication([])
+    language = Language(settings=QSettings(str(tmp_path / 'settings.ini'), QSettings.IniFormat))
+    translator = Translator(language)
+    app.installTranslator(translator)
+    control = Controller(demo=True, language=language)
+    engine = QQmlApplicationEngine()
+    warnings = []
+    engine.warnings.connect(lambda items: warnings.extend(w.toString() for w in items))
+    engine.rootContext().setContextProperty('control', control)
+    engine.rootContext().setContextProperty('language', language)
+    language.changed.connect(engine.retranslate)
+    engine.load(QUrl.fromLocalFile(str(Path(__file__).parents[1] / 'src/usbguard_control/qml/Main.qml')))
+    try:
+        window = engine.rootObjects()[0]
+        spin(app, lambda: control.connected and not control.busy)
+        QMetaObject.invokeMethod(window.findChild(QObject, 'settingsButton'), 'clicked', Qt.DirectConnection)
+        dialog = window.findChild(QObject, 'settingsDialog')
+        spin(app, lambda: dialog.property('opened'))
+        for locale in ('es-419', 'en-US'):
+            language.setLocale(locale)
+            for width, height in ((1040, 780), (900, 620)):
+                window.setWidth(width)
+                window.setHeight(height)
+                for _ in range(8): app.processEvents()
+                assert dialog.property('height') <= height - 40
+                content = window.findChild(QObject, 'settingsContent')
+                scroll = window.findChild(QObject, 'settingsScroll')
+                assert content.property('width') <= scroll.property('availableWidth') + 1
+                for name in ('rememberService', 'hubsCheckBox', 'notificationsCheckBox'):
+                    box = window.findChild(QObject, name)
+                    label = box.property('contentItem')
+                    assert box.property('width') <= content.property('width') + 1
+                    assert label.property('contentWidth') <= label.property('width') - label.property('leftPadding') + 1
+                    assert label.property('contentHeight') <= label.property('height') + 1
+                assert window.grabWindow().save(str(tmp_path / f'settings-{locale}-{height}.png'))
+                flickable = scroll.property('contentItem')
+                bottom = max(0, flickable.property('contentHeight') - flickable.property('height'))
+                flickable.setProperty('contentY', bottom)
+                for _ in range(8): app.processEvents()
+                assert window.grabWindow().save(str(tmp_path / f'settings-bottom-{locale}-{height}.png'))
+                flickable.setProperty('contentY', 0)
+        language.setLocale('es-419')
+        QMetaObject.invokeMethod(window.findChild(QObject, 'stopServiceButton'), 'clicked', Qt.DirectConnection)
+        assert control.serviceConfirmation == {'action': 'stop', 'remember': True}
+        for _ in range(8): app.processEvents()
+        confirm = window.findChild(QObject, 'serviceConfirmDialog')
+        assert confirm.property('height') < window.height() - 40
+        assert window.grabWindow().save(str(tmp_path / 'settings-stop-confirm.png'))
+        control.cancelService()
+        assert all(u['active'] == 'active' for u in control.serviceState['units'])
+        control.prepareService('stop', True)
+        QMetaObject.invokeMethod(window.findChild(QObject, 'confirmServiceButton'), 'clicked', Qt.DirectConnection)
+        spin(app, lambda: not control.busy and not control.connected)
+        assert all(u['active'] == 'inactive' and u['boot'] == 'disabled' for u in control.serviceState['units'])
+        assert not control.error
+        assert window.findChild(QObject, 'startServiceButton').property('enabled')
+        window.findChild(QObject, 'rememberService').setProperty('checked', False)
+        QMetaObject.invokeMethod(window.findChild(QObject, 'startServiceButton'), 'clicked', Qt.DirectConnection)
+        assert control.serviceConfirmation == {'action': 'start', 'remember': False}
+        control.confirmService()
+        spin(app, lambda: not control.busy and control.connected)
+        assert all(u['active'] == 'active' and u['boot'] == 'disabled' for u in control.serviceState['units'])
+        assert not warnings
+    finally:
+        control.shutdown()
+        delete(engine)
+        app.removeTranslator(translator)
+        app.processEvents()
+
+
 def test_temporary_success_notice_disappears_after_disconnect():
     app = QGuiApplication.instance() or QGuiApplication([])
     control = Controller(demo=True)

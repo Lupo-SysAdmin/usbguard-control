@@ -10,6 +10,7 @@ from .demo import DemoBackend
 from .domain import display_text
 from .localization import Language
 from .translations import message
+from .services import DemoServiceManager, manageable
 
 
 class Worker(QObject):
@@ -23,6 +24,7 @@ class Worker(QObject):
         self.backend = None
         self.context = None
         self.cancel = None
+        self.services = None
 
     @Slot()
     def start(self):
@@ -50,8 +52,23 @@ class Worker(QObject):
                 else:
                     from .backend import SystemBackend
                     self.backend = SystemBackend(self.event.emit, cancellable=self.cancel)
+            if self.services is None:
+                if self.demo:
+                    self.services = DemoServiceManager()
+                else:
+                    from .services import ServiceManager
+                    self.services = ServiceManager(connection=self.backend.bus, cancellable=self.cancel)
             if operation == "refresh":
+                try:
+                    state = self.services.snapshot()
+                except Exception as error:
+                    state = {"units": [], "error": friendly_error(error)}
+                self.done.emit("services", state)
+                if self.demo and state["units"][0]["active"] != "active":
+                    raise ValueError("El servicio está detenido.")
                 result = self.backend.snapshot()
+            elif operation == "service":
+                result = self.services.apply(*arguments)
             elif operation == "apply":
                 result = self.backend.apply(*arguments)
             elif operation == "simulate":
@@ -63,7 +80,11 @@ class Worker(QObject):
                 raise ValueError("Operación desconocida")
             self.done.emit(operation, result)
         except Exception as error:
-            self.failed.emit(operation, friendly_error(error))
+            detail = friendly_error(error)
+            if operation == "service" and any(word in str(error).lower() for word in
+                    ("accessdenied", "not authorized", "authorization", "permission denied")):
+                detail = "Operación no autorizada o cancelada. Comprueba el agente de autenticación del escritorio."
+            self.failed.emit(operation, detail)
 
     def notify(self, content):
         if self.demo:
@@ -88,6 +109,7 @@ class Worker(QObject):
 class Controller(QObject):
     changed = Signal()
     confirmationChanged = Signal()
+    serviceConfirmationChanged = Signal()
     request = Signal(str, object)
     stopping = Signal()
 
@@ -112,6 +134,10 @@ class Controller(QObject):
         self._policy = "Consultando política…"
         self._owner = ""
         self._pending = None
+        self._service = {"units": []}
+        self._service_error = ""
+        self._pending_service = None
+        self._service_working = False
         self._notifications = True
         self._event_count = 0
         self._last_error = ""
@@ -157,6 +183,25 @@ class Controller(QObject):
     def advanced(self): return self._advanced
     @Property(bool, notify=changed)
     def notifications(self): return self._notifications
+    @Property(bool, notify=changed)
+    def serviceWorking(self): return self._service_working
+    @Property("QVariantMap", notify=changed)
+    def serviceState(self):
+        labels = {"active": "Activo", "inactive": "Detenido", "failed": "Falló",
+                  "activating": "Iniciando…", "deactivating": "Deteniendo…",
+                  "enabled": "Inicio automático", "disabled": "Sin inicio automático",
+                  "enabled-runtime": "Habilitado solo en esta sesión", "masked": "Enmascarado",
+                  "masked-runtime": "Enmascarado", "not-found": "No instalado"}
+        units = [{**u, "activeLabel": self.language.text(labels.get(u["active"], "Desconocido")),
+                  "bootLabel": self.language.text(labels.get(u["boot"], "Desconocido"))}
+                 for u in self._service.get("units", [])]
+        return {"units": units, "manageable": manageable(self._service),
+                "error": self.language.text(self._service_error or self._service.get("error", ""))}
+    @Property("QVariantMap", notify=serviceConfirmationChanged)
+    def serviceConfirmation(self):
+        if not self._pending_service: return {}
+        action, remember, _expected = self._pending_service
+        return {"action": action, "remember": remember}
     @Property(int, notify=changed)
     def allowedCount(self): return sum(d.target == "allow" and not d.infrastructure for d in self._devices)
     @Property(int, notify=changed)
@@ -237,6 +282,29 @@ class Controller(QObject):
         self.changed.emit()
 
     @Slot(str, bool)
+    def prepareService(self, action, remember):
+        if self._busy or not manageable(self._service) or action not in ("start", "stop"):
+            return
+        self._service_error = ""
+        self._pending_service = (action, remember, self._service)
+        self.serviceConfirmationChanged.emit()
+        self.changed.emit()
+
+    @Slot()
+    def cancelService(self):
+        self._pending_service = None
+        self.serviceConfirmationChanged.emit()
+
+    @Slot()
+    def confirmService(self):
+        if self._busy or not self._pending_service: return
+        args = self._pending_service
+        self._service_action = args
+        self.cancelService()
+        self._service_working = True
+        self.dispatch("service", args)
+
+    @Slot(str, bool)
     def prepare(self, target, permanent):
         if not self._connected or self._busy: return
         device = next((d for d in self._devices if d.id == self._selected), None)
@@ -297,6 +365,10 @@ class Controller(QObject):
 
     @Slot(str, object)
     def completed(self, operation, result):
+        if operation == "services":
+            self._service = result
+            self.changed.emit()
+            return
         self._busy = False
         if operation == "refresh":
             self._connected = True
@@ -330,6 +402,17 @@ class Controller(QObject):
         elif operation == "simulate":
             self.add_event("Simulación", result)
             self.refresh()
+        elif operation == "service":
+            self._service_working = False
+            self._service = result
+            self._service_error = ""
+            self._error = ""
+            action, remember, _expected = self._service_action
+            text = ("Servicios iniciados; inicio automático habilitado." if remember else "Servicios iniciados; arranque sin cambios.") if action == "start" else (
+                    "Servicios detenidos; inicio automático deshabilitado." if remember else "Servicios detenidos; arranque sin cambios.")
+            self.show_notice(text)
+            self.add_event("Simulación" if self._demo else "Servicio", text)
+            self.refresh()
         self.changed.emit()
 
     @Slot(str, str)
@@ -337,12 +420,23 @@ class Controller(QObject):
         self._busy = False
         if operation == "notify": return
         self._error = message
+        if operation == "service":
+            self._service_working = False
+            self._service_error = message
+            self.add_event("Error", message)
+            self.changed.emit()
+            self.refresh()
+            return
         if operation == "refresh":
-            self.clearNotice()
+            if self._notice_context: self.clearNotice()
             self._connected = False
             self._devices = []
             self._selected = -1
             self._policy = "Política no disponible"
+            if self._service.get("units") and all(u["active"] == "inactive" for u in self._service["units"]):
+                self._error = ""
+                self.changed.emit()
+                return
         if message != self._last_error:
             self.add_event("Error", message)
             self._last_error = message

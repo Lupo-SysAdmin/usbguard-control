@@ -12,7 +12,7 @@ USBGuard Control es un cliente independiente para [USBGuard](https://github.com/
 
 ## Estado del proyecto
 
-**v0.1.0 · alpha**. Demostración funcional y cliente D-Bus para USBGuard 1.1.4, con pruebas aisladas y una primera validación física en Kali/GNOME: autorización temporal y persistente de un iPhone, reconexión y permiso persistente de un receptor de mouse. La matriz completa de escritorios y escenarios de recuperación sigue pendiente.
+**v0.2.0 · alpha**. Demostración funcional y cliente D-Bus para USBGuard 1.1.4, con pruebas aisladas y una primera validación física en Kali/GNOME: autorización temporal y persistente de un iPhone, reconexión y permiso persistente de un receptor de mouse. La matriz completa de escritorios y escenarios de recuperación sigue pendiente.
 
 Desarrollado en Kali 2026.3, Python 3.14 y PySide6 6.10.3. La primera prueba de sesión real se realizó en GNOME Shell 50.4/Wayland; KDE Plasma, Xfce y X11 siguen pendientes. La aplicación no es una extensión de GNOME Shell.
 
@@ -23,13 +23,14 @@ Desarrollado en Kali 2026.3, Python 3.14 y PySide6 6.10.3. La primera prueba de 
 - Búsqueda por nombre, tipo o VID:PID y filtros de autorización.
 - Panel de detalles con serie, puerto e interfaces USB.
 - **Permitir ahora**, **Permitir siempre** y **Bloquear ahora**, con confirmación y errores explícitos.
+- Configuración con texto ajustado y desplazamiento; iniciar/detener los servicios y recordar la elección al arrancar mediante systemd y Polkit.
 - Restricción de bloqueo para HID, adaptadores Bluetooth, concentradores y dispositivos con interfaces desconocidas.
 - Eventos D-Bus, reconexión periódica y notificaciones agrupadas mientras está abierta.
 - Actividad de la sesión, limitada a 200 eventos, exportable a JSON.
 - Modo demostración separado del sistema: permite simular desconexiones y comparar decisiones temporales con persistentes.
 - Paquete `.deb` sin scripts administrativos ni instalación automática del daemon.
 
-La interfaz no inicia ni detiene servicios, no ejecuta comandos como root y no escribe directamente las reglas del sistema. Cerrar la ventana no desactiva USBGuard. “Servicio disponible” describe la comunicación; no certifica que todos los dispositivos sean seguros. Las políticas pueden cambiar por otros clientes, incluida la integración de GNOME.
+Los servicios solo se inician o detienen mediante una acción explícita y confirmada en Configuración. La GUI sigue ejecutándose como usuario normal, sin shell ni escritura directa de reglas; systemd y Polkit gestionan los permisos. Cerrar la ventana no desactiva USBGuard. “Servicio disponible” describe la comunicación; no certifica que todos los dispositivos sean seguros. Las políticas pueden cambiar por otros clientes, incluida la integración de GNOME.
 
 ## Ejecutar la demostración
 
@@ -66,7 +67,7 @@ Para construir el paquete sin privilegios:
 python3 scripts/build_deb.py
 ```
 
-El resultado es `dist/usbguard-control_0.1.0-1_all.deb`. Se incluye un flujo de GitHub Actions para pruebas y empaquetado. Configurarlo en el repositorio no significa que ya se haya ejecutado en GitHub.
+El resultado es `dist/usbguard-control_0.2.0-1_all.deb`. Se incluye un flujo de GitHub Actions para pruebas y empaquetado. Configurarlo en el repositorio no significa que ya se haya ejecutado en GitHub.
 
 Atajos: **Ctrl+F** buscar, **Ctrl+R** actualizar, **Ctrl+Q** salir. Tab y Shift+Tab recorren los controles. Los paneles tienen desplazamiento cuando la ventana es pequeña.
 
