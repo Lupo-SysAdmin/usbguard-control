@@ -32,6 +32,12 @@ Resultados observados por la API real y confirmados por el usuario:
 
 El teclado mencionado funciona por Bluetooth y no se enumeró como teclado USB por su cable; no se presenta como una prueba de teclado USB. No se reinició el equipo, no se probó una recuperación de emergencia y no se considera completada una instalación/desinstalación en una VM limpia. No se publican números de serie, hashes ni reglas reales en el repositorio.
 
+### Acceso a documentos del iPhone
+
+Tras probar la autorización permanente, Archivos mostró `Unhandled Lockdown error (-21)` al abrir los documentos del teléfono. La comprobación real confirmó el dispositivo y sus interfaces autorizados, con USBGuard y usbmuxd activos. Se instalaron `libimobiledevice-utils` y su dependencia `libtatsu0`, sin actualizar ni retirar paquetes existentes.
+
+Con el teléfono desbloqueado, `idevicepair validate` terminó correctamente y GVfs respondió a la consulta de la carpeta raíz de documentos. El usuario confirmó que pudo abrirla de nuevo sin el error. No se modificaron las reglas USB ni se ejecutó un desemparejamiento. Esta comprobación distingue autorización USB de acceso a documentos; no demuestra acceso a todos los archivos ni persistencia del emparejamiento tras reiniciar.
+
 ## Automatizable sin hardware
 
 - Analizar snapshots con nombres entre comillas e interfaces compuestas.

@@ -105,4 +105,19 @@ En la unidad `usbguard.service` del paquete `1.1.4+ds-10` examinado, `ConditionK
 
 La desinstalación de la interfaz con `sudo apt remove usbguard-control` deja el daemon y sus reglas bajo administración independiente.
 
+### iPhone permitido, pero Archivos muestra «Lockdown (-21)»
+
+«Permitido» indica autorización USB; el acceso a los documentos del iPhone requiere además el emparejamiento de iOS y el montaje de GVfs. El código `-21` corresponde a `LOCKDOWN_E_INVALID_HOST_ID`: el teléfono rechaza la identidad del equipo en esa sesión. [Definición en libimobiledevice](https://github.com/libimobiledevice/libimobiledevice/blob/1.4.0/include/libimobiledevice/lockdown.h).
+
+Con el iPhone autorizado en USBGuard, desbloquéalo y mantenlo conectado. Acepta «Confiar en este ordenador» si aparece en el teléfono. Para comprobar el emparejamiento, instala las utilidades opcionales y ejecuta la validación como usuario normal:
+
+```bash
+sudo apt install --no-install-recommends libimobiledevice-utils
+idevicepair validate
+```
+
+Si la validación indica que no está emparejado, ejecuta `idevicepair pair`, confirma la confianza en el iPhone y vuelve a validar. Con varios dispositivos Apple conectados, selecciona el correcto mediante `-u` según `idevicepair --help`. Estas herramientas pueden mostrar el identificador del teléfono: ocúltalo antes de compartir sus salidas.
+
+Después de una validación correcta, cierra el aviso anterior de Archivos y abre de nuevo «Documents on …». No hace falta cambiar una regla USB que ya autoriza el dispositivo. Esta ubicación muestra documentos compartidos por aplicaciones compatibles, no todo el sistema de archivos de iOS. La interfaz USBGuard Control no administra el emparejamiento ni los montajes.
+
 Fuentes: [USBGuard 1.1.4](https://github.com/USBGuard/usbguard/releases/tag/usbguard-1.1.4), [paquetes Kali](https://http.kali.org/pool/main/u/usbguard/) y archivos README.Debian/postinst del paquete `1.1.4+ds-10` inspeccionado sin instalarlo.
