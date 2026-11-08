@@ -12,8 +12,8 @@ def test_concrete_rules_preserve_quoted_values_and_composite_interfaces():
     assert not d.as_dict()["canBlock"]
 
 
-@pytest.mark.parametrize("index", [1, 4])
-def test_input_devices_and_hubs_cannot_be_blocked(index):
+@pytest.mark.parametrize("index", [1, 2, 4])
+def test_input_devices_bluetooth_and_hubs_cannot_be_blocked(index):
     d = parse_device(*FIXTURES[index])
     with pytest.raises(ValueError, match="seguridad"):
         validate_action(d, d, "block")

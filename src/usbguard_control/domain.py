@@ -32,7 +32,9 @@ class Device:
 
     @property
     def sensitive(self) -> bool:
-        return not self.interfaces or any(i.startswith(("03:", "09:")) for i in self.interfaces)
+        # A USB Bluetooth controller can carry the user's only keyboard/mouse.
+        return not self.interfaces or any(
+            i.startswith(("03:", "09:")) or i == "e0:01:01" for i in self.interfaces)
 
     @property
     def kind(self) -> str:
@@ -116,4 +118,4 @@ def validate_action(current: Device, expected: Device, target: str) -> None:
     if not current.digest:
         raise ValueError("No se pudo verificar la identidad del dispositivo.")
     if current.infrastructure or (target == "block" and current.sensitive):
-        raise ValueError("Por seguridad, esta versión no bloquea entradas HID, concentradores ni interfaces desconocidas.")
+        raise ValueError("Por seguridad, esta versión no bloquea entradas HID, adaptadores Bluetooth, concentradores ni interfaces desconocidas.")

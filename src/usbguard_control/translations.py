@@ -92,7 +92,7 @@ EN_US = {
     "Acción no admitida": "Unsupported action",
     "El dispositivo cambió. Actualiza la lista y vuelve a seleccionarlo.": "The device changed. Refresh the list and select it again.",
     "No se pudo verificar la identidad del dispositivo.": "The device’s identity could not be verified.",
-    "Por seguridad, esta versión no bloquea entradas HID, concentradores ni interfaces desconocidas.": "For safety, this version does not block HID inputs, hubs, or unknown interfaces.",
+    "Por seguridad, esta versión no bloquea entradas HID, adaptadores Bluetooth, concentradores ni interfaces desconocidas.": "For safety, this version does not block HID inputs, Bluetooth adapters, hubs, or unknown interfaces.",
     "USBGuard se reinició. Actualiza la lista antes de continuar.": "USBGuard restarted. Refresh the list before continuing.",
     "El dispositivo ya no está conectado.": "The device is no longer connected.",
     "USBGuard no está disponible. Revisa el servicio y su puente D-Bus en la guía de instalación.": "USBGuard is unavailable. Check the service and its D-Bus bridge in the setup guide.",

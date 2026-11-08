@@ -100,6 +100,7 @@ class Controller(QObject):
         self._devices = []
         self._events = []
         self._selected = -1
+        self._selection_initialized = False
         self._query = ""
         self._filter = "all"
         self._advanced = False
@@ -107,12 +108,17 @@ class Controller(QObject):
         self._busy = False
         self._error = ""
         self._notice = ""
+        self._notice_context = None
         self._policy = "Consultando política…"
         self._owner = ""
         self._pending = None
         self._notifications = True
         self._event_count = 0
         self._last_error = ""
+        self.notice_timer = QTimer(self)
+        self.notice_timer.setSingleShot(True)
+        self.notice_timer.setInterval(6000)
+        self.notice_timer.timeout.connect(self.clearNotice)
         self.thread = QThread(self)
         self.worker = Worker(demo)
         self.worker.moveToThread(self.thread)
@@ -206,6 +212,7 @@ class Controller(QObject):
     @Slot(int)
     def select(self, device_id):
         self._selected = device_id
+        self._selection_initialized = True
         self.changed.emit()
 
     @Slot(str)
@@ -265,7 +272,14 @@ class Controller(QObject):
     @Slot()
     def clearNotice(self):
         self._notice = ""
+        self._notice_context = None
+        self.notice_timer.stop()
         self.changed.emit()
+
+    def show_notice(self, text, context=None):
+        self._notice = text
+        self._notice_context = context
+        self.notice_timer.start()
 
     @Slot(str)
     def exportActivity(self, url):
@@ -276,7 +290,7 @@ class Controller(QObject):
             try:
                 Path(path).write_text(json.dumps({"application": "USBGuard Control", "demo": self._demo,
                     "scope": "current session only", "locale": self.language.locale, "events": self.events}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-                self._notice = "Actividad exportada."
+                self.show_notice("Actividad exportada.")
             except OSError as error:
                 self._error = str(error)
         self.changed.emit()
@@ -290,19 +304,27 @@ class Controller(QObject):
             self._last_error = ""
             self._devices = result["devices"]
             self._owner = result["owner"]
+            if self._notice_context:
+                expected, target, owner = self._notice_context
+                current = next((d for d in self._devices if d.id == expected.id), None)
+                if (owner != self._owner or current is None
+                        or current.identity != expected.identity or current.target != target):
+                    self.clearNotice()
             values = {"block": "bloquear", "allow": "permitir", "reject": "rechazar", "apply-policy": "evaluar reglas", "unknown": "no disponible"}
             self._policy = message("Nuevos: {inserted} · Sin coincidencia: {implicit}",
                 inserted=message(values.get(result['inserted'], result['inserted'])),
                 implicit=message(values.get(result['implicit'], result['implicit'])))
-            if self._selected == -1 and self._devices:
+            if not self._selection_initialized and self._devices:
                 self._selected = next((d.id for d in self._devices if not d.infrastructure), self._devices[0].id)
+                self._selection_initialized = True
             elif not any(d.id == self._selected for d in self._devices):
                 self._selected = -1
         elif operation == "apply":
-            device, target, permanent, _ = self._action
+            device, target, permanent, owner = self._action
             verb = "Permitido" if target == "allow" else "Bloqueado"
             scope = message("regla guardada #{id}", id=result) if permanent else message("decisión temporal")
-            self._notice = message("{status}: {name} · {scope}", status=message(verb), name=display_text(device.name), scope=scope)
+            self.show_notice(message("{status}: {name} · {scope}", status=message(verb), name=display_text(device.name), scope=scope),
+                             (device, target, owner))
             self.add_event("Simulación" if self._demo else "Acción", self._notice)
             self.refresh()
         elif operation == "simulate":
@@ -316,6 +338,7 @@ class Controller(QObject):
         if operation == "notify": return
         self._error = message
         if operation == "refresh":
+            self.clearNotice()
             self._connected = False
             self._devices = []
             self._selected = -1
@@ -352,6 +375,7 @@ class Controller(QObject):
     def shutdown(self):
         self.poll.stop()
         self.coalesce.stop()
+        self.notice_timer.stop()
         if self.worker.cancel:
             self.worker.cancel.cancel()
         self.stopping.emit()

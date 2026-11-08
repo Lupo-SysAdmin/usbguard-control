@@ -19,6 +19,31 @@ def spin(app, predicate, timeout=3):
     assert predicate()
 
 
+def test_temporary_success_notice_disappears_after_disconnect():
+    app = QGuiApplication.instance() or QGuiApplication([])
+    control = Controller(demo=True)
+    try:
+        spin(app, lambda: control.connected and not control.busy)
+        control.select(12)
+        control.prepare("allow", False)
+        control.confirm()
+        spin(app, lambda: not control.busy and control.selected.get("target") == "allow")
+        assert "Permitido" in control.notice
+        control.simulate()
+        spin(app, lambda: not control.busy and not any(d["id"] == 12 for d in control.devices))
+        assert control.notice == ""
+        control.simulate()
+        spin(app, lambda: not control.busy and any(d["id"] == 12 for d in control.devices))
+        assert next(d for d in control.devices if d["id"] == 12)["target"] == "block"
+        assert control.notice == ""
+        control.refresh()
+        spin(app, lambda: not control.busy)
+        assert control.selected == {}, "A disconnected selection must not silently move to another USB"
+        assert any("Permitido" in event["message"] for event in control.events)
+    finally:
+        control.shutdown()
+
+
 def test_qml_workflow_search_authorize_reconnect_export_and_credit(tmp_path):
     app = QGuiApplication.instance() or QGuiApplication([])
     language = Language(settings=QSettings(str(tmp_path / "preferences.ini"), QSettings.IniFormat))

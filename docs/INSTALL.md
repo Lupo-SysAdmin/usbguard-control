@@ -101,6 +101,8 @@ En GNOME, el gestor de protección puede añadir una regla que autoriza todos lo
 
 Si pierdes el acceso al teclado, utiliza el acceso de recuperación preparado. El README.Debian del paquete examinado documenta los parámetros de arranque `usbguard=0` o `usbguard=false` para impedir que USBGuard se inicie. Verifica estas instrucciones en `/usr/share/doc/usbguard/README.Debian` de tu versión antes de necesitarlas. Detener un servicio no garantiza restaurar instantáneamente todos los dispositivos; puede ser necesaria una reconexión o un reinicio tras reparar la política.
 
+En la unidad `usbguard.service` del paquete `1.1.4+ds-10` examinado, `ConditionKernelCommandLine` y `ConditionPathExists` están bajo `[Service]`; systemd las ignora allí. En la instalación de prueba se añadieron sus equivalentes en `[Unit]` mediante `/etc/systemd/system/usbguard.service.d/10-usbguard-control-conditions.conf`, conservando el archivo del paquete. No confíes en los parámetros de recuperación hasta comprobar que las condiciones se aplican en tu instalación.
+
 La desinstalación de la interfaz con `sudo apt remove usbguard-control` deja el daemon y sus reglas bajo administración independiente.
 
 Fuentes: [USBGuard 1.1.4](https://github.com/USBGuard/usbguard/releases/tag/usbguard-1.1.4), [paquetes Kali](https://http.kali.org/pool/main/u/usbguard/) y archivos README.Debian/postinst del paquete `1.1.4+ds-10` inspeccionado sin instalarlo.

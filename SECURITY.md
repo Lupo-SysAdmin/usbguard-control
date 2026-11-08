@@ -4,7 +4,7 @@ USBGuard Control es un cliente alpha. No certifica dispositivos, detecta malware
 
 El proceso gráfico se ejecuta sin root. No inicia servicios, no modifica directamente reglas ni instala excepciones generales de Polkit. El motor upstream conserva la autorización y la persistencia.
 
-Las decisiones requieren confirmación y una nueva consulta de identidad. La API de USBGuard no ofrece comparación y aplicación atómicas; existe una ventana entre ambas operaciones. Se restringe bloquear dispositivos de entrada y hubs desde esta versión.
+Las decisiones requieren confirmación y una nueva consulta de identidad. La API de USBGuard no ofrece comparación y aplicación atómicas; existe una ventana entre ambas operaciones. Se restringe bloquear dispositivos de entrada, adaptadores Bluetooth USB y hubs desde esta versión.
 
 El historial solo reside en memoria hasta que el usuario lo exporta. No hay telemetría ni conexión de red automática. Los enlaces externos se abren únicamente desde botones explícitos. Las exportaciones pueden contener nombres de dispositivos.
 

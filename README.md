@@ -12,9 +12,9 @@ USBGuard Control es un cliente independiente para [USBGuard](https://github.com/
 
 ## Estado del proyecto
 
-**v0.1.0 · alpha**. La demostración es funcional. El transporte real implementa la API D-Bus de USBGuard 1.1.4 y se prueba contra un servicio simulado en un bus privado. Todavía no está validado con el daemon real, periféricos físicos ni una matriz completa de escritorios.
+**v0.1.0 · alpha**. Demostración funcional y cliente D-Bus para USBGuard 1.1.4, con pruebas aisladas y una primera validación física en Kali/GNOME: autorización temporal y persistente de un iPhone, reconexión y permiso persistente de un receptor de mouse. La matriz completa de escritorios y escenarios de recuperación sigue pendiente.
 
-Desarrollado y probado sin acceso al hardware en un entorno Kali 2026.3, Python 3.14 y PySide6 6.10.3. El objetivo principal es Kali con GNOME; KDE Plasma, Xfce, Wayland y X11 necesitan validación de sesión antes de anunciar soporte. La aplicación no es una extensión de GNOME Shell.
+Desarrollado en Kali 2026.3, Python 3.14 y PySide6 6.10.3. La primera prueba de sesión real se realizó en GNOME Shell 50.4/Wayland; KDE Plasma, Xfce y X11 siguen pendientes. La aplicación no es una extensión de GNOME Shell.
 
 ## Qué incluye
 
@@ -23,7 +23,7 @@ Desarrollado y probado sin acceso al hardware en un entorno Kali 2026.3, Python 
 - Búsqueda por nombre, tipo o VID:PID y filtros de autorización.
 - Panel de detalles con serie, puerto e interfaces USB.
 - **Permitir ahora**, **Permitir siempre** y **Bloquear ahora**, con confirmación y errores explícitos.
-- Restricción de bloqueo para HID, concentradores y dispositivos con interfaces desconocidas.
+- Restricción de bloqueo para HID, adaptadores Bluetooth, concentradores y dispositivos con interfaces desconocidas.
 - Eventos D-Bus, reconexión periódica y notificaciones agrupadas mientras está abierta.
 - Actividad de la sesión, limitada a 200 eventos, exportable a JSON.
 - Modo demostración separado del sistema: permite simular desconexiones y comparar decisiones temporales con persistentes.
@@ -73,8 +73,8 @@ Atajos: **Ctrl+F** buscar, **Ctrl+R** actualizar, **Ctrl+Q** salir. Tab y Shift+
 ## Hoja de ruta
 
 1. **Prototipo visual:** implementado con demostración funcional y captura real de QML.
-2. **Integración:** cliente D-Bus implementado; falta validar daemon, Polkit y hardware reales.
-3. **Instalación:** `.deb` y guía disponibles; falta ensayo completo en una VM Kali limpia y sesiones de escritorio.
+2. **Integración:** cliente D-Bus implementado y primeras pruebas con daemon/hardware reales completadas; faltan escenarios de fallo y recuperación.
+3. **Instalación:** `.deb` instalado mediante APT en Kali/GNOME; falta ensayo de instalación y desinstalación en una VM limpia y otros escritorios.
 4. **Portafolio:** documentación bilingüe, autoría, licencia, captura y CI preparados; publicación y primera release pendientes.
 
 Ver [plan de validación](docs/VALIDATION.md). Próximas mejoras: persistencia de las demás preferencias, editor de reglas con respaldo y revocación, y asistente de instalación validado. No se presenta un historial de sesión como si fuera un registro de auditoría completo.
