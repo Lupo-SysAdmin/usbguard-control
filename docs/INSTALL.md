@@ -36,14 +36,20 @@ No mezcles `sudo pip` con paquetes del sistema. Para desarrollo en un entorno vi
 
 Realiza esta etapa en una VM con instantánea o con un acceso de recuperación que no dependa de los USB que vas a filtrar. Conecta únicamente dispositivos de confianza. No uses esta secuencia para sobrescribir una configuración que ya administras.
 
-El `postinst` del paquete oficial puede generar una política y arrancar servicios. Para una **primera instalación**, bloquea temporalmente su arranque durante la preparación:
+El `postinst` del paquete oficial puede generar una política y arrancar servicios. Para una **primera instalación**, el instalador incluido instala la interfaz y USBGuard y deja ambos servicios enmascarados hasta revisar las reglas:
 
 ```bash
-sudo systemctl mask --runtime usbguard.service usbguard-dbus.service
+sudo sh scripts/install_kali.sh
+```
+
+Se detiene si USBGuard ya está instalado o encuentra unidades administrativas preexistentes. Para hacer los mismos pasos manualmente, bloquea el arranque durante la preparación:
+
+```bash
+sudo systemctl mask usbguard.service usbguard-dbus.service
 sudo apt install usbguard
 ```
 
-Comprueba con `systemctl is-active usbguard.service usbguard-dbus.service` que no estén ejecutándose. El enmascarado temporal desaparece al reiniciar: termina la preparación antes de reiniciar, o conserva los servicios deshabilitados mientras la revisas.
+Comprueba con `systemctl is-active usbguard.service usbguard-dbus.service` que no estén ejecutándose. Las máscaras persisten después de reiniciar hasta que las retires explícitamente. No actives el servicio mientras la política siga pendiente.
 
 Respalda el directorio existente antes de editarlo. Genera una política candidata en un archivo privado:
 
@@ -61,7 +67,7 @@ Solo después de revisar y respaldar, instala la candidata:
 ```bash
 sudo install -m 0600 -o root -g root "$policy_candidate" /etc/usbguard/rules.conf
 rm -- "$policy_candidate"
-sudo systemctl unmask --runtime usbguard.service usbguard-dbus.service
+sudo systemctl unmask usbguard.service usbguard-dbus.service
 sudo systemctl start usbguard.service usbguard-dbus.service
 ```
 
@@ -90,6 +96,8 @@ journalctl -u usbguard -u usbguard-dbus -b
 ```
 
 Si existe servicio pero falta autorización, revisa el agente Polkit y las políticas suministradas por USBGuard. No ejecutes la GUI con sudo para resolverlo. Si GNOME gestiona protección USB, su política puede coexistir o cambiar: inspecciona `gsettings get org.gnome.desktop.privacy usb-protection` y, si existe, `usb-protection-level`; no cambiamos estos valores automáticamente.
+
+En GNOME, el gestor de protección puede añadir una regla que autoriza todos los dispositivos en el modo `lockscreen`. Para administrar una lista explícita con un cliente independiente, coordina ese gestor antes del primer arranque y comprueba las reglas resultantes. Cambiar `usb-protection` a `false` mientras el daemon está activo también puede provocar que GNOME inserte una regla de autorización general. No basta con cambiar la preferencia sin revisar el estado. [Código del gestor de GNOME en Debian](https://browse.dgit.debian.org/gnome-settings-daemon.git/tree/plugins/usb-protection/gsd-usb-protection-manager.c).
 
 Si pierdes el acceso al teclado, utiliza el acceso de recuperación preparado. El README.Debian del paquete examinado documenta los parámetros de arranque `usbguard=0` o `usbguard=false` para impedir que USBGuard se inicie. Verifica estas instrucciones en `/usr/share/doc/usbguard/README.Debian` de tu versión antes de necesitarlas. Detener un servicio no garantiza restaurar instantáneamente todos los dispositivos; puede ser necesaria una reconexión o un reinicio tras reparar la política.
 

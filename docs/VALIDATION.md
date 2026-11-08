@@ -11,6 +11,12 @@
 
 Estos resultados no implican validación del daemon real, hardware, instalación APT completa ni ejecución remota de GitHub Actions.
 
+### Primera instalación en el equipo de desarrollo
+
+El 8 de noviembre de 2026 se instaló la interfaz `0.1.0-1` mediante APT junto con USBGuard `1.1.4+ds-10`, con autenticación Polkit. Se añadieron cuatro paquetes, sin actualizaciones ni eliminaciones. Se verificaron los servicios `inactive/masked` y se abrió la interfaz como usuario normal en GNOME Shell 50.4/Wayland. El sistema también tiene gnome-settings-daemon 51.0 y su protección USB configurada como `lockscreen`.
+
+La preparación de reglas, la activación y las pruebas físicas siguen pendientes. No se considera completada todavía una prueba de instalación/desinstalación en una VM limpia.
+
 ## Automatizable sin hardware
 
 - Analizar snapshots con nombres entre comillas e interfaces compuestas.
