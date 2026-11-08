@@ -1,0 +1,24 @@
+USBGuard Control
+Copyright (C) 2026 Jan Herrera
+https://github.com/Lupo-SysAdmin
+SPDX-License-Identifier: GPL-3.0-or-later
+
+This is an independent desktop client, not an official USBGuard release.
+Jan Herrera's attribution concerns this user interface, not the USBGuard engine.
+
+USBGuard: https://github.com/USBGuard/usbguard
+Copyright belongs to its respective authors. GPL-2.0-or-later.
+Communicated with over D-Bus; not embedded or redistributed in this package.
+
+Qt / PySide6: https://www.qt.io/ and https://doc.qt.io/qtforpython-6/
+Copyright belongs to their respective owners. Components carry their own
+LGPL/GPL/commercial and third-party license notices. Installed separately.
+
+PyGObject / GLib / GIO: https://pygobject.gnome.org/ and https://www.gtk.org/
+Their respective authors and licenses apply. Installed separately.
+
+The shield icon and UI assets are part of USBGuard Control under its license.
+No Kali, GNOME, Qt or upstream USBGuard branding assets are included.
+The user's visual reference is not redistributed in this repository.
+
+This software is supplied without warranty. See LICENSE for full terms.

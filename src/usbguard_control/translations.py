@@ -1,0 +1,158 @@
+# SPDX-FileCopyrightText: 2026 Jan Herrera
+# SPDX-License-Identifier: GPL-3.0-or-later
+"""Reviewed UI catalog: Latin American Spanish source → US English."""
+from dataclasses import dataclass, field
+
+EN_US = {
+    " · Demostración": " · Demo",
+    "El control de tus conexiones, en tus manos.": "Your connections. Your control.",
+    "DEMOSTRACIÓN": "DEMO MODE",
+    "Acerca de": "About",
+    "Dispositivos": "Devices",
+    "Actividad": "Activity",
+    "Configuración": "Settings",
+    "Entorno de demostración": "Demo environment",
+    "Servicio disponible": "Service available",
+    "Sin conexión con USBGuard": "Not connected to USBGuard",
+    "Datos simulados. Ningún dispositivo real se modifica.": "Simulated data. No real devices are changed.",
+    "permitidos": "allowed",
+    "sin autorizar": "unauthorized",
+    "Dispositivos USB": "USB devices",
+    "Simular conexión": "Simulate connection",
+    "Consultando…": "Refreshing…",
+    "↻  Actualizar": "↻  Refresh",
+    "Buscar nombre, tipo o VID:PID…": "Search name, type, or VID:PID…",
+    "Buscar dispositivos": "Search devices",
+    "Todos": "All",
+    "Permitidos": "Allowed",
+    "Bloqueados": "Blocked",
+    "DISPOSITIVO": "DEVICE",
+    "ESTADO": "STATUS",
+    "No hay dispositivos con este filtro.": "No devices match this filter.",
+    "Conecta con USBGuard para ver tus dispositivos.": "Connect to USBGuard to see your devices.",
+    "Vista avanzada · infraestructura visible": "Advanced view · infrastructure visible",
+    " concentrador(es) ocultos · ver en Configuración": " hub(s) hidden · see Settings",
+    "DETALLES": "DETAILS",
+    "Selecciona un dispositivo": "Select a device",
+    "Número de serie": "Serial number",
+    "Puerto": "Port",
+    "Interfaces": "Interfaces",
+    "Dispositivo sensible. El bloqueo está restringido para conservar el acceso al equipo.": "Sensitive device. Blocking is restricted to preserve access to your computer.",
+    "Permitir ahora": "Allow now",
+    "Permitir siempre": "Always allow",
+    "Bloquear ahora": "Block now",
+    "“Ahora” cambia el estado actual. “Siempre” guarda una regla en USBGuard.": "“Now” changes the current state. “Always” saves a rule in USBGuard.",
+    "Actividad de esta sesión": "Activity in this session",
+    "Exportar JSON": "Export JSON",
+    "Hasta 200 eventos desde que abriste la aplicación. No sustituye el registro del servicio.": "Up to 200 events since you opened the app. This does not replace the service log.",
+    "ÚLTIMA ACTIVIDAD": "LATEST ACTIVITY",
+    "Sin eventos": "No events",
+    "Desarrollado por Jan Herrera": "Developed by Jan Herrera",
+    "Cliente independiente  ·  v0.1.0  ·  GPL-3.0-or-later": "Independent client  ·  v0.1.0  ·  GPL-3.0-or-later",
+    "Bloquear dispositivo": "Block device",
+    "Autorizar dispositivo": "Authorize device",
+    "Se guardará una regla persistente. Esta decisión puede aplicarse en futuras conexiones y reinicios. Revisa las reglas si luego quieres revocarla.": "A persistent rule will be saved. This decision may apply after reconnecting or restarting. Review the rules if you want to revoke it later.",
+    "El dispositivo dejará de estar autorizado. Desmonta las unidades de almacenamiento antes de continuar. No se guardará una regla permanente.": "The device will no longer be authorized. Unmount storage drives before continuing. No permanent rule will be saved.",
+    "Se autorizará el dispositivo ahora. Al reconectar o reiniciar, USBGuard volverá a evaluar sus reglas.": "The device will be authorized now. USBGuard will evaluate its rules again after reconnecting or restarting.",
+    "Incluye interfaces sensibles, como teclado o ratón. Autoriza únicamente si reconoces el dispositivo.": "Includes sensitive interfaces, such as a keyboard or mouse. Only authorize a device you recognize.",
+    "Esta acción es simulada.": "This action is simulated.",
+    "Cancelar": "Cancel",
+    "Confirmar": "Confirm",
+    "Cerrar": "Close",
+    "Guardar": "Save",
+    "Acerca de USBGuard Control": "About USBGuard Control",
+    "Desarrollador de la interfaz · Lupo-SysAdmin": "UI developer · Lupo-SysAdmin",
+    "USBGuard Control 0.1.0\nCopyright © 2026 Jan Herrera\nGPL-3.0-or-later · Software libre, sin garantía.\n\nCliente independiente. El motor USBGuard pertenece a sus respectivos autores. Qt y PySide6 pertenecen a sus respectivos titulares.": "USBGuard Control 0.1.0\nCopyright © 2026 Jan Herrera\nGPL-3.0-or-later · Free software, without warranty.\n\nIndependent client. The USBGuard engine belongs to its respective authors. Qt and PySide6 belong to their respective owners.",
+    "GitHub de Jan": "Jan’s GitHub",
+    "Leer licencia": "Read license",
+    "Configuración y conexión": "Settings and connection",
+    "Mostrar concentradores USB (vista avanzada)": "Show USB hubs (advanced view)",
+    "Notificaciones agrupadas mientras la aplicación está abierta": "Group notifications while the app is open",
+    "Política actual": "Current policy",
+    "Antes de activar USBGuard:\n1. Conecta solo periféricos de confianza.\n2. Genera y revisa la política inicial.\n3. Conserva un respaldo y un acceso de recuperación.\n4. Inicia USBGuard y su puente D-Bus.\n\nEsta interfaz no inicia ni detiene servicios. Cerrar la ventana no modifica la política de USBGuard.": "Before enabling USBGuard:\n1. Connect only trusted peripherals.\n2. Generate and review the initial policy.\n3. Keep a backup and a recovery access method.\n4. Start USBGuard and its D-Bus bridge.\n\nThis interface does not start or stop services. Closing the window does not change USBGuard’s policy.",
+    "Volver a comprobar conexión": "Check connection again",
+    "Exportar actividad de la sesión": "Export session activity",
+    "Concentrador USB": "USB hub",
+    "Entrada · HID": "Input · HID",
+    "Almacenamiento": "Storage",
+    "Conectividad": "Connectivity",
+    "Cámara": "Camera",
+    "Audio": "Audio",
+    "Dispositivo USB": "USB device",
+    "Dispositivo sin nombre": "Unnamed device",
+    "No informado": "Not reported",
+    "No informadas": "Not reported",
+    "Permitido": "Allowed",
+    "Bloqueado": "Blocked",
+    "Rechazado": "Rejected",
+    "Desconocido": "Unknown",
+    "Estado de dispositivo no reconocido": "Unrecognized device state",
+    "Lista de interfaces incompleta": "Incomplete interface list",
+    "Interfaz USB inválida": "Invalid USB interface",
+    "Acción no admitida": "Unsupported action",
+    "El dispositivo cambió. Actualiza la lista y vuelve a seleccionarlo.": "The device changed. Refresh the list and select it again.",
+    "No se pudo verificar la identidad del dispositivo.": "The device’s identity could not be verified.",
+    "Por seguridad, esta versión no bloquea entradas HID, concentradores ni interfaces desconocidas.": "For safety, this version does not block HID inputs, hubs, or unknown interfaces.",
+    "USBGuard se reinició. Actualiza la lista antes de continuar.": "USBGuard restarted. Refresh the list before continuing.",
+    "El dispositivo ya no está conectado.": "The device is no longer connected.",
+    "USBGuard no está disponible. Revisa el servicio y su puente D-Bus en la guía de instalación.": "USBGuard is unavailable. Check the service and its D-Bus bridge in the setup guide.",
+    "Operación no autorizada. Revisa el agente Polkit de tu sesión y los permisos de USBGuard.": "Operation not authorized. Check your session’s Polkit agent and USBGuard permissions.",
+    "Operación desconocida": "Unknown operation",
+    "Consultando política…": "Reading policy…",
+    "Sesión": "Session",
+    "Modo demostración iniciado · los cambios son simulados": "Demo mode started · changes are simulated",
+    "Conectando con USBGuard": "Connecting to USBGuard",
+    "Selecciona un archivo local.": "Select a local file.",
+    "Actividad exportada.": "Activity exported.",
+    "Nuevos: {inserted} · Sin coincidencia: {implicit}": "New: {inserted} · No match: {implicit}",
+    "bloquear": "block",
+    "permitir": "allow",
+    "rechazar": "reject",
+    "evaluar reglas": "evaluate rules",
+    "no disponible": "unavailable",
+    "regla guardada #{id}": "saved rule #{id}",
+    "decisión temporal": "temporary decision",
+    "{status}: {name} · {scope}": "{status}: {name} · {scope}",
+    "Simulación": "Simulation",
+    "Acción": "Action",
+    "Error": "Error",
+    "Política no disponible": "Policy unavailable",
+    "Presente · ID {id}": "Present · ID {id}",
+    "Conectado · ID {id}": "Connected · ID {id}",
+    "Actualizado · ID {id}": "Updated · ID {id}",
+    "Desconectado · ID {id}": "Disconnected · ID {id}",
+    "Cambio · ID {id}": "Change · ID {id}",
+    "Dispositivo": "Device",
+    "Política": "Policy",
+    "Decisión de USBGuard actualizada · ID {id}": "USBGuard decision updated · ID {id}",
+    "USBGuard notificó una excepción. Revisa el registro del servicio.": "USBGuard reported an exception. Check the service log.",
+    "Crucial X8 SSD desconectado": "Crucial X8 SSD disconnected",
+    "Crucial X8 SSD conectado": "Crucial X8 SSD connected",
+    "Actividad USB": "USB activity",
+    "{count} cambios detectados. Abre USBGuard Control para revisarlos.": "{count} changes detected. Open USBGuard Control to review them.",
+    "No se pudo guardar la preferencia de idioma.": "The language preference could not be saved.",
+}
+
+# Regional wording overrides; product names and hardware strings stay unchanged.
+ES_419 = {
+    "Incluye interfaces sensibles, como teclado o ratón. Autoriza únicamente si reconoces el dispositivo.": "Incluye interfaces sensibles, como teclado o mouse. Autoriza únicamente si reconoces el dispositivo.",
+}
+
+
+@dataclass(frozen=True)
+class Message:
+    source: str
+    values: dict = field(default_factory=dict)
+
+
+def message(source, **values):
+    return Message(source, values)
+
+
+def translate(value, locale):
+    catalog = EN_US if locale == "en-US" else ES_419
+    if isinstance(value, Message):
+        # Only nested Message values are translated; never translate USB names.
+        values = {k: translate(v, locale) if isinstance(v, Message) else v for k, v in value.values.items()}
+        return catalog.get(value.source, value.source).format(**values)
+    return catalog.get(value, value)

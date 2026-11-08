@@ -1,0 +1,19 @@
+[Desktop Entry]
+Type=Application
+Name=USBGuard Control
+GenericName=USB authorization manager
+GenericName[es]=Gestor de autorización USB
+Comment=Manage USBGuard devices and authorization policies
+Comment[es]=Gestiona dispositivos y permisos de USBGuard
+Exec=usbguard-control
+Icon=usbguard-control
+Terminal=false
+Categories=System;Security;
+Keywords=USB;USBGuard;Security;Firewall;
+StartupNotify=true
+Actions=Demo;
+
+[Desktop Action Demo]
+Name=Open demonstration
+Name[es]=Abrir demostración
+Exec=usbguard-control --demo

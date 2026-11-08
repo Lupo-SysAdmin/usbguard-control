@@ -1,0 +1,98 @@
+# Instalación y prueba en Kali
+
+Objetivo inicial: Kali 2026.3. La revisión candidata observada el 8 de noviembre de 2026 es `usbguard 1.1.4+ds-10`; consulta siempre `apt policy usbguard` en tu equipo. El paquete incluye `usbguard-dbus` y su unidad systemd; no existe la necesidad de instalar otro paquete llamado `usbguard-dbus` en esta revisión.
+
+## 1. Probar solo la interfaz
+
+Instala las dependencias gráficas, sin instalar todavía el daemon:
+
+```bash
+sudo apt update
+sudo apt install python3 python3-gi \
+  python3-pyside6.qtcore python3-pyside6.qtgui \
+  python3-pyside6.qtqml python3-pyside6.qtquick \
+  qml6-module-qtquick qml6-module-qtquick-window \
+  qml6-module-qtquick-layouts qml6-module-qtquick-controls \
+  qml6-module-qtquick-dialogs qml6-module-qtquick-templates \
+  qml6-module-qtqml-workerscript
+PYTHONPATH=src python3 -m usbguard_control --demo
+```
+
+Para pruebas automatizadas: `sudo apt install python3-pytest dbus-daemon desktop-file-utils`.
+
+O construye e instala el paquete de la interfaz:
+
+```bash
+python3 scripts/build_deb.py
+sudo apt install ./dist/usbguard-control_0.1.0-1_all.deb
+usbguard-control --demo
+```
+
+USBGuard figura como `Suggests`, no como dependencia que se instale automáticamente. El `.deb` no contiene scripts postinst, servicios ni cambios Polkit. El menú de aplicaciones ofrece una acción “Abrir demostración”.
+
+No mezcles `sudo pip` con paquetes del sistema. Para desarrollo en un entorno virtual, usa `python3 -m venv --system-site-packages .venv` para conservar acceso a PyGObject instalado por APT. `pip install -e . --no-deps` puede registrar el comando si las dependencias ya están instaladas.
+
+## 2. Preparar USBGuard en una instalación nueva
+
+Realiza esta etapa en una VM con instantánea o con un acceso de recuperación que no dependa de los USB que vas a filtrar. Conecta únicamente dispositivos de confianza. No uses esta secuencia para sobrescribir una configuración que ya administras.
+
+El `postinst` del paquete oficial puede generar una política y arrancar servicios. Para una **primera instalación**, bloquea temporalmente su arranque durante la preparación:
+
+```bash
+sudo systemctl mask --runtime usbguard.service usbguard-dbus.service
+sudo apt install usbguard
+```
+
+Comprueba con `systemctl is-active usbguard.service usbguard-dbus.service` que no estén ejecutándose. El enmascarado temporal desaparece al reiniciar: termina la preparación antes de reiniciar, o conserva los servicios deshabilitados mientras la revisas.
+
+Respalda el directorio existente antes de editarlo. Genera una política candidata en un archivo privado:
+
+```bash
+umask 077
+policy_candidate=$(mktemp)
+sudo usbguard generate-policy > "$policy_candidate"
+less "$policy_candidate"
+```
+
+Revisa que estén contemplados teclado, ratón, hubs y dispositivos internos necesarios. La política generada confía en lo conectado en ese momento; no determina si los dispositivos son benignos. Confirma `RuleFile` y `RuleFolder` en `/etc/usbguard/usbguard-daemon.conf` y revisa reglas preexistentes en ambos lugares.
+
+Solo después de revisar y respaldar, instala la candidata:
+
+```bash
+sudo install -m 0600 -o root -g root "$policy_candidate" /etc/usbguard/rules.conf
+rm -- "$policy_candidate"
+sudo systemctl unmask --runtime usbguard.service usbguard-dbus.service
+sudo systemctl start usbguard.service usbguard-dbus.service
+```
+
+Prueba los dispositivos y un USB prescindible. Comprueba `systemctl is-enabled usbguard.service usbguard-dbus.service`: el paquete puede haberlos habilitado durante la instalación. Conserva el arranque automático solo después de la validación. No otorgues acceso general al grupo `users` ni añadas reglas Polkit que permitan todas las acciones.
+
+## 3. Conectar la interfaz
+
+```bash
+usbguard-control
+```
+
+Desde el código fuente: `PYTHONPATH=src python3 -m usbguard_control`.
+
+Ejecuta como usuario normal en una sesión local activa con agente Polkit. Las acciones administrativas pueden mostrar la autenticación del escritorio. La aplicación no solicita ni guarda contraseñas.
+
+“Permitir ahora” no guarda una regla: al reconectar o reiniciar se reevalúa la política. “Permitir siempre” pide a USBGuard guardar una regla; fallará si su almacenamiento de reglas no es escribible o no está configurado. “Bloquear ahora” tampoco elimina reglas persistentes. Para revocar una regla guardada, revisa `sudo usbguard list-rules` y administra la regla correcta con las herramientas oficiales; el editor gráfico está pendiente.
+
+Antes de bloquear almacenamiento, desmonta el volumen. Bloquear autorización USB no es una operación de expulsión segura. Esta versión no administra montajes.
+
+## Diagnóstico y recuperación
+
+```bash
+python3 scripts/diagnose.py
+systemctl status usbguard.service usbguard-dbus.service
+journalctl -u usbguard -u usbguard-dbus -b
+```
+
+Si existe servicio pero falta autorización, revisa el agente Polkit y las políticas suministradas por USBGuard. No ejecutes la GUI con sudo para resolverlo. Si GNOME gestiona protección USB, su política puede coexistir o cambiar: inspecciona `gsettings get org.gnome.desktop.privacy usb-protection` y, si existe, `usb-protection-level`; no cambiamos estos valores automáticamente.
+
+Si pierdes el acceso al teclado, utiliza el acceso de recuperación preparado. El README.Debian del paquete examinado documenta los parámetros de arranque `usbguard=0` o `usbguard=false` para impedir que USBGuard se inicie. Verifica estas instrucciones en `/usr/share/doc/usbguard/README.Debian` de tu versión antes de necesitarlas. Detener un servicio no garantiza restaurar instantáneamente todos los dispositivos; puede ser necesaria una reconexión o un reinicio tras reparar la política.
+
+La desinstalación de la interfaz con `sudo apt remove usbguard-control` deja el daemon y sus reglas bajo administración independiente.
+
+Fuentes: [USBGuard 1.1.4](https://github.com/USBGuard/usbguard/releases/tag/usbguard-1.1.4), [paquetes Kali](https://http.kali.org/pool/main/u/usbguard/) y archivos README.Debian/postinst del paquete `1.1.4+ds-10` inspeccionado sin instalarlo.
