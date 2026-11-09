@@ -2,6 +2,10 @@
 
 ## 0.2.0 — 2026-11-08
 
+- Validación en VMs KVM: Kali 2026.1/Xfce/X11 y Parrot 7.4/KDE/Wayland, instalación/desinstalación, controles reales de servicios, reinicios y recuperación.
+- Controles QML con estilo Basic explícito para evitar bucles de geometría introducidos por Breeze en KDE.
+- Etiquetas accesibles de las casillas y contraste mejorado de botones principales; regresiones de teclado y accesibilidad en ES/EN.
+- Lanzador Debian con `-B`: no genera caché de Python propiedad de root que quede después de desinstalar.
 - Consulta automática silenciosa cada cinco segundos, sin atenuar controles ni volver a notificar detalles que no cambiaron; los clics durante la consulta se procesan en orden.
 
 - Configuración con casillas multilínea, ancho limitado y desplazamiento en ventanas pequeñas.

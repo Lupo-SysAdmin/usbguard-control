@@ -22,7 +22,7 @@ def main():
         (app_dir / "launch.py").write_text('import sys\nfrom pathlib import Path\nsys.path.insert(0, str(Path(__file__).parent))\nfrom usbguard_control.app import main\nraise SystemExit(main())\n')
         binary = stage / "usr/bin/usbguard-control"
         binary.parent.mkdir(parents=True)
-        binary.write_text('#!/bin/sh\nexec /usr/bin/python3 -I /usr/share/usbguard-control/launch.py "$@"\n')
+        binary.write_text('#!/bin/sh\nexec /usr/bin/python3 -B -I /usr/share/usbguard-control/launch.py "$@"\n')
         binary.chmod(0o755)
         desktop = stage / "usr/share/applications"
         desktop.mkdir(parents=True)

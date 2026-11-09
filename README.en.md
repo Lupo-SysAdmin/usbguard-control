@@ -12,7 +12,7 @@ An independent Python / PySide6 / Qt Quick client for USBGuard. USBGuard remains
 
 ## Status
 
-**0.2.0 alpha.** Functional demo, real D-Bus client, isolated integration tests and a Debian package. Initial physical validation with USBGuard 1.1.4 passed on Kali 2026.3 / GNOME Shell 50.4 / Wayland: temporary and persistent iPhone authorization, reconnection, and a saved mouse receiver rule. Failure/recovery scenarios and Plasma, Xfce and X11 remain unvalidated. Developed with Python 3.14 and PySide6 6.10.3. Available in Latin American Spanish and US English.
+**0.2.0 · first-release candidate.** Functional D-Bus client, Debian package and **46 passing automated tests**. Tested with physical devices on Kali 2026.3 / GNOME Shell 50.4 / Wayland, and in KVM guests running Kali 2026.1 / Xfce 4.20.3 / X11 and Parrot 7.4 / KDE Plasma 6.3.6 / Wayland. Tests cover installation/removal, service controls, authentication, reboots, recovery, reconnection and rule revocation. PySide6 versions tested: 6.8.2.1, 6.10.3 and 6.11.2. Primary daemon: USBGuard 1.1.4; Parrot's 1.1.3 API was also exercised. See [validation results and limits](docs/VALIDATION.md). Available in Latin American Spanish and US English.
 
 ## Features
 

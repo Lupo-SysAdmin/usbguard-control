@@ -2,6 +2,8 @@
 
 Objetivo inicial: Kali 2026.3. La revisión candidata observada el 8 de noviembre de 2026 es `usbguard 1.1.4+ds-10`; consulta siempre `apt policy usbguard` en tu equipo. El paquete incluye `usbguard-dbus` y su unidad systemd; no existe la necesidad de instalar otro paquete llamado `usbguard-dbus` en esta revisión.
 
+También se ensayaron instalación/desinstalación en Kali 2026.1/Xfce y Parrot 7.4/KDE. Parrot distribuye `1.1.3+ds-3`: se probaron su API, conexión gráfica y arranque; no se sustituyeron sus paquetes con los de Kali. Consulta la [matriz de validación](VALIDATION.md) para distinguir el alcance de cada prueba. Para el escalado, reserva al menos 900×620 píxeles lógicos de área útil: al 200 % son 1800×1240 píxeles físicos, además de los paneles del escritorio.
+
 ## 1. Probar solo la interfaz
 
 Instala las dependencias gráficas, sin instalar todavía el daemon:

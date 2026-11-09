@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Jan Herrera
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
-import QtQuick.Controls
+import QtQuick.Controls.Basic
 Button {
     id: button
     property string tone: "normal"
@@ -14,7 +14,7 @@ Button {
     opacity: enabled ? 1 : 0.38
     background: Rectangle {
         radius: 8
-        color: button.down ? "#29496d" : button.tone === "primary" ? "#397be5" : button.tone === "danger" ? "#36242c" : button.selected ? "#223b58" : button.hovered ? "#283344" : "#1c2634"
+        color: button.down ? "#29496d" : button.tone === "primary" ? "#2d69ce" : button.tone === "danger" ? "#36242c" : button.selected ? "#223b58" : button.hovered ? "#283344" : "#1c2634"
         border.color: button.activeFocus ? "#a6caff" : button.tone === "danger" ? "#70404a" : button.selected ? "#4876aa" : "#334155"
         border.width: button.activeFocus ? 2 : 1
     }

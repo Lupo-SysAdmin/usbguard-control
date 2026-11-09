@@ -12,9 +12,9 @@ USBGuard Control es un cliente independiente para [USBGuard](https://github.com/
 
 ## Estado del proyecto
 
-**v0.2.0 · alpha**. Demostración funcional y cliente D-Bus para USBGuard 1.1.4, con pruebas aisladas y una primera validación física en Kali/GNOME: autorización temporal y persistente de un iPhone, reconexión y permiso persistente de un receptor de mouse. La matriz completa de escritorios y escenarios de recuperación sigue pendiente.
+**v0.2.0 · candidata a primera release**. Cliente D-Bus funcional, paquete Debian y **46 pruebas automatizadas aprobadas**. Validado con hardware real en Kali/GNOME y en VMs Kali/Xfce y Parrot/KDE: instalación/desinstalación, control del servicio, autenticación, reinicios, recuperación, reconexiones y revocación. Consulta los resultados y límites en [Validación](docs/VALIDATION.md).
 
-Desarrollado en Kali 2026.3, Python 3.14 y PySide6 6.10.3. La primera prueba de sesión real se realizó en GNOME Shell 50.4/Wayland; KDE Plasma, Xfce y X11 siguen pendientes. La aplicación no es una extensión de GNOME Shell.
+Entornos probados: Kali 2026.3 con GNOME Shell 50.4/Wayland; Kali 2026.1 con Xfce 4.20.3/X11; Parrot 7.4 con KDE Plasma 6.3.6/Wayland. PySide6 6.8.2.1, 6.10.3 y 6.11.2. Motor principal probado: USBGuard 1.1.4; también se verificó la API 1.1.3 distribuida por Parrot. La aplicación no es una extensión de GNOME Shell.
 
 ## Qué incluye
 
@@ -74,8 +74,8 @@ Atajos: **Ctrl+F** buscar, **Ctrl+R** actualizar, **Ctrl+Q** salir. Tab y Shift+
 ## Hoja de ruta
 
 1. **Prototipo visual:** implementado con demostración funcional y captura real de QML.
-2. **Integración:** cliente D-Bus implementado y primeras pruebas con daemon/hardware reales completadas; faltan escenarios de fallo y recuperación.
-3. **Instalación:** `.deb` instalado mediante APT en Kali/GNOME; falta ensayo de instalación y desinstalación en una VM limpia y otros escritorios.
+2. **Integración:** daemon/hardware reales, Polkit, recuperación, revocación y cambios externos probados; alcance detallado en la matriz de validación.
+3. **Instalación:** `.deb` instalado en Kali/GNOME y ensayado con instalación/desinstalación en VMs Kali/Xfce y Parrot/KDE.
 4. **Portafolio:** documentación bilingüe, autoría, licencia, captura y CI preparados; publicación y primera release pendientes.
 
 Ver [plan de validación](docs/VALIDATION.md). Próximas mejoras: persistencia de las demás preferencias, editor de reglas con respaldo y revocación, y asistente de instalación validado. No se presenta un historial de sesión como si fuera un registro de auditoría completo.

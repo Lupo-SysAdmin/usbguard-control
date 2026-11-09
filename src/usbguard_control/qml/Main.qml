@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Jan Herrera
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
-import QtQuick.Controls
+import QtQuick.Controls.Basic
 import QtQuick.Layouts
 import QtQuick.Dialogs
 
@@ -17,7 +17,7 @@ ApplicationWindow {
     palette.window: "#101722"; palette.windowText: "#e7edf7"
     palette.base: "#151e2b"; palette.text: "#e7edf7"
     palette.button: "#223044"; palette.buttonText: "#e7edf7"
-    palette.highlight: "#397be5"; palette.highlightedText: "#ffffff"
+    palette.highlight: "#2d69ce"; palette.highlightedText: "#ffffff"
     property int page: 0
     readonly property bool compact: height < 720
     property string activeFilter: "all"

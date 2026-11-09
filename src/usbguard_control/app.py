@@ -31,7 +31,6 @@ def main(argv=None):
             from gi.repository import Gio  # noqa: F401
         except ImportError:
             parser.error("Falta PyGObject. En Kali: sudo apt install python3-gi")
-    os.environ.setdefault("QT_QUICK_CONTROLS_STYLE", "Basic")
     app = QGuiApplication([sys.argv[0]])
     app.setApplicationName("USBGuard Control")
     app.setApplicationVersion(__version__)

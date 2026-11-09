@@ -10,3 +10,4 @@ dist/
 .agents/
 .aws/
 .codex/
+.qa-evidence/
