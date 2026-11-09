@@ -44,6 +44,28 @@ def test_untrusted_display_strings_are_plain_and_bounded():
     assert len(display_text("x" * 500)) == 160
 
 
+@pytest.mark.parametrize('wire,expected', [
+    (r'Memoria Jos\xc3\xa9 \xe2\x80\x93 edici\xc3\xb3n \xc3\xb1 / \xe6\xbc\xa2\xe5\xad\x97', 'Memoria José – edición ñ / 漢字'),
+    (r'Disco \"Jan\" \\ respaldo', 'Disco "Jan" \\ respaldo'),
+    (r'literal \\xc3\\xa9', r'literal \xc3\xa9'),
+    ('<b>USB & prueba</b>', '<b>USB & prueba</b>'),
+    (r'USB seguro\xe2\x80\xaeTXT', 'USB seguro\u202eTXT'),
+    (r'A\x00B\x0aC', 'A\x00B\nC'),
+    (r'USB \xf0\x9f\x94\x90', 'USB 🔐'),
+])
+def test_real_usbguard_escaped_bytes_are_decoded_once(wire, expected):
+    device = parse_device(3, 'block id 1d6b:0104 name "' + wire + '" serial "' + wire + '" hash "abc=" with-interface 08:06:50')
+    assert device.name == device.serial == expected
+    assert device.as_dict()['name'] == display_text(expected)
+    assert device.as_dict()['serial'] == display_text(expected)
+
+
+@pytest.mark.parametrize('wire', [r'\x', r'\x1', r'\xgg', r'\q', r'\xff', 'unfinished\\'])
+def test_malformed_usbguard_escapes_are_rejected(wire):
+    with pytest.raises(ValueError):
+        parse_device(3, 'block name "' + wire + '" hash "abc"')
+
+
 def test_temporary_decision_does_not_survive_reconnect():
     backend = DemoBackend()
     device = backend.snapshot()["devices"][0]

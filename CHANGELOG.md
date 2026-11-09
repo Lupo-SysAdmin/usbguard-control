@@ -2,6 +2,12 @@
 
 ## 0.2.0 — 2026-11-08
 
+- Descriptores USB Unicode/escapados interpretados según el protocolo del daemon; sin doble decodificación de barras literales y con regresiones para entradas malformadas.
+- Filas de dispositivos accesibles mediante Tab/Espacio, desplazamiento al foco y avisos de error alcanzables por teclado.
+- Las consultas automáticas conservan los errores de acciones para que puedan leerse; la recuperación de conexión y la actualización manual los limpian.
+- Estilo Basic inicializado también para el selector de archivos de Qt.
+- Validación adicional de autenticación KDE, 40 eventos USB agrupados en 10 notificaciones y nombres especiales mediante USB emulados en el kernel.
+
 - Validación en VMs KVM: Kali 2026.1/Xfce/X11 y Parrot 7.4/KDE/Wayland, instalación/desinstalación, controles reales de servicios, reinicios y recuperación.
 - Controles QML con estilo Basic explícito para evitar bucles de geometría introducidos por Breeze en KDE.
 - Etiquetas accesibles de las casillas y contraste mejorado de botones principales; regresiones de teclado y accesibilidad en ES/EN.

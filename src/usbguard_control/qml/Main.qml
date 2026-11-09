@@ -108,9 +108,16 @@ ApplicationWindow {
             Layout.fillWidth: true
             Layout.preferredHeight: bannerText.implicitHeight + 20
             radius: 8; color: control.error ? "#37242e" : "#1b3047"
+            border.color: bannerText.activeFocus ? "#a6caff" : "transparent"
             UiText {
-                id: bannerText; anchors.fill: parent; anchors.margins: 10
+                id: bannerText; objectName: "statusMessage"; anchors.fill: parent; anchors.margins: 10
                 text: control.error || control.notice; wrapMode: Text.WordWrap; elide: Text.ElideNone
+                activeFocusOnTab: true
+                Accessible.role: Accessible.StaticText
+                Accessible.name: text
+                onTextChanged: function() {
+                    if (control.error && typeof Accessible.announce === "function") Accessible.announce(bannerText.text, Accessible.Assertive)
+                }
                 color: control.error ? "#ffc1c6" : "#b9d8ff"; font.pixelSize: 12
             }
         }
@@ -163,8 +170,11 @@ ApplicationWindow {
                             delegate: ItemDelegate {
                                 id: deviceRow
                                 required property var modelData
+                                required property int index
                                 width: ListView.view.width; height: 54
                                 hoverEnabled: true
+                                focusPolicy: Qt.StrongFocus
+                                onActiveFocusChanged: if (activeFocus) deviceList.positionViewAtIndex(index, ListView.Contain)
                                 Accessible.name: modelData.name + ", " + modelData.status + ", " + modelData.kind
                                 onClicked: control.select(modelData.id)
                                 background: Rectangle {

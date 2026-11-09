@@ -3,10 +3,48 @@
 """Device snapshots. No privileged operations or GUI dependencies."""
 from dataclasses import dataclass
 import re
-import shlex
 
 TARGETS = {"allow": 0, "block": 1}
 INTERFACE = re.compile(r"^[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}$")
+RULE_TOKEN = re.compile(r'"(?:[^"\\]|\\.)*"|[{}]|[^\s{}"\\]+')
+
+
+def rule_tokens(rule: str) -> list[str]:
+    """Decode USBGuard's quoted UTF-8 bytes once, preserving literal escapes.
+
+    The daemon uses backslash-quote, backslash-backslash and xHH byte escapes,
+    rather than shell quoting (USBGuard Utility::escapeString).
+    """
+    tokens = []
+    offset = 0
+    while offset < len(rule):
+        if rule[offset].isspace():
+            offset += 1
+            continue
+        match = RULE_TOKEN.match(rule, offset)
+        if match is None:
+            raise ValueError("Cadena de dispositivo incompleta o inválida")
+        value = match.group()
+        offset = match.end()
+        if value.startswith('"'):
+            raw = value[1:-1]
+            decoded = bytearray()
+            index = 0
+            while index < len(raw):
+                if raw[index] != '\\':
+                    decoded.extend(raw[index].encode('utf-8'))
+                    index += 1
+                elif raw[index + 1] in ('"', '\\'):
+                    decoded.extend(raw[index + 1].encode('ascii'))
+                    index += 2
+                elif raw[index + 1] == 'x' and re.fullmatch(r'[0-9a-fA-F]{2}', raw[index + 2:index + 4]):
+                    decoded.append(int(raw[index + 2:index + 4], 16))
+                    index += 4
+                else:
+                    raise ValueError("Escape de dispositivo inválido")
+            value = decoded.decode('utf-8')
+        tokens.append(value)
+    return tokens
 
 
 def display_text(text: str) -> str:
@@ -74,10 +112,7 @@ class Device:
 
 def parse_device(device_id: int, rule: str) -> Device:
     """Parse concrete listDevices rules, not arbitrary policy expressions."""
-    lexer = shlex.shlex(rule, posix=True, punctuation_chars="{}")
-    lexer.whitespace_split = True
-    lexer.commenters = ""
-    tokens = list(lexer)
+    tokens = rule_tokens(rule)
     if not tokens or tokens[0] not in ("allow", "block", "reject"):
         raise ValueError("Estado de dispositivo no reconocido")
     values = {}

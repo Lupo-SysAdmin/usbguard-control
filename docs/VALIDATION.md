@@ -2,7 +2,7 @@
 
 ## Resultado local — 8 de noviembre de 2026
 
-- **46 pruebas automatizadas aprobadas** con la suite de `scripts/check.sh` en Kali 2026.3, Python 3.14.8 y PySide6 6.10.3; incluyen regresiones de Bluetooth, avisos obsoletos, teclado, nombres accesibles y contraste del botón principal.
+- **62 pruebas automatizadas aprobadas** con la suite de `scripts/check.sh` en Kali 2026.3, Python 3.14.8 y PySide6 6.10.3; incluyen regresiones de Bluetooth, avisos obsoletos, teclado, nombres accesibles y contraste del botón principal.
 - Regresión de refresco: consultas idénticas sin cambios visuales, indicador manual conservado, clics de dispositivo/servicio/actualización durante la consulta, cambios reales, desconexión y recuperación ante errores.
 - Medición de dos ciclos automáticos contra USBGuard real, en una instancia invisible: intervalo de cinco segundos, opacidad de botones al 100 %, datos seleccionados iguales y ninguna notificación visual redundante. No se cambiaron reglas ni servicios.
 - Controles de servicios verificados contra un systemd simulado en un bus privado: firmas reales, autenticación interactiva, orden de inicio/parada, persistencia opcional, cancelación/denegación, cambios externos, jobs fallidos y fallos parciales.
@@ -76,6 +76,7 @@ El nombre de la VM Parrot era «Parrot 7.2», pero `/etc/os-release` informa 7.4
 | Instalador completo | Ambos servicios quedan inactivos/enmascarados antes de revisar las reglas |
 | Instalador sobre USBGuard existente | Rechazo explícito; configuración preservada |
 | Controles gráficos Xfce con Polkit real | Iniciar/detener con y sin recordar: cuatro combinaciones verificadas como usuario normal |
+| Controles gráficos KDE con Polkit real | Iniciar/detener con y sin recordar: cuatro combinaciones verificadas; al terminar ambos servicios quedan activos/habilitados |
 | Cancelación Polkit Xfce | Se cancela el diálogo nativo; ambos servicios conservan `active/enabled` |
 | Inicio tras reinicio, ambas VMs | Unidades activas/habilitadas después de un nuevo arranque |
 | Arranque deshabilitado, Kali | Unidades inactivas/deshabilitadas después de reiniciar |
@@ -94,24 +95,42 @@ El nombre de la VM Parrot era «Parrot 7.2», pero `/etc/os-release` informa 7.4
 
 La lectura del daemon debe ejecutarse desde una sesión local activa. Un proceso lanzado administrativamente con `runuser` puede ser considerado inactivo por Polkit aunque tenga `DISPLAY`: se verificó el rechazo y luego el acceso correcto desde los lanzadores reales de Xfce y KDE, sin cambiar políticas de autorización. La prueba de Orca verificó la generación de voz registrada, no una evaluación humana de pronunciación; los términos del lector siguieron el idioma inglés del escritorio.
 
+### Pruebas adicionales de eventos y nombres USB
+
+En Parrot se crearon cuatro dispositivos de almacenamiento USB emulados con `dummy_hcd` y `libcomposite`, imágenes vacías de solo lectura y números de serie exclusivos de prueba. El recorrido fue descriptor USB → kernel → daemon USBGuard → D-Bus → GUI; no se simularon respuestas del backend. No se añadieron reglas permanentes para estos dispositivos. Al terminar se retiraron los cuatro gadgets y `dummy_hcd`; se comprobaron los tres USB virtuales iniciales, reglas intactas y ambos servicios activos/habilitados.
+
+- Cinco ciclos de desconectar/reconectar cuatro dispositivos produjeron **40 eventos de presencia y 10 notificaciones agrupadas**, aceptadas por el servicio del escritorio sin errores. Dos clientes observaron los estados correctos y retiraron las selecciones desconectadas.
+- Se verificaron acentos, eñe, caracteres CJK, comillas, barras invertidas, texto con apariencia de HTML y un control bidireccional. Los nombres coinciden con los descriptores; el HTML permanece literal y el control bidireccional se elimina solo de la presentación. La identidad original se conserva para revalidar operaciones.
+- La prueba descubrió que el analizador anterior conservaba los escapes `\xHH` de USBGuard como texto. Se corrigió para reconstruir los bytes UTF-8 exactamente una vez, sin interpretar escapes literales de nuevo. Trece casos de regresión cubren entradas válidas y malformadas.
+
+### Recorrido completo de teclado y Orca
+
+Se completaron nueve grupos de comprobaciones en cada idioma con Orca 48.1 y la GUI como usuario normal en KDE: búsqueda, selección/filtros, permiso temporal y cancelación, bloqueo/permiso persistente, error por retirada del dispositivo, actividad, exportación mediante el selector de archivos, configuración/confirmaciones de servicios y Acerca de. Las acciones de esta revisión usan el modo demo; las operaciones reales de servicios y USB se validaron por separado arriba.
+
+El recorrido usa Tab, Espacio, Escape, Ctrl+F y edición del nombre de archivo. Los JSON exportados se comprobaron por contenido e idioma. Los registros de voz contienen nombres de dispositivos, controles, confirmaciones, el error, preferencias y los diálogos en ambos idiomas. No es una certificación de accesibilidad ni una evaluación humana de pronunciación o de cada texto de revisión plana. El selector de archivos y los términos de Orca siguen el idioma del escritorio; en Qt 6.8 su campo de nombre fue anunciado como «text», sin repetir la etiqueta visual.
+
+Orca y el puente AT-SPI de Qt 6.8 emitieron advertencias sobre rutas de objetos accesibles retirados durante cambios de modelo; los recorridos y las comprobaciones de voz terminaron correctamente. Se conserva este límite, sin presentar los registros como libres de advertencias. No hubo advertencias QML en los recorridos finales.
+
 ### Correcciones detectadas por estas pruebas
 
 - El lanzador ahora evita generar bytecode de Python; la desinstalación deja limpio el directorio de la aplicación incluso tras intentar ejecutarla como root.
 - La importación explícita de `QtQuick.Controls.Basic` conserva el diseño y elimina los bucles de geometría del tema Breeze observados en KDE. [Selección de estilos de Qt](https://doc.qt.io/qt-6.8/qtquickcontrols-styles.html).
+- Las filas de dispositivos ahora reciben foco mediante Tab y se desplazan hasta quedar visibles. Los errores conservan su texto durante las consultas automáticas y pueden enfocarse; Qt 6.8 o superior también recibe un anuncio accesible. La actualización manual y la recuperación de conexión limpian el error.
+- `QQuickStyle.setStyle("Basic")` se aplica después de crear la aplicación: KDE sobrescribía la preferencia de entorno y mezclaba Breeze en el selector de archivos. Se añadió la dependencia `python3-pyside6.qtquickcontrols2` al paquete, instalación y CI.
 - Las casillas personalizadas exponen su nombre accesible. El contraste del texto del botón principal pasó de 3,67:1 a 4,68:1; el test mide los colores del control renderizado. Esto verifica ese par de colores, no certifica toda la aplicación. [Criterio de contraste W3C](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum).
 
-No hubo advertencias QML después de corregir KDE. La VM Parrot emitió advertencias EGL por su adaptador virtual y renderizó correctamente; no se presenta como validación de todas las GPU. La recuperación probada interrumpe el puente USBGuard, no reinicia el bus D-Bus completo del escritorio. Las operaciones systemd de Parrot se probaron también por la API administrativa; la autenticación positiva interactiva de los botones se verificó en Xfce.
+No hubo advertencias QML en los recorridos finales después de corregir KDE; las advertencias AT-SPI se detallan arriba. La VM Parrot emitió advertencias EGL por su adaptador virtual y renderizó correctamente; no se presenta como validación de todas las GPU. La recuperación probada interrumpe el puente USBGuard, no reinicia el bus D-Bus completo del escritorio. Las operaciones systemd de Parrot se probaron también por la API administrativa; la autenticación positiva interactiva de los botones se verificó en Xfce y KDE, como usuario normal y sin excepciones Polkit.
 
 ## Cobertura y comprobaciones adicionales
 
 - [x] Instalar y desinstalar el `.deb` en VMs sin USBGuard Control previo (Kali 2026.1 y Parrot 7.4).
-- [ ] Repetir en una imagen limpia específicamente de Kali 2026.3.
+- [x] Compatibilidad con Kali 2026.3 (host) y Kali 2026.1 (VM), aceptada como alcance de esta publicación; no se exige otra VM limpia 2026.3.
 - [x] Verificar el flujo básico en GNOME Shell 50.4/Wayland con dispositivos reales.
 - [x] Verificar KDE Plasma/Wayland y Xfce/X11 en sesiones reales.
 - [x] Validar escalado 100 %, 150 % y 200 %, navegación de teclado y contraste del botón principal.
 - [x] Verificar nombres, roles y estados accesibles en ES/EN mediante Qt y AT-SPI.
 - [x] Probar foco y anuncio de la casilla de arranque con Orca real en ES/EN.
-- [ ] Completar una revisión de accesibilidad de todos los flujos con lector de pantalla.
+- [x] Recorrer búsqueda, selección, confirmación/cancelación, errores, actividad/exportación, configuración/servicios y Acerca de con teclado y Orca en ES/EN, dentro del alcance descrito abajo.
 - [x] Preparar reglas y ejecutar autorizaciones con USBGuard 1.1.4 real y la política Polkit instalada.
 - [x] Verificar permiso temporal y persistente mediante reconexiones físicas.
 - [x] Verificar arranque completo después de reiniciar, recuperación y posterior revocación en VM.
@@ -119,12 +138,14 @@ No hubo advertencias QML después de corregir KDE. La VM Parrot emitió adverten
 - [x] Verificar la delegación explícita de GNOME a USBGuard sin regla general de autorización.
 - [x] Verificar cambios externos de autorización y dos clientes simultáneos en una sesión.
 - [x] Confirmar entrega de notificaciones y recuperación tras interrupciones del puente D-Bus.
-- [ ] Ampliar a múltiples usuarios/sesiones y ráfagas de muchos dispositivos.
-- [ ] Probar nombres Unicode/escapados de hardware real.
+- [x] Validación en tres equipos: host Kali y VMs Kali/Parrot. Las sesiones de usuarios distintos quedan fuera del alcance acordado; no se confunden con equipos distintos.
+- [x] Verificar ráfagas de conexión/desconexión de múltiples dispositivos y agrupación de notificaciones.
+- [x] Verificar nombres Unicode/escapados mediante descriptores USB emulados en el kernel y USBGuard real; no se atribuye a hardware físico con esos nombres.
+- [x] Verificar autenticación positiva de los botones de servicio en KDE con las cuatro combinaciones de ejecución/arranque.
 - [x] Revisar capturas, README, licencias, fuente correspondiente y sumas antes de subir artefactos.
 
 ## Alcance
 
 La ventana muestra actividad de la sesión, no un historial persistente de auditoría. No contiene editor de reglas, autorización global, revocación gráfica ni configuración automática de privilegios. Los controles explícitos de servicio no equivalen a permitir todos los dispositivos. El modo demo no prueba el daemon. La protección de HID de esta interfaz no puede impedir que otra herramienta modifique el mismo dispositivo.
 
-La parada/inicio con autenticación real y los reinicios se verificaron dentro de las VMs. No se reinició ni se detuvo la protección del equipo de desarrollo durante estas pruebas. Las comprobaciones de nombres Unicode/escapados usan datos sintéticos; no se atribuyen a hardware físico probado.
+La parada/inicio con autenticación real y los reinicios se verificaron dentro de las VMs. No se reinició ni se detuvo la protección del equipo de desarrollo durante estas pruebas. Las comprobaciones de nombres Unicode/escapados usan descriptores USB emulados que atraviesan el kernel y el daemon reales; no se atribuyen a hardware físico con nombres Unicode.

@@ -9,6 +9,7 @@ from PySide6.QtCore import QSettings, QTimer, QUrl
 from PySide6.QtGui import QGuiApplication, QIcon
 from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtQuick import QQuickWindow  # Registers the window type for QML roots.
+from PySide6.QtQuickControls2 import QQuickStyle
 from shiboken6 import delete
 from . import __version__
 from .controller import Controller
@@ -32,6 +33,8 @@ def main(argv=None):
         except ImportError:
             parser.error("Falta PyGObject. En Kali: sudo apt install python3-gi")
     app = QGuiApplication([sys.argv[0]])
+    # The desktop platform theme may override environment style preferences.
+    QQuickStyle.setStyle('Basic')
     app.setApplicationName("USBGuard Control")
     app.setApplicationVersion(__version__)
     app.setOrganizationName("Lupo-SysAdmin")

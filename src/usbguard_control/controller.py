@@ -394,9 +394,10 @@ class Controller(QObject):
             self._busy = False
         if operation in ("refresh", "poll"):
             before = (self._connected, self._error, self._devices, self._owner, self._policy, self._selected)
+            if operation == "refresh" or not self._connected:
+                self._error = ""
+                self._last_error = ""
             self._connected = True
-            self._error = ""
-            self._last_error = ""
             self._devices = result["devices"]
             self._owner = result["owner"]
             if self._notice_context:

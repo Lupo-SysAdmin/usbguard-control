@@ -178,3 +178,20 @@ def test_failed_poll_clears_stale_data_and_can_recover(ui, monkeypatch):
     control.pollBackground()
     spin(app, lambda: not control._polling)
     assert control.connected and not control.error and control.devices
+
+
+def test_background_read_preserves_action_error_until_manual_refresh(ui):
+    app, control, window, refresh = ui
+    control.exportActivity('https://example.invalid/activity.json')
+    error = control.error
+    assert error
+    changes = []
+    control.changed.connect(lambda: changes.append(True))
+    control.pollBackground()
+    spin(app, lambda: not control._polling)
+    assert control.error == error
+    assert window.findChild(QObject, 'statusMessage').property('text') == error
+    assert changes == [], 'An unchanged background read must not erase or reannounce the error'
+    click(refresh)
+    spin(app, lambda: not control.busy)
+    assert not control.error
