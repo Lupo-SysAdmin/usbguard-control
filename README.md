@@ -1,10 +1,12 @@
 # USBGuard Control
 
+[![Linux validation](https://github.com/Lupo-SysAdmin/usbguard-control/actions/workflows/ci.yml/badge.svg)](https://github.com/Lupo-SysAdmin/usbguard-control/actions/workflows/ci.yml)
+
 **Una interfaz de escritorio para decidir qué conectas a tu Linux.**
 
 Desarrollador de la interfaz: **Jan Herrera** · [Lupo-SysAdmin](https://github.com/Lupo-SysAdmin)
 
-[English](README.en.md) · [Instalación en Kali](docs/INSTALL.md) · [Arquitectura](docs/ARCHITECTURE.md) · [Licencia y créditos](docs/LICENSING.md)
+[Descargas](https://github.com/Lupo-SysAdmin/usbguard-control/releases) · [English](README.en.md) · [Instalación en Kali](docs/INSTALL.md) · [Arquitectura](docs/ARCHITECTURE.md) · [Licencia y créditos](docs/LICENSING.md)
 
 ![USBGuard Control: demostración con dispositivos ficticios](docs/images/usbguard-control-demo.png)
 
@@ -67,7 +69,7 @@ Para construir el paquete sin privilegios:
 python3 scripts/build_deb.py
 ```
 
-El resultado es `dist/usbguard-control_0.2.0-1_all.deb`. Se incluye un flujo de GitHub Actions para pruebas y empaquetado. Configurarlo en el repositorio no significa que ya se haya ejecutado en GitHub.
+El resultado es `dist/usbguard-control_0.2.0-1_all.deb`. GitHub Actions ejecuta las pruebas y el empaquetado en Debian con cada envío. Consulta el [resultado de CI](https://github.com/Lupo-SysAdmin/usbguard-control/actions/workflows/ci.yml).
 
 Atajos: **Ctrl+F** buscar, **Ctrl+R** actualizar, **Ctrl+Q** salir. Tab y Shift+Tab recorren los controles. Los paneles tienen desplazamiento cuando la ventana es pequeña.
 
@@ -76,7 +78,7 @@ Atajos: **Ctrl+F** buscar, **Ctrl+R** actualizar, **Ctrl+Q** salir. Tab y Shift+
 1. **Prototipo visual:** implementado con demostración funcional y captura real de QML.
 2. **Integración:** daemon/hardware reales, Polkit, recuperación, revocación y cambios externos probados; alcance detallado en la matriz de validación.
 3. **Instalación:** `.deb` instalado en Kali/GNOME y ensayado con instalación/desinstalación en VMs Kali/Xfce y Parrot/KDE.
-4. **Portafolio:** documentación bilingüe, autoría, licencia, captura y CI preparados; publicación y primera release pendientes.
+4. **Portafolio:** repositorio público con documentación bilingüe, autoría, licencia, capturas y CI. Consulta las versiones en Descargas.
 
 Ver [plan de validación](docs/VALIDATION.md). Próximas mejoras: persistencia de las demás preferencias, editor de reglas con respaldo y revocación, y asistente de instalación validado. No se presenta un historial de sesión como si fuera un registro de auditoría completo.
 

@@ -13,7 +13,7 @@ sudo apt update
 sudo apt install python3 python3-gi \
   python3-pyside6.qtcore python3-pyside6.qtgui \
   python3-pyside6.qtqml python3-pyside6.qtquick python3-pyside6.qtquickcontrols2 \
-  qml6-module-qtquick qml6-module-qtquick-window \
+  qt6-svg-plugins qml6-module-qtquick qml6-module-qtquick-window \
   qml6-module-qtquick-layouts qml6-module-qtquick-controls \
   qml6-module-qtquick-dialogs qml6-module-qtquick-templates \
   qml6-module-qtqml-workerscript

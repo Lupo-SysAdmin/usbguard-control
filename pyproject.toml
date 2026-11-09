@@ -16,6 +16,8 @@ classifiers = ["Development Status :: 4 - Beta", "Operating System :: POSIX :: L
 
 [project.urls]
 Author = "https://github.com/Lupo-SysAdmin"
+Repository = "https://github.com/Lupo-SysAdmin/usbguard-control"
+Issues = "https://github.com/Lupo-SysAdmin/usbguard-control/issues"
 
 [project.optional-dependencies]
 test = ["pytest>=8"]

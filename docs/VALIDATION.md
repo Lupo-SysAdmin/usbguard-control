@@ -13,7 +13,7 @@
 - Distribuciones fuente y wheel construidas; sumas en `dist/SHA256SUMS`.
 - Tres advertencias de obsolescencia provienen de PyGObject/asyncio en Python 3.14; no hubo fallos de prueba ni advertencias QML en el flujo probado.
 
-Las pruebas aisladas no sustituyen la validación física descrita a continuación. GitHub Actions todavía no se ha ejecutado remotamente.
+Las pruebas aisladas no sustituyen la validación física descrita a continuación. GitHub Actions ejecuta la suite y el empaquetado en Debian trixie; su estado está disponible en [CI](https://github.com/Lupo-SysAdmin/usbguard-control/actions/workflows/ci.yml). La primera ejecución encontró que faltaba declarar `qt6-svg-plugins` para cargar el icono SVG en una instalación mínima. Se añadió a CI, al `.deb` y a la guía; las pruebas no se relajaron.
 
 ### Primera instalación en el equipo de desarrollo
 

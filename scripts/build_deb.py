@@ -44,8 +44,8 @@ Section: utils
 Priority: optional
 Architecture: all
 Maintainer: Jan Herrera
-Homepage: https://github.com/Lupo-SysAdmin
-Depends: python3 (>= 3.11), python3-gi, python3-pyside6.qtcore (>= 6.6), python3-pyside6.qtgui, python3-pyside6.qtqml, python3-pyside6.qtquick, python3-pyside6.qtquickcontrols2, qml6-module-qtquick, qml6-module-qtquick-window, qml6-module-qtquick-layouts, qml6-module-qtquick-controls, qml6-module-qtquick-dialogs, qml6-module-qtquick-templates, qml6-module-qtqml-workerscript
+Homepage: https://github.com/Lupo-SysAdmin/usbguard-control
+Depends: python3 (>= 3.11), python3-gi, python3-pyside6.qtcore (>= 6.6), python3-pyside6.qtgui, python3-pyside6.qtqml, python3-pyside6.qtquick, python3-pyside6.qtquickcontrols2, qt6-svg-plugins, qml6-module-qtquick, qml6-module-qtquick-window, qml6-module-qtquick-layouts, qml6-module-qtquick-controls, qml6-module-qtquick-dialogs, qml6-module-qtquick-templates, qml6-module-qtqml-workerscript
 Suggests: usbguard (>= 1.1.4)
 Description: Independent desktop interface for USBGuard
  Modern Qt Quick interface with a safe demonstration mode, device details,

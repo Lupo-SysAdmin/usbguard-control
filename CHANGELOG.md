@@ -2,6 +2,8 @@
 
 ## 0.2.0 — 2026-11-08
 
+- Publicación en GitHub y CI en Debian mínimo; dependencia SVG de Qt declarada explícitamente tras la primera ejecución remota.
+
 - Descriptores USB Unicode/escapados interpretados según el protocolo del daemon; sin doble decodificación de barras literales y con regresiones para entradas malformadas.
 - Filas de dispositivos accesibles mediante Tab/Espacio, desplazamiento al foco y avisos de error alcanzables por teclado.
 - Las consultas automáticas conservan los errores de acciones para que puedan leerse; la recuperación de conexión y la actualización manual los limpian.

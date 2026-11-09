@@ -1,10 +1,12 @@
 # USBGuard Control
 
+[![Linux validation](https://github.com/Lupo-SysAdmin/usbguard-control/actions/workflows/ci.yml/badge.svg)](https://github.com/Lupo-SysAdmin/usbguard-control/actions/workflows/ci.yml)
+
 **A Linux desktop interface for deciding what you connect.**
 
 UI developer: **Jan Herrera** · [Lupo-SysAdmin](https://github.com/Lupo-SysAdmin)
 
-[Español](README.md) · [Kali setup](docs/INSTALL.md) · [Architecture](docs/ARCHITECTURE.md)
+[Downloads](https://github.com/Lupo-SysAdmin/usbguard-control/releases) · [Español](README.md) · [Kali setup](docs/INSTALL.md) · [Architecture](docs/ARCHITECTURE.md)
 
 ![USBGuard Control running with simulated devices](docs/images/usbguard-control-demo-en.png)
 
@@ -50,7 +52,7 @@ python3 scripts/diagnose.py
 python3 scripts/build_deb.py
 ```
 
-Tests use an isolated bus and a mock service, never USB hardware. The package is written to `dist/usbguard-control_0.2.0-1_all.deb`. USBGuard is a suggested dependency, intentionally installed and configured separately. A GitHub Actions workflow is included but has not yet run remotely.
+Tests use an isolated bus and a mock service, never USB hardware. The package is written to `dist/usbguard-control_0.2.0-1_all.deb`. USBGuard is a suggested dependency, intentionally installed and configured separately. GitHub Actions runs tests and packaging on Debian for each push. See the [CI results](https://github.com/Lupo-SysAdmin/usbguard-control/actions/workflows/ci.yml).
 
 The [validation checklist](docs/VALIDATION.md) distinguishes completed checks from pending physical and desktop-session tests.
 
