@@ -2,6 +2,8 @@
 
 ## 0.2.0 — 2026-11-08
 
+- Consulta automática silenciosa cada cinco segundos, sin atenuar controles ni volver a notificar detalles que no cambiaron; los clics durante la consulta se procesan en orden.
+
 - Configuración con casillas multilínea, ancho limitado y desplazamiento en ventanas pequeñas.
 - Controles explícitos para iniciar y detener USBGuard y su puente D-Bus, con confirmación y autenticación de systemd/Polkit.
 - Elección opcional persistente al arrancar; estados de ejecución y arranque consultados por separado.

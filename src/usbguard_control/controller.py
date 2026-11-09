@@ -58,7 +58,7 @@ class Worker(QObject):
                 else:
                     from .services import ServiceManager
                     self.services = ServiceManager(connection=self.backend.bus, cancellable=self.cancel)
-            if operation == "refresh":
+            if operation in ("refresh", "poll"):
                 try:
                     state = self.services.snapshot()
                 except Exception as error:
@@ -108,6 +108,7 @@ class Worker(QObject):
 
 class Controller(QObject):
     changed = Signal()
+    selectedChanged = Signal()
     confirmationChanged = Signal()
     serviceConfirmationChanged = Signal()
     request = Signal(str, object)
@@ -122,12 +123,14 @@ class Controller(QObject):
         self._devices = []
         self._events = []
         self._selected = -1
+        self._selected_view = {}
         self._selection_initialized = False
         self._query = ""
         self._filter = "all"
         self._advanced = False
         self._connected = False
         self._busy = False
+        self._polling = False
         self._error = ""
         self._notice = ""
         self._notice_context = None
@@ -141,6 +144,7 @@ class Controller(QObject):
         self._notifications = True
         self._event_count = 0
         self._last_error = ""
+        self.changed.connect(self.sync_selected)
         self.notice_timer = QTimer(self)
         self.notice_timer.setSingleShot(True)
         self.notice_timer.setInterval(6000)
@@ -158,7 +162,7 @@ class Controller(QObject):
         self.thread.start()
         self.poll = QTimer(self)
         self.poll.setInterval(5000)
-        self.poll.timeout.connect(self.refresh)
+        self.poll.timeout.connect(self.pollBackground)
         self.poll.start()
         self.coalesce = QTimer(self)
         self.coalesce.setSingleShot(True)
@@ -214,9 +218,9 @@ class Controller(QObject):
                 if (self._advanced or not d.infrastructure)
                 and (self._filter == "all" or (d.target == "allow") == (self._filter == "allow"))
                 and self._query.casefold() in (d.name + " " + d.usb_id + " " + self.language.text(d.kind)).casefold()]
-    @Property("QVariantMap", notify=changed)
+    @Property("QVariantMap", notify=selectedChanged)
     def selected(self):
-        return next((self.localize_device(d) for d in self._devices if d.id == self._selected), {})
+        return self._selected_view
     @Property("QVariantList", notify=changed)
     def events(self):
         return [{**event, "category": self.language.text(event["category"]),
@@ -238,6 +242,12 @@ class Controller(QObject):
                 result[key] = self.language.text(result[key])
         return result
 
+    def sync_selected(self):
+        selected = next((self.localize_device(d) for d in self._devices if d.id == self._selected), {})
+        if selected != self._selected_view:
+            self._selected_view = selected
+            self.selectedChanged.emit()
+
     def add_event(self, category, message):
         self._events.insert(0, {"time": datetime.now().astimezone().isoformat(timespec="seconds"),
                                 "category": category, "message": message})
@@ -253,6 +263,14 @@ class Controller(QObject):
     @Slot()
     def refresh(self):
         self.dispatch("refresh")
+
+    @Slot()
+    def pollBackground(self):
+        if self._busy or self._polling: return
+        self._polling = True
+        # The worker serializes requests. User actions may queue behind this
+        # read without disabling their controls or losing the click.
+        self.request.emit("poll", None)
 
     @Slot(int)
     def select(self, device_id):
@@ -366,11 +384,16 @@ class Controller(QObject):
     @Slot(str, object)
     def completed(self, operation, result):
         if operation == "services":
-            self._service = result
-            self.changed.emit()
+            if self._service != result:
+                self._service = result
+                self.changed.emit()
             return
-        self._busy = False
-        if operation == "refresh":
+        if operation == "poll":
+            self._polling = False
+        else:
+            self._busy = False
+        if operation in ("refresh", "poll"):
+            before = (self._connected, self._error, self._devices, self._owner, self._policy, self._selected)
             self._connected = True
             self._error = ""
             self._last_error = ""
@@ -391,6 +414,9 @@ class Controller(QObject):
                 self._selection_initialized = True
             elif not any(d.id == self._selected for d in self._devices):
                 self._selected = -1
+            after = (self._connected, self._error, self._devices, self._owner, self._policy, self._selected)
+            if operation == "poll" and before == after:
+                return
         elif operation == "apply":
             device, target, permanent, owner = self._action
             verb = "Permitido" if target == "allow" else "Bloqueado"
@@ -417,7 +443,10 @@ class Controller(QObject):
 
     @Slot(str, str)
     def failed(self, operation, message):
-        self._busy = False
+        if operation == "poll":
+            self._polling = False
+        else:
+            self._busy = False
         if operation == "notify": return
         self._error = message
         if operation == "service":
@@ -427,7 +456,7 @@ class Controller(QObject):
             self.changed.emit()
             self.refresh()
             return
-        if operation == "refresh":
+        if operation in ("refresh", "poll"):
             if self._notice_context: self.clearNotice()
             self._connected = False
             self._devices = []

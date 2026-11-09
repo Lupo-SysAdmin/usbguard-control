@@ -2,7 +2,9 @@
 
 ## Resultado local — 8 de noviembre de 2026
 
-- **38 pruebas automatizadas aprobadas** con `sh scripts/check.sh` en Kali 2026.3, Python 3.14.8 y PySide6 6.10.3; incluyen regresiones de Bluetooth y avisos obsoletos tras desconectar un dispositivo.
+- **44 pruebas automatizadas aprobadas** con la suite de `scripts/check.sh` en Kali 2026.3, Python 3.14.8 y PySide6 6.10.3; incluyen regresiones de Bluetooth y avisos obsoletos tras desconectar un dispositivo.
+- Regresión de refresco: consultas idénticas sin cambios visuales, indicador manual conservado, clics de dispositivo/servicio/actualización durante la consulta, cambios reales, desconexión y recuperación ante errores.
+- Medición de dos ciclos automáticos contra USBGuard real, en una instancia invisible: intervalo de cinco segundos, opacidad de botones al 100 %, datos seleccionados iguales y ninguna notificación visual redundante. No se cambiaron reglas ni servicios.
 - Controles de servicios verificados contra un systemd simulado en un bus privado: firmas reales, autenticación interactiva, orden de inicio/parada, persistencia opcional, cancelación/denegación, cambios externos, jobs fallidos y fallos parciales.
 - Configuración renderizada en ES/EN a 1040×780 y 900×620; comprobación de ancho y alto del texto de las casillas, y del flujo detener/iniciar con la conexión simulada cerrada.
 - Capturas renderizadas desde QML en español latinoamericano e inglés estadounidense; revisión visual de la ventana normal, compacta y los diálogos.
