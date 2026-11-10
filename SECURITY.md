@@ -1,6 +1,6 @@
 # Seguridad
 
-USBGuard Control es un cliente en versión candidata. No certifica dispositivos, detecta malware ni sustituye USBGuard. Los atributos USB pueden falsificarse. Autorizar un dispositivo permite que sus interfaces interactúen con el equipo.
+USBGuard Control es un cliente independiente de USBGuard. No certifica dispositivos, detecta malware ni sustituye USBGuard. Los atributos USB pueden falsificarse. Autorizar un dispositivo permite que sus interfaces interactúen con el equipo.
 
 El proceso gráfico se ejecuta sin root. No modifica directamente reglas ni instala excepciones generales de Polkit. El motor upstream conserva la autorización y la persistencia. Los controles de servicios usan D-Bus de systemd y su política Polkit existente, únicamente para `usbguard.service` y `usbguard-dbus.service`, tras una confirmación explícita. Abrir la aplicación o consultar estados no inicia USBGuard.
 

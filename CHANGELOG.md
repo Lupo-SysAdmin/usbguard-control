@@ -1,6 +1,8 @@
 # Changelog
 
-## 0.2.0 — 2026-11-08
+## 0.2.0 — 2026-11-09
+
+- Primera publicación estable, promovida desde `v0.2.0-rc.1` sin cambios en el código de la aplicación. Documentación y metadatos actualizados; se conservan el alcance y los límites de validación documentados.
 
 - Publicación en GitHub y CI en Debian mínimo; dependencia SVG de Qt declarada explícitamente tras la primera ejecución remota.
 

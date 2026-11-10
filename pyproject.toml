@@ -12,7 +12,7 @@ license = "GPL-3.0-or-later"
 license-files = ["LICENSE", "NOTICE", "AUTHORS"]
 authors = [{name = "Jan Herrera"}]
 dependencies = ["PySide6>=6.6,<7"]
-classifiers = ["Development Status :: 4 - Beta", "Operating System :: POSIX :: Linux", "Topic :: Security"]
+classifiers = ["Development Status :: 5 - Production/Stable", "Operating System :: POSIX :: Linux", "Topic :: Security"]
 
 [project.urls]
 Author = "https://github.com/Lupo-SysAdmin"

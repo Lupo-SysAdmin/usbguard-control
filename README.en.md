@@ -6,7 +6,7 @@
 
 UI developer: **Jan Herrera** · [Lupo-SysAdmin](https://github.com/Lupo-SysAdmin)
 
-[Downloads](https://github.com/Lupo-SysAdmin/usbguard-control/releases) · [Español](README.md) · [Kali setup](docs/INSTALL.md) · [Architecture](docs/ARCHITECTURE.md)
+[Download stable release](https://github.com/Lupo-SysAdmin/usbguard-control/releases/latest) · [Español](README.md) · [Kali setup](docs/INSTALL.md) · [Architecture](docs/ARCHITECTURE.md)
 
 ![USBGuard Control running with simulated devices](docs/images/usbguard-control-demo-en.png)
 
@@ -14,7 +14,7 @@ An independent Python / PySide6 / Qt Quick client for USBGuard. USBGuard remains
 
 ## Status
 
-**0.2.0 · first-release candidate.** Functional D-Bus client, Debian package and **62 passing automated tests**. Tested with physical devices on Kali 2026.3 / GNOME Shell 50.4 / Wayland, and in KVM guests running Kali 2026.1 / Xfce 4.20.3 / X11 and Parrot 7.4 / KDE Plasma 6.3.6 / Wayland. Tests cover installation/removal, service controls, authentication, reboots, recovery, reconnection and rule revocation. PySide6 versions tested: 6.8.2.1, 6.10.3 and 6.11.2. Primary daemon: USBGuard 1.1.4; Parrot's 1.1.3 API was also exercised. See [validation results and limits](docs/VALIDATION.md). Available in Latin American Spanish and US English.
+**0.2.0 · first stable release.** Functional D-Bus client, Debian package and **62 passing automated tests**. Tested with physical devices on Kali 2026.3 / GNOME Shell 50.4 / Wayland, and in KVM guests running Kali 2026.1 / Xfce 4.20.3 / X11 and Parrot 7.4 / KDE Plasma 6.3.6 / Wayland. Tests cover installation/removal, service controls, authentication, reboots, recovery, reconnection and rule revocation. PySide6 versions tested: 6.8.2.1, 6.10.3 and 6.11.2. Primary daemon: USBGuard 1.1.4; Parrot's 1.1.3 API was also exercised. See [validation results and limits](docs/VALIDATION.md). Available in Latin American Spanish and US English.
 
 ## Features
 

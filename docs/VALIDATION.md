@@ -1,5 +1,9 @@
 # Validación y límites de la versión 0.2.0
 
+## Publicación estable — 9 de noviembre de 2026
+
+La versión `v0.2.0` promueve la candidata `v0.2.0-rc.1` con el mismo código de aplicación, pruebas, configuración de CI y lógica de empaquetado. Cambian la documentación de publicación y la clasificación del paquete Python a estable. Se mantienen el alcance y las limitaciones descritos en este documento; esta promoción no añade nuevas pruebas físicas ni modifica la instalación del equipo de desarrollo.
+
 ## Resultado local — 8 de noviembre de 2026
 
 - **62 pruebas automatizadas aprobadas** con la suite de `scripts/check.sh` en Kali 2026.3, Python 3.14.8 y PySide6 6.10.3; incluyen regresiones de Bluetooth, avisos obsoletos, teclado, nombres accesibles y contraste del botón principal.

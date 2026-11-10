@@ -6,7 +6,7 @@
 
 Desarrollador de la interfaz: **Jan Herrera** · [Lupo-SysAdmin](https://github.com/Lupo-SysAdmin)
 
-[Descargas](https://github.com/Lupo-SysAdmin/usbguard-control/releases) · [English](README.en.md) · [Instalación en Kali](docs/INSTALL.md) · [Arquitectura](docs/ARCHITECTURE.md) · [Licencia y créditos](docs/LICENSING.md)
+[Descargar versión estable](https://github.com/Lupo-SysAdmin/usbguard-control/releases/latest) · [English](README.en.md) · [Instalación en Kali](docs/INSTALL.md) · [Arquitectura](docs/ARCHITECTURE.md) · [Licencia y créditos](docs/LICENSING.md)
 
 ![USBGuard Control: demostración con dispositivos ficticios](docs/images/usbguard-control-demo.png)
 
@@ -14,7 +14,7 @@ USBGuard Control es un cliente independiente para [USBGuard](https://github.com/
 
 ## Estado del proyecto
 
-**v0.2.0 · candidata a primera release**. Cliente D-Bus funcional, paquete Debian y **62 pruebas automatizadas aprobadas**. Validado con hardware real en Kali/GNOME y en VMs Kali/Xfce y Parrot/KDE: instalación/desinstalación, control del servicio, autenticación, reinicios, recuperación, reconexiones y revocación. Consulta los resultados y límites en [Validación](docs/VALIDATION.md).
+**v0.2.0 · primera versión estable**. Cliente D-Bus funcional, paquete Debian y **62 pruebas automatizadas aprobadas**. Validado con hardware real en Kali/GNOME y en VMs Kali/Xfce y Parrot/KDE: instalación/desinstalación, control del servicio, autenticación, reinicios, recuperación, reconexiones y revocación. Consulta los resultados y límites en [Validación](docs/VALIDATION.md).
 
 Entornos probados: Kali 2026.3 con GNOME Shell 50.4/Wayland; Kali 2026.1 con Xfce 4.20.3/X11; Parrot 7.4 con KDE Plasma 6.3.6/Wayland. PySide6 6.8.2.1, 6.10.3 y 6.11.2. Motor principal probado: USBGuard 1.1.4; también se verificó la API 1.1.3 distribuida por Parrot. La aplicación no es una extensión de GNOME Shell.
 
