@@ -3,7 +3,7 @@
 """In-memory simulation; never imports a system transport."""
 from dataclasses import replace
 from .domain import parse_device, validate_action
-from .policy import PolicyRule, device_rule, concrete_rule, LAST_RULE
+from .policy import PolicyRule, device_rule, concrete_rule, canonical_rule, LAST_RULE
 from .policy_backend import PolicyOperations
 
 FIXTURES = [
@@ -27,8 +27,7 @@ class DemoBackend(PolicyOperations):
     def list_rules(self, owner): return list(self.rules)
 
     def matching_devices(self, owner, text):
-        rule = concrete_rule(text)
-        return [d for d in self.devices if d.digest == rule.digest and d.usb_id == rule.usb_id]
+        return [d for d in self.devices if self.matching_rule(PolicyRule(0, text), d)]
 
     def append_rule(self, owner, text, parent):
         self.next_rule += 1
@@ -65,4 +64,11 @@ class DemoBackend(PolicyOperations):
         return "Crucial X8 SSD conectado"
 
     def matching_rule(self, rule, device):
-        return concrete_rule(rule.text).digest == device.digest
+        _, attrs = canonical_rule(rule.text)
+        values = {'id': device.usb_id.lower(), 'serial': device.serial, 'name': device.name,
+                  'hash': device.digest, 'parent-hash': device.parent, 'via-port': device.port,
+                  'with-connect-type': device.connect_type}
+        if any(attrs[k] != value for k, value in values.items() if k in attrs): return False
+        # Supported interface predicates are exact sets, matching USBGuard's
+        # default/equals operator. Labels are metadata, not device predicates.
+        return set(attrs['with-interface']) == set(device.interfaces)

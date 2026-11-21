@@ -60,3 +60,9 @@ Se consulta `org.usbguard.Policy1` en `/org/usbguard1/Policy`: `listRules(s) →
 Editar inserta la sustitución después de la regla original y luego retira la original, conservando la posición relativa al resto. Si la segunda operación falla, se informa el resultado parcial y se mantiene el respaldo. Recuperar añade reglas faltantes al final, sin borrar la política vigente. Estas operaciones no reautorizan los dispositivos conectados.
 
 Las explicaciones proceden de decisiones realizadas por esta instancia o de las señales DevicePolicyApplied/Changed, contrastadas con la identidad y el estado actuales. Un snapshot inicial no se interpreta como evidencia de qué regla causó la autorización.
+
+## Editor de texto 0.5
+
+`RuleEditor.qml` captura el ID y el texto original al abrirse. El borrador permanece separado de la selección y de las actualizaciones periódicas. `canonical_rule` normaliza únicamente la gramática concreta admitida; `validate_replacement` conserva VID:PID, serie, huella e interfaces y rechaza reglas sensibles o sintaxis no soportada.
+
+La operación `replace` consulta `listDevices` con ambos predicados para mostrar coincidencias antes/después sin escribir. Al confirmar, vuelve a comprobar política, propietario D-Bus y coincidencias; después crea el respaldo y utiliza la secuencia existente de insertar/retirar. No modifica la autorización actual del dispositivo ni convierte esa secuencia en una transacción atómica. El backend de demostración evalúa también los atributos editables para que la comparación de alcance sea coherente.

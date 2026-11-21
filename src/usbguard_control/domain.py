@@ -63,6 +63,7 @@ class Device:
     parent: str
     port: str
     interfaces: tuple[str, ...]
+    connect_type: str = ''
 
     @property
     def infrastructure(self) -> bool:
@@ -100,7 +101,7 @@ class Device:
 
     @property
     def identity(self) -> tuple:
-        return (self.usb_id, self.serial, self.digest, self.parent, self.port, self.interfaces)
+        return (self.usb_id, self.serial, self.digest, self.parent, self.port, self.interfaces, self.connect_type)
 
     def as_dict(self) -> dict:
         return {
@@ -149,7 +150,7 @@ def parse_device(device_id: int, rule: str) -> Device:
         raise ValueError("Interfaz USB inválida")
     return Device(int(device_id), tokens[0], values.get("name", ""), values.get("id", ""),
                   values.get("serial", ""), values.get("hash", ""), values.get("parent-hash", ""),
-                  values.get("via-port", ""), tuple(i.lower() for i in interfaces))
+                  values.get("via-port", ""), tuple(i.lower() for i in interfaces), values.get('with-connect-type', ''))
 
 
 def validate_action(current: Device, expected: Device, target: str) -> None:

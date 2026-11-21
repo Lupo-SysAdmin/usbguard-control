@@ -3,7 +3,7 @@
 
 Objetivo inicial: Kali 2026.3. La revisión candidata observada el 8 de noviembre de 2026 es `usbguard 1.1.4+ds-10`; consulta siempre `apt policy usbguard` en tu equipo. El paquete incluye `usbguard-dbus` y su unidad systemd; no existe la necesidad de instalar otro paquete llamado `usbguard-dbus` en esta revisión.
 
-También se ensayaron instalación/desinstalación en Kali 2026.1/Xfce y Parrot 7.4/KDE. Parrot distribuye `1.1.3+ds-3`: se probaron su API, conexión gráfica y arranque; no se sustituyeron sus paquetes con los de Kali. Consulta la [matriz de validación](VALIDATION.md) para distinguir el alcance de cada prueba. Para el escalado, reserva al menos 900×620 píxeles lógicos de área útil: al 200 % son 1800×1240 píxeles físicos, además de los paneles del escritorio.
+Las pruebas históricas de 0.2.0 incluyeron instalación/desinstalación en Kali 2026.1/Xfce y Parrot 7.4/KDE. La VM Kali ahora ejecuta 2026.3. La actualización y el editor de 0.5.0 se probaron en ambas VMs; consulta la [validación actual](VALIDATION-0.5.md). Parrot conserva `1.1.3+ds-3`; no se sustituyeron sus paquetes con los de Kali. La [matriz de compatibilidad](COMPATIBILITY.md) distingue las pruebas automatizadas adicionales en Ubuntu, Fedora y Arch. Estas instrucciones APT son para Kali/sistemas Debian compatibles. Para el escalado, reserva al menos 900×620 píxeles lógicos de área útil: al 200 % son 1800×1240 píxeles físicos, además de los paneles del escritorio.
 
 ## 1. Probar solo la interfaz
 
@@ -27,7 +27,7 @@ O construye e instala el paquete de la interfaz:
 
 ```bash
 python3 scripts/build_deb.py
-sudo apt install ./dist/usbguard-control_0.3.0-1_all.deb
+sudo apt install ./dist/usbguard-control_0.5.0-1_all.deb
 usbguard-control --demo
 ```
 

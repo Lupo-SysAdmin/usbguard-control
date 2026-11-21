@@ -99,3 +99,23 @@ EN_US.update({
  'En demostración, los respaldos automáticos son temporales.': 'Automatic backups are temporary in demo mode.',
  'No se pudo abrir la carpeta de respaldos.': 'The backup folder could not be opened.',
 })
+
+EN_US.update({
+ 'Editor avanzado · regla específica': 'Advanced editor · device-specific rule',
+ 'Editar texto de la regla': 'Edit rule text',
+ 'Edita permitir/bloquear, nombre USB, puerto, huella del padre, tipo de conexión o etiqueta. Conserva VID:PID, serie, huella e interfaces. Las reglas globales, las condiciones y los dispositivos de entrada siguen protegidos.': 'Edit allow/block, USB name, port, parent hash, connection type, or label. Keep VID:PID, serial, hash, and interfaces unchanged. Global rules, conditions, and input devices remain protected.',
+ 'El atributo name debe coincidir con el nombre USB real; para un alias usa Guardar nombre. Escribe una sola regla en una línea. Validar no guarda cambios.': 'The name attribute must match the real USB name; use Save name for an alias. Enter one rule on a single line. Validation does not save changes.',
+ 'Borrador de la regla': 'Rule draft',
+ 'La vista previa mostrará la regla normalizada y las coincidencias actuales antes y después. Al confirmar se guardará un respaldo y se conservará la posición de la regla.': 'The preview shows the normalized rule and current matches before and after. Confirmation saves a backup and preserves the rule position.',
+ 'Restablecer borrador': 'Reset draft', 'Validar y comparar': 'Validate and compare',
+ 'Coincidencias antes: ': 'Matches before: ', 'Coincidencias después: ': 'Matches after: ',
+ 'La regla debe ocupar una línea y no contener caracteres de control.': 'The rule must use one line and contain no control characters.',
+ 'Los atributos de la regla no deben ir entre comillas.': 'Rule attribute names must not be quoted.',
+ 'El identificador USB no debe ir entre comillas.': 'The USB identifier must not be quoted.',
+ 'La decisión de la regla no debe ir entre comillas.': 'The rule target must not be quoted.',
+ 'Los valores de texto deben ir entre comillas dobles.': 'Text values must be enclosed in double quotes.',
+ 'Conserva VID:PID, serie, huella e interfaces de la regla original.': 'Keep the original rule’s VID:PID, serial, hash, and interfaces unchanged.',
+ 'Esa etiqueta está reservada para la gestión USB del escritorio.': 'That label is reserved for the desktop’s USB management.',
+ 'No hay cambios en la regla.': 'There are no rule changes.',
+ 'Ya existe una regla idéntica. Revisa las reglas antes de continuar.': 'An identical rule already exists. Review the rules before continuing.',
+})

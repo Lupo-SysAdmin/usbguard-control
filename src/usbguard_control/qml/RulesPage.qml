@@ -55,6 +55,7 @@ ColumnLayout {
                     UiText { Layout.fillWidth: true; visible: desk.selectedRule.id !== undefined && !desk.selectedRule.editable; text: qsTr("Las reglas de entrada, Bluetooth, concentradores o sintaxis avanzada se muestran para consulta. Su modificación requiere revisión administrativa."); wrapMode: Text.Wrap; elide: Text.ElideNone; color: control.workspace.colors["#efd09a"]; font.pixelSize: 12 }
                     ChoiceBox { id: ruleTarget; objectName: "ruleTarget"; Layout.fillWidth: true; model: [qsTr("Permitir"), qsTr("Bloquear")]; enabled: !!desk.selectedRule.editable; Accessible.name: qsTr("Nueva decisión de la regla") }
                     ActionButton { objectName: "editRuleButton"; Layout.fillWidth: true; text: qsTr("Vista previa del cambio"); enabled: control.connected && !control.busy && !!desk.selectedRule.editable; onClicked: desk.prepareRule("edit", ruleTarget.currentIndex === 0 ? "allow" : "block") }
+                    ActionButton { objectName: "advancedRuleButton"; Layout.fillWidth: true; text: qsTr("Editar texto de la regla"); enabled: control.connected && !control.busy && !!desk.selectedRule.editable; onClicked: textEditor.editSelected() }
                     ActionButton { objectName: "removeRuleButton"; Layout.fillWidth: true; text: qsTr("Retirar regla"); tone: "danger"; enabled: control.connected && !control.busy && !!desk.selectedRule.editable; onClicked: desk.prepareRule("remove", "") }
                     UiText { Layout.fillWidth: true; text: qsTr("Retirar una regla no bloquea inmediatamente el dispositivo ni elimina otras reglas que puedan autorizarlo."); wrapMode: Text.Wrap; elide: Text.ElideNone; color: control.workspace.colors["#a3b9d6"]; font.pixelSize: 12 }
                     InputField { id: ruleAlias; Layout.fillWidth: true; visible: !!desk.selectedRule.canRename; text: desk.selectedRule.alias || ""; placeholderText: qsTr("Nombre personalizado (opcional)"); Accessible.name: placeholderText; maximumLength: 80; onAccepted: desk.renameRule(text) }
@@ -73,22 +74,27 @@ ColumnLayout {
             ColumnLayout {
                 width: parent.width; spacing: 12
                 UiText { Layout.fillWidth: true; text: qsTr("Se guardará un respaldo local antes de modificar la política. Puede solicitarse autenticación del sistema."); wrapMode: Text.Wrap; elide: Text.ElideNone }
-                UiText { Layout.fillWidth: true; visible: desk.confirmation.operation === "edit" || (desk.confirmation.operation === "restore" && desk.confirmation.count > 1); text: qsTr("Esta acción requiere varias operaciones. Si cancelas una autenticación posterior, pueden quedar cambios parciales; revisa las reglas y el respaldo."); wrapMode: Text.Wrap; elide: Text.ElideNone; color: control.workspace.colors["#efd09a"] }
+                UiText { Layout.fillWidth: true; visible: desk.confirmation.operation === "edit" || desk.confirmation.operation === "replace" || (desk.confirmation.operation === "restore" && desk.confirmation.count > 1); text: qsTr("Esta acción requiere varias operaciones. Si cancelas una autenticación posterior, pueden quedar cambios parciales; revisa las reglas y el respaldo."); wrapMode: Text.Wrap; elide: Text.ElideNone; color: control.workspace.colors["#efd09a"] }
                 UiText { Layout.fillWidth: true; text: desk.confirmation.operation === "restore" ? qsTr("Recuperación selectiva: se agregan al final como permanentes las reglas específicas faltantes. No se reemplaza la política completa; las reglas anteriores pueden tener prioridad.") : qsTr("El cambio afecta futuras evaluaciones. Los dispositivos conectados conservarán su estado actual."); wrapMode: Text.Wrap; elide: Text.ElideNone; color: control.workspace.colors["#efd09a"] }
                 UiText { visible: desk.confirmation.operation === "restore"; text: qsTr("Reglas a recuperar: ") + (desk.confirmation.count || 0) + qsTr(" · Protegidas o avanzadas omitidas: ") + (desk.confirmation.skipped || 0); Layout.fillWidth: true; wrapMode: Text.Wrap; elide: Text.ElideNone }
                 UiText { Layout.fillWidth: true; text: qsTr("Dispositivos conectados coincidentes: ") + ((desk.confirmation.affected || []).join(", ") || qsTr("Ninguno")); wrapMode: Text.Wrap; elide: Text.ElideNone }
+                UiText { Layout.fillWidth: true; visible: desk.confirmation.operation === "replace"; text: qsTr("Coincidencias antes: ") + ((desk.confirmation.beforeMatches || []).join(", ") || qsTr("Ninguno")); wrapMode: Text.Wrap; elide: Text.ElideNone }
+                UiText { Layout.fillWidth: true; visible: desk.confirmation.operation === "replace"; text: qsTr("Coincidencias después: ") + ((desk.confirmation.afterMatches || []).join(", ") || qsTr("Ninguno")); wrapMode: Text.Wrap; elide: Text.ElideNone }
+                UiText { visible: !!desk.confirmation.before; text: qsTr("Regla actual"); font.bold: true }
                 RuleText { Layout.fillWidth: true; visible: !!desk.confirmation.before; text: desk.confirmation.before || ""; readOnly: true; selectByMouse: true; wrapMode: TextEdit.Wrap; textFormat: TextEdit.PlainText; Accessible.name: qsTr("Regla actual") }
+                UiText { visible: !!desk.confirmation.after; text: qsTr("Regla resultante"); font.bold: true }
                 RuleText { Layout.fillWidth: true; visible: !!desk.confirmation.after; text: desk.confirmation.after || ""; readOnly: true; selectByMouse: true; wrapMode: TextEdit.Wrap; textFormat: TextEdit.PlainText; Accessible.name: qsTr("Regla resultante") }
                 UiText { visible: control.demo; text: qsTr("Esta acción es simulada."); color: control.workspace.colors["#efd09a"] }
             }
         }
         footer: DialogButtonBox {
             ActionButton { text: qsTr("Cancelar"); onClicked: desk.cancelRule() }
-            ActionButton { objectName: "confirmRuleButton"; text: qsTr("Confirmar cambio"); tone: "danger"; enabled: control.connected && !control.busy; onClicked: desk.confirmRule() }
+            ActionButton { objectName: "confirmRuleButton"; text: qsTr("Confirmar cambio"); tone: "danger"; enabled: control.connected && !control.busy; onClicked: { textEditor.close(); desk.confirmRule() } }
         }
         onRejected: desk.cancelRule()
     }
     Connections { target: desk; function onConfirmationChanged() { if (desk.confirmation.operation) policyConfirm.open(); else policyConfirm.close() } }
+    RuleEditor { id: textEditor }
     FileDialog { id: backupDialog; title: qsTr("Guardar respaldo de reglas"); fileMode: FileDialog.SaveFile; nameFilters: ["JSON (*.json)"]; defaultSuffix: "json"; onAccepted: desk.exportBackup(selectedFile.toString()) }
     FileDialog { id: restoreDialog; title: qsTr("Abrir respaldo para recuperar reglas"); fileMode: FileDialog.OpenFile; nameFilters: ["JSON (*.json)"]; onAccepted: desk.loadBackup(selectedFile.toString()) }
 }

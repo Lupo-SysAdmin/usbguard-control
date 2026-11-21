@@ -3,7 +3,7 @@
 """Policy operations with optimistic revalidation and mandatory local backups."""
 from datetime import datetime, timezone
 from pathlib import Path
-from .policy import PolicyRule, LAST_RULE, validate_edit, replace_target, backup_document
+from .policy import PolicyRule, LAST_RULE, validate_edit, replace_target, validate_replacement, backup_document
 from .storage import private_json
 
 
@@ -12,13 +12,13 @@ class PolicyOperations:
         owner = self.owner()
         return {'owner': owner, 'rules': self.list_rules(owner)}
 
-    def preview_policy(self, operation, rule_id=0, target='', restore=None):
+    def preview_policy(self, operation, rule_id=0, target='', restore=None, draft=None):
         snapshot = self.policy_snapshot()
         rules = snapshot['rules']
         selected = next((r for r in rules if r.id == rule_id), None)
         result = dict(snapshot, operation=operation, selected=selected, target=target, additions=[], affected=[],
-                      sources=list(restore or []), skipped=0)
-        if operation in ('remove', 'edit'):
+                      sources=list(restore or []), skipped=0, draft=draft)
+        if operation in ('remove', 'edit', 'replace'):
             if selected is None: raise ValueError('La regla cambió. Actualiza la lista.')
             validate_edit(selected)
             result['affected'] = self.matching_devices(snapshot['owner'], selected.text)
@@ -27,6 +27,15 @@ class PolicyOperations:
             if operation == 'edit':
                 result['replacement'] = replace_target(selected, target)
                 if result['replacement'] == selected.text: raise ValueError('La regla ya tiene esa decisión.')
+            elif operation == 'replace':
+                result['replacement'] = validate_replacement(selected, draft)
+                result['affectedBefore'] = list(result['affected'])
+                result['affectedAfter'] = self.matching_devices(snapshot['owner'], result['replacement'])
+                if any(d.sensitive for d in result['affectedAfter']):
+                    raise ValueError('La regla afecta dispositivos de entrada o infraestructura.')
+                result['affected'].extend(d for d in result['affectedAfter'] if d not in result['affected'])
+                if any(r.id != selected.id and r.text == result['replacement'] for r in rules):
+                    raise ValueError('Ya existe una regla idéntica. Revisa las reglas antes de continuar.')
         elif operation == 'restore':
             existing = {r.text for r in rules}
             for text in restore or []:
@@ -57,7 +66,7 @@ class PolicyOperations:
         self.assert_policy(owner, expected)
         # Recompute every constraint, including affected sensitive devices.
         fresh = self.preview_policy(preview['operation'], preview['selected'].id if preview['selected'] else 0,
-                                    preview['target'], preview['sources'])
+                                    preview['target'], preview['sources'], preview.get('draft'))
         if fresh != preview:
             raise ValueError('La política cambió. Revisa una nueva vista previa.')
         backup = Path(backup_dir) / ('policy-' + datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ') + '.json')
@@ -69,7 +78,7 @@ class PolicyOperations:
                 self.remove_rule(owner, preview['selected'].id)
                 changed = True
                 expected.remove(preview['selected'])
-            elif preview['operation'] == 'edit':
+            elif preview['operation'] in ('edit', 'replace'):
                 old = preview['selected']
                 new_id = self.append_rule(owner, preview['replacement'], old.id)
                 changed = True

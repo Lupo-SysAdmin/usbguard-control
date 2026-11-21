@@ -140,3 +140,57 @@ def test_decision_explanation_never_guesses_policy_origin(tmp_path):
         control.select(12)
         assert control.selected['target']=='block' and 'no observado' in control.selected['explanation']
     finally:control.shutdown()
+
+
+def test_text_editor_keeps_draft_and_captured_rule_during_refresh_and_selection(tmp_path):
+    app=QGuiApplication.instance() or QGuiApplication([])
+    control=new_control(tmp_path,True)
+    translator=Translator(control.language);app.installTranslator(translator)
+    engine=QQmlApplicationEngine();warnings=[]
+    engine.warnings.connect(lambda items:warnings.extend(w.toString() for w in items))
+    engine.rootContext().setContextProperty('control',control)
+    engine.rootContext().setContextProperty('language',control.language)
+    control.language.changed.connect(engine.retranslate)
+    engine.load(QUrl.fromLocalFile(str(Path(__file__).parents[1]/'src/usbguard_control/qml/Main.qml')))
+    try:
+        window=engine.rootObjects()[0]
+        spin(app,lambda:control.connected and not control.busy)
+        window.setProperty('page',2);control.workspace.selectRule(115)
+        raw=control.workspace.selectedRule['raw']
+        QMetaObject.invokeMethod(window.findChild(QObject,'advancedRuleButton'),'clicked',Qt.DirectConnection)
+        editor=window.findChild(QObject,'ruleEditorDialog');draft=window.findChild(QObject,'ruleDraft')
+        button=window.findChild(QObject,'previewRuleTextButton')
+        assert editor.property('visible') and editor.property('ruleId')==115
+        bad=raw.replace('demo-kingston','changed-identity')
+        draft.setProperty('text',bad)
+        QMetaObject.invokeMethod(button,'clicked',Qt.DirectConnection)
+        spin(app,lambda:not control.busy and bool(control.workspace.editorError))
+        assert not control.workspace.confirmation and len(control.workspace.rules)==4
+        for locale in ('en-US','es-419'):
+            control.language.setLocale(locale)
+            for theme in ('light','dark'):
+                control.workspace.setTheme(theme);window.resize(900,620)
+                for _ in range(12):app.processEvents()
+                assert not window.grabWindow().isNull()
+                assert draft.property('text')==bad
+        control.refresh();spin(app,lambda:not control.busy)
+        control.workspace.selectRule(109)  # Moving selection cannot redirect the editor.
+        assert draft.property('text')==bad and editor.property('ruleId')==115
+        draft.setProperty('text',raw+' label "QA editor"')
+        QMetaObject.invokeMethod(button,'clicked',Qt.DirectConnection)
+        spin(app,lambda:bool(control.workspace.confirmation))
+        assert not control.workspace.editorError
+        assert control.workspace.confirmation['before']==raw
+        assert control.workspace.confirmation['after'].endswith('label "QA editor"')
+        control.workspace.cancelRule()
+        assert editor.property('visible') and draft.property('text').endswith('label "QA editor"')
+        QMetaObject.invokeMethod(button,'clicked',Qt.DirectConnection)
+        spin(app,lambda:bool(control.workspace.confirmation))
+        QMetaObject.invokeMethod(window.findChild(QObject,'confirmRuleButton'),'clicked',Qt.DirectConnection)
+        spin(app,lambda:not control.busy and any('QA editor' in r['raw'] for r in control.workspace.rules))
+        assert not editor.property('visible')
+        assert next(r for r in control.workspace.rules if r['id']==109)['raw'].startswith('allow ')
+        assert list((tmp_path/'data/backups').glob('*.json'))
+        assert not warnings,warnings
+    finally:
+        control.shutdown();delete(engine);app.removeTranslator(translator);app.processEvents()
