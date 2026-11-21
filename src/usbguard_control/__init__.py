@@ -1,3 +1,3 @@
 # SPDX-FileCopyrightText: 2026 Jan Herrera
 # SPDX-License-Identifier: GPL-3.0-or-later
-__version__ = "0.3.0.dev1"
+__version__ = "0.3.0"

@@ -1,6 +1,6 @@
-# Desarrollo de USBGuard Control 0.3
+# Funciones de USBGuard Control 0.3.0
 
-Esta rama contiene **0.3.0.dev1**, una versión de desarrollo. La release pública estable `v0.2.0` sigue intacta. No se ha instalado esta actualización ni se han cambiado reglas o servicios del equipo de desarrollo.
+**Versión estable 0.3.0.** El alcance probado y sus límites están en [Validación 0.3.0](VALIDATION-0.3.md). La versión 0.2.0 se conserva como publicación anterior.
 
 ## Funciones implementadas
 
@@ -41,24 +41,16 @@ Todos los textos propios tienen catálogo español latinoamericano/inglés estad
 
 ![Diagnóstico y primeros pasos](images/usbguard-control-diagnostics.png)
 
-## Validación de esta rama
+## Validación
 
-El 21 de noviembre de 2026, `scripts/check.sh` completó **91 pruebas aprobadas**, capturas ES/EN, validación del lanzador y construcción del `.deb`. Se mantienen tres advertencias de obsolescencia de PyGObject/asyncio en Python 3.14; no hubo errores QML en los recorridos probados.
+La suite automatizada incluye 91 pruebas de reglas, revalidación, denegación, cambios parciales, respaldos, recuperación selectiva, persistencia, privacidad, traducción e interfaz. `sh scripts/check.sh` ejecuta las pruebas, genera capturas de demostración y construye `dist/usbguard-control_0.3.0-1_all.deb`.
 
-Las pruebas nuevas se ejecutan con datos simulados, directorios temporales y un servicio D-Bus aislado. Cubren revalidación, persistencia solicitada al puente, cambio de prioridad, denegación, cambios parciales, respaldo fallido, recuperación selectiva, preferencias, alias, historial y exportación, traducciones y navegación de las pantallas. El contrato se contrastó con el XML y la implementación `DBusBridge.cpp` de USBGuard 1.1.4: en `appendRule` el booleano significa `temporary`, por eso se envía `False` para persistir.
-
-Para repetir la suite y construir el paquete:
-
-```bash
-sh scripts/check.sh
-```
-
-Resultado esperado: `dist/usbguard-control_0.3.0~dev1-1_all.deb`. Las capturas de demostración contienen únicamente dispositivos ficticios.
-
-Antes de promover esta rama a estable se necesita probar las **nuevas** operaciones con autenticación real y política de prueba en las VMs, así como inicio/cierre/reapertura del observador en GNOME, Xfce y KDE. No se atribuyen a esta versión las pruebas físicas de 0.2.0. Deben verificarse también restauración selectiva, retención y desinstalación del paquete actualizado; los datos y la entrada XDG del usuario se administran desde la aplicación y no deben confundirse con archivos del paquete.
+Las pruebas reales de escritorio, autenticación y ciclo de instalación se documentan en [Validación 0.3.0](VALIDATION-0.3.md). Las operaciones D-Bus se contrastaron con XML e implementación de USBGuard 1.1.4: el booleano de `appendRule` significa `temporary`, por lo que se envía `False` para persistir. También se verificaron contra USBGuard 1.1.3 en Parrot.
 
 ## English
 
-This is **0.3.0.dev1**, not a new stable release. It adds guided rule management and selective recovery, local activity history, diagnostics, saved preferences, light/dark/system themes and an optional single-instance background observer. Rules with advanced syntax or sensitive input interfaces remain read-only. The setup guide does not install packages or generate trusted policy automatically. Policy snapshots do not expose per-rule persistence; recovered rules are deliberately made permanent. Existing rules and connected-device authorization are preserved by recovery.
+Stable **0.3.0** adds guided rule management and selective recovery, local activity history, diagnostics, saved preferences, light/dark/system themes, and an optional single-instance background observer. Rules with advanced syntax or sensitive input interfaces remain read-only. The setup guide does not install packages or generate trusted policy automatically. Policy snapshots do not expose per-rule persistence; recovered rules are deliberately made permanent. Recovery preserves existing rules and connected-device authorization.
 
-Automated tests use temporary storage and an isolated D-Bus fixture. Real Polkit policy-editing and the new observer lifecycle must still be checked in desktop VMs before a stable release. The host installation and its policy were not changed during development.
+Edits and multi-rule recovery require multiple D-Bus operations and may request separate authentications. Canceling a later authentication can leave partial changes; the UI warns before confirmation, reports the failure, and retains a backup. It does not promise an atomic transaction or automatic rollback.
+
+See the [validation report](VALIDATION-0.3.md) for actual desktop/VM coverage and limits. GNOME was tested from source without replacing the host package; Xfce and KDE were tested with the installed Debian package.

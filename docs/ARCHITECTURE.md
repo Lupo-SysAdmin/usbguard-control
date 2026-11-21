@@ -46,7 +46,7 @@ El idioma, filtros, vista avanzada, notificaciones, alias, tema y tamaño de ven
 
 La elección de arranque se guarda en systemd, no en QSettings: `EnableUnitFiles` o `DisableUnitFiles` persistentes y `Reload`. El controlador consulta el estado incluso si el puente USBGuard está detenido, permitiendo iniciarlo desde Configuración. Solo acepta unidades instaladas con estados de habilitación ordinarios; conserva máscaras y configuraciones especiales. Inicia primero el daemon y luego el puente; detiene primero el puente y luego el daemon. Espera cada job y comprueba el estado final antes de declarar éxito. Revalida el snapshot confirmado, pero las operaciones no son atómicas: ante un fallo parcial muestra el error y vuelve a leer ambos estados sin intentar una reversión automática. [API de systemd](https://www.freedesktop.org/software/systemd/man/latest/org.freedesktop.systemd1.html).
 
-## Workspace 0.3 en desarrollo
+## Workspace 0.3
 
 - `workspace.py`: preferencias, alias, explicaciones observadas, previews y consultas de historial.
 - `policy.py`: gramática conservadora para edición guiada; las reglas desconocidas se muestran solo para consulta.

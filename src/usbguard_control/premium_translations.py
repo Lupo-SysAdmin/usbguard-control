@@ -14,6 +14,7 @@ EN_US = {
  'Retirar una regla no bloquea inmediatamente el dispositivo ni elimina otras reglas que puedan autorizarlo.': 'Removing a rule does not immediately block the device or remove other rules that may authorize it.',
  'Revisar cambio de reglas': 'Review rule change',
  'Se guardará un respaldo local antes de modificar la política. Puede solicitarse autenticación del sistema.': 'A local backup will be saved before changing the policy. System authentication may be requested.',
+ 'Esta acción requiere varias operaciones. Si cancelas una autenticación posterior, pueden quedar cambios parciales; revisa las reglas y el respaldo.': 'This action requires multiple operations. Canceling a later authentication may leave partial changes; review the rules and backup.',
  'Recuperación selectiva: se agregan al final como permanentes las reglas específicas faltantes. No se reemplaza la política completa; las reglas anteriores pueden tener prioridad.': 'Selective recovery appends missing device-specific rules as permanent rules. It does not replace the entire policy; earlier rules may take precedence.',
  'El cambio afecta futuras evaluaciones. Los dispositivos conectados conservarán su estado actual.': 'The change affects future evaluations. Connected devices will keep their current state.',
  'Reglas a recuperar: ': 'Rules to recover: ', ' · Protegidas o avanzadas omitidas: ': ' · Protected or advanced rules skipped: ',

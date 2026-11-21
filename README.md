@@ -14,11 +14,11 @@ USBGuard Control es un cliente independiente para [USBGuard](https://github.com/
 
 ## Estado del proyecto
 
-**Rama de desarrollo 0.3.0.dev1.** Incluye gestión guiada de reglas, respaldos, historial local, diagnóstico y preferencias de escritorio. La versión publicada **0.2.0 estable** sigue disponible en [Descargas](https://github.com/Lupo-SysAdmin/usbguard-control/releases/tag/v0.2.0). Esta rama no sustituye esa release ni se presenta como estable.
+**Versión estable 0.3.0.** Incluye gestión guiada de reglas, respaldos, historial local, diagnóstico y preferencias de escritorio. Descarga el paquete `.deb` en [Releases](https://github.com/Lupo-SysAdmin/usbguard-control/releases/latest).
 
-Las pruebas automatizadas de esta rama usan demostración y un bus D-Bus aislado. La validación física y de escritorios documentada para 0.2.0 no certifica las funciones nuevas; consulta [Desarrollo 0.3](docs/DEVELOPMENT-0.3.md) para el alcance y los límites.
+Validada en escritorios reales: **Kali 2026.3 / GNOME 50.4 / Wayland**, **Kali 2026.3 / Xfce 4.20.4 / X11** y **Parrot 7.4 / KDE Plasma 6.3.6 / Wayland**. Las operaciones de reglas con autenticación, reconexión de USB de prueba y el arranque automático tras reiniciar se verificaron dentro de las VMs. En GNOME se comprobó la interfaz y el observador desde el código, conservando la instalación del host.
 
-Entornos probados anteriormente con 0.2.0: Kali 2026.3 con GNOME Shell 50.4/Wayland; Kali 2026.1 con Xfce 4.20.3/X11; Parrot 7.4 con KDE Plasma 6.3.6/Wayland. PySide6 6.8.2.1, 6.10.3 y 6.11.2. Motor principal probado: USBGuard 1.1.4; también se verificó la API 1.1.3 distribuida por Parrot. La aplicación no es una extensión de GNOME Shell.
+Consulta [resultados y alcance de 0.3.0](docs/VALIDATION-0.3.md) y [funciones y límites](docs/FEATURES-0.3.md). La VM conserva el nombre «Kali 2026.1», pero su sistema instalado ahora es 2026.3. Las pruebas históricas de 0.2.0 en 2026.1 siguen documentadas por separado. La aplicación no es una extensión de GNOME Shell.
 
 ## Qué incluye
 
@@ -77,18 +77,18 @@ Para construir el paquete sin privilegios:
 python3 scripts/build_deb.py
 ```
 
-El resultado es `dist/usbguard-control_0.3.0~dev1-1_all.deb`. GitHub Actions ejecuta las pruebas y el empaquetado en Debian con cada envío. Consulta el [resultado de CI](https://github.com/Lupo-SysAdmin/usbguard-control/actions/workflows/ci.yml).
+El resultado es `dist/usbguard-control_0.3.0-1_all.deb`. GitHub Actions ejecuta las pruebas y el empaquetado en Debian con cada envío. Consulta el [resultado de CI](https://github.com/Lupo-SysAdmin/usbguard-control/actions/workflows/ci.yml).
 
 Atajos: **Ctrl+F** buscar, **Ctrl+R** actualizar, **Ctrl+Q** salir. Tab y Shift+Tab recorren los controles. Los paneles tienen desplazamiento cuando la ventana es pequeña.
 
 ## Hoja de ruta
 
 1. **Prototipo visual:** implementado con demostración funcional y captura real de QML.
-2. **Integración:** daemon/hardware reales, Polkit, recuperación, revocación y cambios externos probados; alcance detallado en la matriz de validación.
-3. **Instalación:** `.deb` instalado en Kali/GNOME y ensayado con instalación/desinstalación en VMs Kali/Xfce y Parrot/KDE.
+2. **Integración:** daemon real, Polkit, recuperación, revocación y cambios externos probados; las pruebas físicas históricas y las nuevas pruebas USB en VMs se distinguen en la matriz.
+3. **Instalación:** 0.3.0 ensayada con instalación/desinstalación en VMs Kali/Xfce y Parrot/KDE; GNOME validado desde el código. La instalación del host permanece en 0.2.0.
 4. **Portafolio:** repositorio público con documentación bilingüe, autoría, licencia, capturas y CI. Consulta las versiones en Descargas.
 
-Ver [plan de validación](docs/VALIDATION.md). Las nuevas funciones de esta rama requieren la validación de escritorio descrita en [Desarrollo 0.3](docs/DEVELOPMENT-0.3.md) antes de una publicación estable. El historial del observador no equivale al registro completo del servicio.
+Ver [validación de 0.3.0](docs/VALIDATION-0.3.md) y [funciones y límites](docs/FEATURES-0.3.md). El historial del observador no equivale al registro completo del servicio.
 
 ## Autoría y licencia
 

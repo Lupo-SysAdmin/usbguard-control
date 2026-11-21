@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3.0.dev1 — En desarrollo, 2026-11-21
+## 0.3.0 — 2026-11-21
 
 - Gestión guiada de reglas por D-Bus con vista previa, comprobación de identidad de política y respaldo obligatorio.
 - Recuperación selectiva de reglas específicas; reglas avanzadas, HID, Bluetooth y concentradores protegidos.
@@ -9,7 +9,8 @@
 - Diagnóstico guiado y comprobación de emparejamiento del iPhone sin modificarlo.
 - Temas claro/oscuro/sistema, preferencias persistentes, observador en segundo plano, instancia única e inicio de sesión opcional.
 - Nueva dependencia de QtWidgets y QtNetwork para la integración del escritorio.
-- La release estable 0.2.0 y su alcance de validación permanecen independientes.
+- Validación real en GNOME/Wayland, Xfce/X11 y KDE/Wayland; operaciones de política autenticadas, reconexión de USB de prueba, reinicio/inicio de sesión, instancia única y reinstalación del paquete en las VMs.
+- Advertencia previa sobre varias operaciones y posibles cambios parciales al cancelar una autenticación posterior. La release 0.2.0 se conserva como historial.
 
 ## 0.2.0 — 2026-11-09
 

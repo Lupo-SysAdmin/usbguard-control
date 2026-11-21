@@ -1,4 +1,3 @@
-> Esta guía en la rama de desarrollo construye `0.3.0~dev1-1`. Para la versión estable 0.2.0 usa la documentación del tag `v0.2.0`.
 
 # Instalación y prueba en Kali
 
@@ -28,7 +27,7 @@ O construye e instala el paquete de la interfaz:
 
 ```bash
 python3 scripts/build_deb.py
-sudo apt install ./dist/usbguard-control_0.3.0~dev1-1_all.deb
+sudo apt install ./dist/usbguard-control_0.3.0-1_all.deb
 usbguard-control --demo
 ```
 
@@ -87,7 +86,7 @@ Desde el código fuente: `PYTHONPATH=src python3 -m usbguard_control`.
 
 Ejecuta como usuario normal en una sesión local activa con agente Polkit. Las acciones administrativas pueden mostrar la autenticación del escritorio. La aplicación no solicita ni guarda contraseñas.
 
-“Permitir ahora” no guarda una regla: al reconectar o reiniciar se reevalúa la política. “Permitir siempre” pide a USBGuard guardar una regla; fallará si su almacenamiento de reglas no es escribible o no está configurado. “Bloquear ahora” tampoco elimina reglas persistentes. Para revocar una regla guardada, revisa `sudo usbguard list-rules` y administra la regla correcta con las herramientas oficiales; el editor gráfico está pendiente.
+“Permitir ahora” no guarda una regla: al reconectar o reiniciar se reevalúa la política. “Permitir siempre” pide a USBGuard guardar una regla; fallará si su almacenamiento de reglas no es escribible o no está configurado. “Bloquear ahora” tampoco elimina reglas persistentes. Para revocar una regla específica, abre **Reglas**, selecciona la entrada y usa **Retirar regla** tras revisar la vista previa. La aplicación guarda un respaldo antes de cambiarla. Las reglas sensibles o avanzadas requieren revisión con las herramientas oficiales. Retirar una regla no cambia la autorización actual: reconecta el dispositivo para evaluar la política resultante.
 
 Antes de bloquear almacenamiento, desmonta el volumen. Bloquear autorización USB no es una operación de expulsión segura. Esta versión no administra montajes.
 
