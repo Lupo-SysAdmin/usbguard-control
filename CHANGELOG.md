@@ -8,6 +8,7 @@
 - Revalida ambas coincidencias antes de confirmar; mantiene respaldo obligatorio, prioridad y avisos de cambios parciales.
 - La demostración evalúa también puerto, padre, nombre, serie, interfaces y tipo de conexión. El tipo de conexión se incorpora a la identidad comprobada.
 - 117 pruebas automatizadas, documentación y capturas ES/EN. El alcance real de esta versión se registra en docs/VALIDATION-0.5.md.
+- Matriz CI con dependencias nativas y usuario normal en Ubuntu 26.04, Fedora 45 y Arch rolling: 117 pruebas por sistema. Ubuntu también verifica instalación e inicio del `.deb`; Fedora/Arch se validan desde código, sin prometer paquetes nativos ni pruebas de escritorio/hardware.
 
 ## 0.3.0 — 2026-11-21
 

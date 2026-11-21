@@ -20,6 +20,8 @@ Validated on real **Kali 2026.3 / Xfce 4.20.4 / X11**, and **Parrot 7.4 / KDE Pl
 
 See [0.5.0 validation and scope](docs/VALIDATION-0.5.md) and [features and limits](docs/FEATURES-0.5.md).
 
+**Other distributions:** Ubuntu 26.04, Fedora 45 and Arch rolling passed 117 tests each with native dependencies in GitHub Actions. Ubuntu also passed Debian-package installation and demo launch; Fedora/Arch were tested from source. These automated jobs do not include a live desktop or real USB. See the [compatibility and installation limits](docs/COMPATIBILITY.md).
+
 ## Features
 
 - Searchable device list, authorization filters and device details.

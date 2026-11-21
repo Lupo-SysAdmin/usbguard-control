@@ -22,6 +22,8 @@ La VM llamada «Kali 2026.1» ejecuta actualmente Kali 2026.3. No se declara una
 
 ## Pruebas con el paquete y escritorios reales
 
+Además de la suite Debian, **Ubuntu 26.04, Fedora 45 y Arch rolling pasaron 117 pruebas cada una** en GitHub Actions con dependencias nativas y usuario sin privilegios. Ubuntu pasó instalación, integridad y apertura del `.deb` en modo demostración. Estos contenedores no son escritorios ni hardware: consulta el [inventario y alcance de compatibilidad](COMPATIBILITY.md).
+
 - La actualización conservó la política de ambas VMs. Las cuatro páginas renderizaron en ES/EN y claro/oscuro sin errores QML. Se comprobaron cierre al segundo plano, reapertura con instancia única, creación/retirada de la entrada XDG y exportación de respaldo.
 - Se utilizaron dispositivos de almacenamiento USB del kernel con `dummy_hcd`/`libcomposite`, imágenes vacías de solo lectura y nombres especiales. No son periféricos físicos.
 - El editor rechazó un VID:PID con comodín antes de escribir. El borrador válido añadió una restricción de puerto y una etiqueta. La vista previa mostró un dispositivo coincidente antes y ninguno después, sin cambiar la política.

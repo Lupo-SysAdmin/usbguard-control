@@ -20,6 +20,8 @@ Validada en escritorios reales: **Kali 2026.3 / Xfce 4.20.4 / X11** y **Parrot 7
 
 Consulta [resultados y alcance de 0.5.0](docs/VALIDATION-0.5.md) y [funciones y límites](docs/FEATURES-0.5.md). La VM conserva el nombre «Kali 2026.1», pero su sistema instalado ahora es 2026.3. Las pruebas históricas de 0.2.0 en 2026.1 siguen documentadas por separado. La aplicación no es una extensión de GNOME Shell.
 
+**Otras distribuciones:** Ubuntu 26.04, Fedora 45 y Arch rolling pasaron 117 pruebas cada una con dependencias nativas en GitHub Actions. Ubuntu también pasó instalación y apertura del `.deb`; Fedora/Arch se probaron desde código. Son pruebas automatizadas sin escritorio ni USB real. Consulta la [matriz de compatibilidad y límites de instalación](docs/COMPATIBILITY.md).
+
 ## Qué incluye
 
 - Diseño oscuro, escalable y redimensionable, con controles de teclado y estados identificados por texto e iconos.
