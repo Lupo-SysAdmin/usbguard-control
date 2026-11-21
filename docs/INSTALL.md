@@ -1,3 +1,4 @@
+
 # Instalación y prueba en Kali
 
 Objetivo inicial: Kali 2026.3. La revisión candidata observada el 8 de noviembre de 2026 es `usbguard 1.1.4+ds-10`; consulta siempre `apt policy usbguard` en tu equipo. El paquete incluye `usbguard-dbus` y su unidad systemd; no existe la necesidad de instalar otro paquete llamado `usbguard-dbus` en esta revisión.
@@ -12,7 +13,7 @@ Instala las dependencias gráficas, sin instalar todavía el daemon:
 sudo apt update
 sudo apt install python3 python3-gi \
   python3-pyside6.qtcore python3-pyside6.qtgui \
-  python3-pyside6.qtqml python3-pyside6.qtquick python3-pyside6.qtquickcontrols2 \
+  python3-pyside6.qtqml python3-pyside6.qtquick python3-pyside6.qtquickcontrols2 python3-pyside6.qtwidgets python3-pyside6.qtnetwork \
   qt6-svg-plugins qml6-module-qtquick qml6-module-qtquick-window \
   qml6-module-qtquick-layouts qml6-module-qtquick-controls \
   qml6-module-qtquick-dialogs qml6-module-qtquick-templates \
@@ -26,7 +27,7 @@ O construye e instala el paquete de la interfaz:
 
 ```bash
 python3 scripts/build_deb.py
-sudo apt install ./dist/usbguard-control_0.2.0-1_all.deb
+sudo apt install ./dist/usbguard-control_0.3.0-1_all.deb
 usbguard-control --demo
 ```
 
@@ -85,7 +86,7 @@ Desde el código fuente: `PYTHONPATH=src python3 -m usbguard_control`.
 
 Ejecuta como usuario normal en una sesión local activa con agente Polkit. Las acciones administrativas pueden mostrar la autenticación del escritorio. La aplicación no solicita ni guarda contraseñas.
 
-“Permitir ahora” no guarda una regla: al reconectar o reiniciar se reevalúa la política. “Permitir siempre” pide a USBGuard guardar una regla; fallará si su almacenamiento de reglas no es escribible o no está configurado. “Bloquear ahora” tampoco elimina reglas persistentes. Para revocar una regla guardada, revisa `sudo usbguard list-rules` y administra la regla correcta con las herramientas oficiales; el editor gráfico está pendiente.
+“Permitir ahora” no guarda una regla: al reconectar o reiniciar se reevalúa la política. “Permitir siempre” pide a USBGuard guardar una regla; fallará si su almacenamiento de reglas no es escribible o no está configurado. “Bloquear ahora” tampoco elimina reglas persistentes. Para revocar una regla específica, abre **Reglas**, selecciona la entrada y usa **Retirar regla** tras revisar la vista previa. La aplicación guarda un respaldo antes de cambiarla. Las reglas sensibles o avanzadas requieren revisión con las herramientas oficiales. Retirar una regla no cambia la autorización actual: reconecta el dispositivo para evaluar la política resultante.
 
 Antes de bloquear almacenamiento, desmonta el volumen. Bloquear autorización USB no es una operación de expulsión segura. Esta versión no administra montajes.
 

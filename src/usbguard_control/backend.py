@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """USBGuard 1.1.4 D-Bus client. Calls never activate a stopped service."""
 from .domain import TARGETS, parse_device, validate_action
+from .policy import PolicyRule
+from .policy_backend import PolicyOperations
 
 SERVICE = "org.usbguard1"
 ROOT = "/org/usbguard1"
@@ -9,7 +11,7 @@ DEVICES = ROOT + "/Devices"
 INTERFACE = "org.usbguard.Devices1"
 
 
-class SystemBackend:
+class SystemBackend(PolicyOperations):
     def __init__(self, event_callback=None, connection=None, cancellable=None):
         from gi.repository import Gio, GLib
         self.Gio, self.GLib = Gio, GLib
@@ -46,6 +48,22 @@ class SystemBackend:
         rows = self.call(owner, DEVICES, INTERFACE, "listDevices", "(s)", ("match",), "(a(us))")[0]
         return [parse_device(device_id, rule) for device_id, rule in rows]
 
+    def list_rules(self, owner):
+        rows = self.call(owner, ROOT + '/Policy', 'org.usbguard.Policy1', 'listRules', '(s)', ('',), '(a(us))')[0]
+        return [PolicyRule(int(i), text) for i, text in rows]
+
+    def matching_devices(self, owner, rule):
+        query = 'match ' + rule.split(' ', 1)[1]
+        rows = self.call(owner, DEVICES, INTERFACE, 'listDevices', '(s)', (query,), '(a(us))')[0]
+        return [parse_device(i, text) for i, text in rows]
+
+    def append_rule(self, owner, rule, parent):
+        return self.call(owner, ROOT + '/Policy', 'org.usbguard.Policy1', 'appendRule', '(sub)',
+                         (rule, parent, False), '(u)', True)[0]
+
+    def remove_rule(self, owner, rule_id):
+        self.call(owner, ROOT + '/Policy', 'org.usbguard.Policy1', 'removeRule', '(u)', (rule_id,), '()', True)
+
     def snapshot(self):
         owner = self.owner()
         devices = self.devices(owner)
@@ -55,7 +73,11 @@ class SystemBackend:
                 parameters[key] = self.call(owner, ROOT, SERVICE, "getParameter", "(s)", (name,), "(s)")[0]
             except self.GLib.Error:
                 parameters[key] = "unknown"
-        return {"devices": devices, "owner": owner, **parameters}
+        try:
+            rules, rules_error = self.list_rules(owner), ''
+        except Exception as error:
+            rules, rules_error = [], friendly_error(error)
+        return {"devices": devices, "owner": owner, "rules": rules, "rulesError": rules_error, **parameters}
 
     def apply(self, expected, target, permanent, owner):
         if self.owner() != owner:

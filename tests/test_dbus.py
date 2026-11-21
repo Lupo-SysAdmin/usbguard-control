@@ -116,3 +116,36 @@ def test_worker_receives_real_bus_events_and_shuts_down(backend, monkeypatch):
     finally:
         control.shutdown()
         assert not control.thread.isRunning()
+
+
+def test_policy_read_edit_and_interactive_flags(backend, tmp_path):
+    preview = backend.preview_policy('edit', 51, 'block')
+    assert preview['affected'][0].id == 15
+    result = backend.commit_policy(preview, tmp_path)
+    assert result['rules'][0].text.startswith('block ')
+    assert backend.snapshot()['devices'][3].target == 'allow'
+    assert len(list(tmp_path.glob('*.json'))) == 1
+
+
+def test_policy_denial_preserves_original_and_external_changes_reject_preview(backend, tmp_path):
+    preview = backend.preview_policy('remove', 51)
+    change(backend, 'policy-swap')
+    with pytest.raises(ValueError, match='política cambió'): backend.commit_policy(preview, tmp_path)
+    assert not list(tmp_path.iterdir())
+    preview = backend.preview_policy('remove', 51)
+    change(backend, 'deny')
+    with pytest.raises(GLib.Error): backend.commit_policy(preview, tmp_path)
+    assert backend.policy_snapshot()['rules'] == preview['rules']
+
+
+def test_policy_read_denial_does_not_hide_devices(backend):
+    change(backend, 'no-rules')
+    snapshot = backend.snapshot()
+    assert snapshot['devices'] and snapshot['rulesError'] and not snapshot['rules']
+
+
+def test_policy_partial_write_reports_failure(backend, tmp_path):
+    preview = backend.preview_policy('edit', 51, 'block')
+    change(backend, 'deny-remove')
+    with pytest.raises(ValueError, match='Cambios parciales'): backend.commit_policy(preview, tmp_path)
+    assert len(backend.policy_snapshot()['rules']) == 2

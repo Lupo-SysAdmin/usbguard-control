@@ -75,6 +75,13 @@ class Device:
             i.startswith(("03:", "09:")) or i == "e0:01:01" for i in self.interfaces)
 
     @property
+    def functions(self) -> list[str]:
+        classes = {i[:2] for i in self.interfaces}
+        return [label for code, label in (("03", "Entrada · HID"), ("08", "Almacenamiento"),
+                ("e0", "Conectividad"), ("0e", "Cámara"), ("01", "Audio"), ("09", "Concentrador USB"))
+                if code in classes] or ["Dispositivo USB"]
+
+    @property
     def kind(self) -> str:
         classes = {i[:2] for i in self.interfaces}
         if "09" in classes:
@@ -102,7 +109,7 @@ class Device:
             "usbId": self.usb_id, "serial": display_text(self.serial) or "No informado",
             "digest": self.digest, "port": self.port or "No informado",
             "interfaces": ", ".join(self.interfaces) or "No informadas",
-            "kind": self.kind, "infrastructure": self.infrastructure,
+            "kind": self.kind, "functions": self.functions, "infrastructure": self.infrastructure,
             "sensitive": self.sensitive,
             "canBlock": not self.sensitive and bool(self.digest),
             "canAllow": not self.infrastructure and bool(self.digest),

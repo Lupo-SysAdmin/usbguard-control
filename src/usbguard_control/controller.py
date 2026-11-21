@@ -11,6 +11,9 @@ from .domain import display_text
 from .localization import Language
 from .translations import message
 from .services import DemoServiceManager, manageable
+from .workspace import Workspace
+from .storage import private_json
+from .policy import backup_document
 
 
 class Worker(QObject):
@@ -25,6 +28,9 @@ class Worker(QObject):
         self.context = None
         self.cancel = None
         self.services = None
+        self.notification_bus = None
+        self.notification_subscription = None
+        self.notification_ids = set()
 
     @Slot()
     def start(self):
@@ -71,6 +77,32 @@ class Worker(QObject):
                 result = self.services.apply(*arguments)
             elif operation == "apply":
                 result = self.backend.apply(*arguments)
+            elif operation == 'policy-preview':
+                result = self.backend.preview_policy(*arguments)
+            elif operation == 'policy-commit':
+                preview, directory = arguments
+                if directory is None and self.demo:
+                    import tempfile
+                    with tempfile.TemporaryDirectory(prefix='usbguard-demo-') as temporary:
+                        result = self.backend.commit_policy(preview, temporary)
+                        result['backup'] = ''
+                else:
+                    result = self.backend.commit_policy(preview, directory)
+            elif operation == 'policy-backup':
+                snapshot = self.backend.policy_snapshot()
+                private_json(arguments, backup_document(snapshot['rules']))
+                result = arguments
+            elif operation == 'diagnose-phone':
+                import shutil
+                import subprocess
+                if self.demo:
+                    result = 'Diagnóstico simulado. No se consultó ningún teléfono.'
+                elif not shutil.which('idevicepair'):
+                    result = 'Falta idevicepair (paquete libimobiledevice-utils).'
+                else:
+                    check = subprocess.run(['idevicepair', 'validate'], capture_output=True, timeout=12)
+                    result = ('Emparejamiento válido. Si Archivos falla, revisa GVfs y vuelve a abrir el dispositivo.' if check.returncode == 0
+                              else 'No se confirmó el emparejamiento. Desbloquea el iPhone y revisa el aviso Confiar y la conexión USB.')
             elif operation == "simulate":
                 result = self.backend.toggle_connection()
             elif operation == "notify":
@@ -91,13 +123,26 @@ class Worker(QObject):
             return
         from gi.repository import Gio, GLib
         bus = Gio.bus_get_sync(Gio.BusType.SESSION, self.cancel)
-        bus.call_sync("org.freedesktop.Notifications", "/org/freedesktop/Notifications",
+        if self.notification_subscription is None:
+            self.notification_bus = bus
+            def action(_bus, _sender, _path, _interface, _member, parameters, _data):
+                notification_id, key = parameters.unpack()
+                if notification_id in self.notification_ids and key == 'open':
+                    self.event.emit('NotificationOpen', ())
+            self.notification_subscription = bus.signal_subscribe('org.freedesktop.Notifications',
+                'org.freedesktop.Notifications', 'ActionInvoked', '/org/freedesktop/Notifications',
+                None, Gio.DBusSignalFlags.NONE, action, None)
+        result = bus.call_sync("org.freedesktop.Notifications", "/org/freedesktop/Notifications",
             "org.freedesktop.Notifications", "Notify", GLib.Variant("(susssasa{sv}i)",
-            ("USBGuard Control", 0, "usbguard-control", content[0], content[1], [], {}, 5000)),
+            ("USBGuard Control", 0, "usbguard-control", content[0], content[1], ['open', content[2]], {}, 5000)),
             GLib.VariantType.new("(u)"), Gio.DBusCallFlags.NO_AUTO_START, 1000, self.cancel)
+        # Bound memory; only notifications emitted by this observer activate it.
+        self.notification_ids = {result.unpack()[0]}
 
     @Slot()
     def stop(self):
+        if self.notification_bus and self.notification_subscription is not None:
+            self.notification_bus.signal_unsubscribe(self.notification_subscription)
         if self.backend and hasattr(self.backend, "close"):
             self.backend.close()
         if self.context:
@@ -114,7 +159,7 @@ class Controller(QObject):
     request = Signal(str, object)
     stopping = Signal()
 
-    def __init__(self, demo=False, language=None):
+    def __init__(self, demo=False, language=None, data_dir=None):
         super().__init__()
         self.language = language or Language()
         self.language.changed.connect(self.changed.emit)
@@ -144,6 +189,13 @@ class Controller(QObject):
         self._notifications = True
         self._event_count = 0
         self._last_error = ""
+        self._workspace = Workspace(self, data_dir)
+        self._advanced = self._workspace.pref_bool('advanced', False)
+        self._notifications = self._workspace.pref_bool('notifications', True)
+        saved_filter = self._workspace.pref('filter', 'all')
+        self._filter = saved_filter if saved_filter in ('all', 'allow', 'block') else 'all'
+        self._workspace.changed.connect(self.sync_selected)
+        self.changed.connect(self._workspace.changed.emit)
         self.changed.connect(self.sync_selected)
         self.notice_timer = QTimer(self)
         self.notice_timer.setSingleShot(True)
@@ -173,6 +225,10 @@ class Controller(QObject):
 
     @Property(bool, constant=True)
     def demo(self): return self._demo
+    @Property(QObject, constant=True)
+    def workspace(self): return self._workspace
+    @Property(str, notify=changed)
+    def activeFilter(self): return self._filter
     @Property(bool, notify=changed)
     def connected(self): return self._connected
     @Property(bool, notify=changed)
@@ -217,7 +273,7 @@ class Controller(QObject):
         return [self.localize_device(d) for d in self._devices
                 if (self._advanced or not d.infrastructure)
                 and (self._filter == "all" or (d.target == "allow") == (self._filter == "allow"))
-                and self._query.casefold() in (d.name + " " + d.usb_id + " " + self.language.text(d.kind)).casefold()]
+                and self._query.casefold() in (d.name + " " + self._workspace.device_alias(d) + " " + d.usb_id + " " + self.language.text(d.kind)).casefold()]
     @Property("QVariantMap", notify=selectedChanged)
     def selected(self):
         return self._selected_view
@@ -234,6 +290,11 @@ class Controller(QObject):
 
     def localize_device(self, device):
         result = device.as_dict()
+        result['originalName'] = result['name']
+        result['alias'] = self._workspace.device_alias(device)
+        if result['alias']: result['name'] = result['alias']
+        result['functions'] = ' · '.join(self.language.text(f) for f in device.functions)
+        result['explanation'] = self._workspace.explanation(device)
         for key in ("kind", "status"):
             result[key] = self.language.text(result[key])
         for key, absent in (("name", not display_text(device.name)), ("serial", not display_text(device.serial)),
@@ -252,6 +313,7 @@ class Controller(QObject):
         self._events.insert(0, {"time": datetime.now().astimezone().isoformat(timespec="seconds"),
                                 "category": category, "message": message})
         del self._events[200:]
+        self._workspace.record(self._events[0])
         self.changed.emit()
 
     def dispatch(self, operation, args=None):
@@ -287,16 +349,19 @@ class Controller(QObject):
     def filter(self, value):
         if value in ("all", "allow", "block"):
             self._filter = value
+            self._workspace.save('filter', value)
             self.changed.emit()
 
     @Slot(bool)
     def showInfrastructure(self, value):
         self._advanced = value
+        self._workspace.save('advanced', value)
         self.changed.emit()
 
     @Slot(bool)
     def setNotifications(self, value):
         self._notifications = value
+        self._workspace.save('notifications', value)
         self.changed.emit()
 
     @Slot(str, bool)
@@ -400,6 +465,7 @@ class Controller(QObject):
             self._connected = True
             self._devices = result["devices"]
             self._owner = result["owner"]
+            self._workspace.update_snapshot(result)
             if self._notice_context:
                 expected, target, owner = self._notice_context
                 current = next((d for d in self._devices if d.id == expected.id), None)
@@ -422,10 +488,27 @@ class Controller(QObject):
             device, target, permanent, owner = self._action
             verb = "Permitido" if target == "allow" else "Bloqueado"
             scope = message("regla guardada #{id}", id=result) if permanent else message("decisión temporal")
+            reason = message('Regla guardada por esta aplicación: #{id}.', id=result) if permanent else 'Decisión temporal tomada en esta sesión.'
+            self._workspace.decisions[device.id] = (device.identity, target, owner, reason)
             self.show_notice(message("{status}: {name} · {scope}", status=message(verb), name=display_text(device.name), scope=scope),
                              (device, target, owner))
             self.add_event("Simulación" if self._demo else "Acción", self._notice)
             self.refresh()
+        elif operation == 'policy-preview':
+            self._workspace.pending = result
+            self._workspace.confirmationChanged.emit()
+        elif operation == 'policy-commit':
+            self._workspace.decisions.clear()
+            self.show_notice('Reglas actualizadas. Los dispositivos conectados conservan su estado actual.')
+            self.add_event('Política', self._notice)
+            if result['backup']:
+                self._workspace.storage_error = ''
+            self.refresh()
+        elif operation == 'policy-backup':
+            self.show_notice('Respaldo de reglas exportado.')
+        elif operation == 'diagnose-phone':
+            self._workspace.diagnostic_result = result
+            self._workspace.changed.emit()
         elif operation == "simulate":
             self.add_event("Simulación", result)
             self.refresh()
@@ -450,6 +533,10 @@ class Controller(QObject):
             self._busy = False
         if operation == "notify": return
         self._error = message
+        if operation == 'policy-commit':
+            self._workspace.cancelRule()
+            self.add_event('Error', message)
+            self.pollBackground()
         if operation == "service":
             self._service_working = False
             self._service_error = message
@@ -461,6 +548,8 @@ class Controller(QObject):
             if self._notice_context: self.clearNotice()
             self._connected = False
             self._devices = []
+            self._workspace.update_snapshot({'rulesError': message})
+            self._workspace.decisions.clear()
             self._selected = -1
             self._policy = "Política no disponible"
             if self._service.get("units") and all(u["active"] == "inactive" for u in self._service["units"]):
@@ -474,10 +563,19 @@ class Controller(QObject):
 
     @Slot(str, object)
     def device_event(self, member, args):
+        if member == 'NotificationOpen':
+            self._workspace.showWindow.emit()
+            return
+        self._workspace.observe(member, args)
+        self.sync_selected()
         if member == "DevicePresenceChanged":
             self._event_count += 1
             action = {0: "Presente · ID {id}", 1: "Conectado · ID {id}", 2: "Actualizado · ID {id}", 3: "Desconectado · ID {id}"}.get(args[1], "Cambio · ID {id}")
-            self.add_event("Dispositivo", message(action, id=args[0]))
+            try:
+                from .domain import parse_device
+                name = display_text(parse_device(args[0], args[3]).name)
+            except (ValueError, IndexError): name = ''
+            self.add_event("Dispositivo", message('{event} · {name}', event=message(action, id=args[0]), name=name))
         elif member in ("DevicePolicyChanged", "DevicePolicyApplied"):
             self.add_event("Política", message("Decisión de USBGuard actualizada · ID {id}", id=args[0]))
         elif member == "ExceptionMessage":
@@ -491,12 +589,15 @@ class Controller(QObject):
         count, self._event_count = self._event_count, 0
         if count and self._notifications and not self._demo:
             self.dispatch("notify", (self.language.text("Actividad USB"), self.language.text(message(
-                "{count} cambios detectados. Abre USBGuard Control para revisarlos.", count=count))))
+                "{count} cambios detectados. Abre USBGuard Control para revisarlos.", count=count)),
+                self.language.text('Abrir USBGuard Control')))
             QTimer.singleShot(1200, self.refresh)
         else:
             self.refresh()
 
     def shutdown(self):
+        if self._workspace.closed: return
+        self.add_event('Sesión', 'Observación finalizada. No se registran eventos mientras la aplicación está cerrada.')
         self.poll.stop()
         self.coalesce.stop()
         self.notice_timer.stop()
@@ -504,3 +605,4 @@ class Controller(QObject):
             self.worker.cancel.cancel()
         self.stopping.emit()
         self.thread.wait()
+        self._workspace.close()

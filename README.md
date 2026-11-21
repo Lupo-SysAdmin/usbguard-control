@@ -14,9 +14,11 @@ USBGuard Control es un cliente independiente para [USBGuard](https://github.com/
 
 ## Estado del proyecto
 
-**v0.2.0 · primera versión estable**. Cliente D-Bus funcional, paquete Debian y **62 pruebas automatizadas aprobadas**. Validado con hardware real en Kali/GNOME y en VMs Kali/Xfce y Parrot/KDE: instalación/desinstalación, control del servicio, autenticación, reinicios, recuperación, reconexiones y revocación. Consulta los resultados y límites en [Validación](docs/VALIDATION.md).
+**Versión estable 0.3.0.** Incluye gestión guiada de reglas, respaldos, historial local, diagnóstico y preferencias de escritorio. Descarga el paquete `.deb` en [Releases](https://github.com/Lupo-SysAdmin/usbguard-control/releases/latest).
 
-Entornos probados: Kali 2026.3 con GNOME Shell 50.4/Wayland; Kali 2026.1 con Xfce 4.20.3/X11; Parrot 7.4 con KDE Plasma 6.3.6/Wayland. PySide6 6.8.2.1, 6.10.3 y 6.11.2. Motor principal probado: USBGuard 1.1.4; también se verificó la API 1.1.3 distribuida por Parrot. La aplicación no es una extensión de GNOME Shell.
+Validada en escritorios reales: **Kali 2026.3 / GNOME 50.4 / Wayland**, **Kali 2026.3 / Xfce 4.20.4 / X11** y **Parrot 7.4 / KDE Plasma 6.3.6 / Wayland**. Las operaciones de reglas con autenticación, reconexión de USB de prueba y el arranque automático tras reiniciar se verificaron dentro de las VMs. En GNOME se comprobó la interfaz y el observador desde el código, conservando la instalación del host.
+
+Consulta [resultados y alcance de 0.3.0](docs/VALIDATION-0.3.md) y [funciones y límites](docs/FEATURES-0.3.md). La VM conserva el nombre «Kali 2026.1», pero su sistema instalado ahora es 2026.3. Las pruebas históricas de 0.2.0 en 2026.1 siguen documentadas por separado. La aplicación no es una extensión de GNOME Shell.
 
 ## Qué incluye
 
@@ -27,8 +29,14 @@ Entornos probados: Kali 2026.3 con GNOME Shell 50.4/Wayland; Kali 2026.1 con Xfc
 - **Permitir ahora**, **Permitir siempre** y **Bloquear ahora**, con confirmación y errores explícitos.
 - Configuración con texto ajustado y desplazamiento; iniciar/detener los servicios y recordar la elección al arrancar mediante systemd y Polkit.
 - Restricción de bloqueo para HID, adaptadores Bluetooth, concentradores y dispositivos con interfaces desconocidas.
-- Eventos D-Bus, reconexión periódica y notificaciones agrupadas mientras está abierta.
-- Actividad de la sesión, limitada a 200 eventos, exportable a JSON.
+- Eventos D-Bus, reconexión periódica y notificaciones agrupadas mientras el observador está en ejecución.
+- **Reglas y confianza:** reglas activas en su orden, búsqueda, nombres personalizados incluso desconectados, edición guiada permitir/bloquear y retirada de reglas específicas.
+- Vista previa con dispositivos coincidentes, revalidación de la política y respaldo local obligatorio antes de modificar reglas.
+- Exportación de respaldos y recuperación selectiva de reglas específicas faltantes; las reglas protegidas y avanzadas se conservan para revisión administrativa.
+- Historial local entre sesiones, retención de 7/30/90 días, búsqueda por mensaje/fecha y exportación JSON/CSV con ocultación de detalles.
+- Diagnóstico de servicios/conexión/reglas, comprobación opcional del emparejamiento del iPhone y asistente inicial guiado.
+- Temas claro, oscuro y del sistema; preferencias, nombres y tamaño de ventana guardados.
+- Observador opcional en segundo plano, apertura desde notificaciones compatibles, instancia única e inicio de sesión opcional desde el paquete instalado.
 - Modo demostración separado del sistema: permite simular desconexiones y comparar decisiones temporales con persistentes.
 - Paquete `.deb` sin scripts administrativos ni instalación automática del daemon.
 
@@ -69,18 +77,18 @@ Para construir el paquete sin privilegios:
 python3 scripts/build_deb.py
 ```
 
-El resultado es `dist/usbguard-control_0.2.0-1_all.deb`. GitHub Actions ejecuta las pruebas y el empaquetado en Debian con cada envío. Consulta el [resultado de CI](https://github.com/Lupo-SysAdmin/usbguard-control/actions/workflows/ci.yml).
+El resultado es `dist/usbguard-control_0.3.0-1_all.deb`. GitHub Actions ejecuta las pruebas y el empaquetado en Debian con cada envío. Consulta el [resultado de CI](https://github.com/Lupo-SysAdmin/usbguard-control/actions/workflows/ci.yml).
 
 Atajos: **Ctrl+F** buscar, **Ctrl+R** actualizar, **Ctrl+Q** salir. Tab y Shift+Tab recorren los controles. Los paneles tienen desplazamiento cuando la ventana es pequeña.
 
 ## Hoja de ruta
 
 1. **Prototipo visual:** implementado con demostración funcional y captura real de QML.
-2. **Integración:** daemon/hardware reales, Polkit, recuperación, revocación y cambios externos probados; alcance detallado en la matriz de validación.
-3. **Instalación:** `.deb` instalado en Kali/GNOME y ensayado con instalación/desinstalación en VMs Kali/Xfce y Parrot/KDE.
+2. **Integración:** daemon real, Polkit, recuperación, revocación y cambios externos probados; las pruebas físicas históricas y las nuevas pruebas USB en VMs se distinguen en la matriz.
+3. **Instalación:** 0.3.0 ensayada con instalación/desinstalación en VMs Kali/Xfce y Parrot/KDE; GNOME validado desde el código. La instalación del host permanece en 0.2.0.
 4. **Portafolio:** repositorio público con documentación bilingüe, autoría, licencia, capturas y CI. Consulta las versiones en Descargas.
 
-Ver [plan de validación](docs/VALIDATION.md). Próximas mejoras: persistencia de las demás preferencias, editor de reglas con respaldo y revocación, y asistente de instalación validado. No se presenta un historial de sesión como si fuera un registro de auditoría completo.
+Ver [validación de 0.3.0](docs/VALIDATION-0.3.md) y [funciones y límites](docs/FEATURES-0.3.md). El historial del observador no equivale al registro completo del servicio.
 
 ## Autoría y licencia
 
