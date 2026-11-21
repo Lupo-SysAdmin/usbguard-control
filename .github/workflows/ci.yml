@@ -20,3 +20,64 @@ jobs:
           path: |
             dist/*.deb
             docs/images/usbguard-control-demo.png
+  portability:
+    name: ${{ matrix.name }} / isolated compatibility
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Ubuntu 26.04
+            image: ubuntu:26.04
+            family: ubuntu
+          - name: Fedora 45
+            image: fedora:45
+            family: fedora
+          - name: Arch rolling
+            image: archlinux:base
+            family: arch
+    container: ${{ matrix.image }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install native distribution dependencies
+        env:
+          DISTRO_FAMILY: ${{ matrix.family }}
+        run: |
+          case "$DISTRO_FAMILY" in
+            ubuntu)
+              printf '#!/bin/sh\nexit 101\n' > /usr/sbin/policy-rc.d
+              chmod 755 /usr/sbin/policy-rc.d
+              apt-get update
+              DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends python3 python3-gi python3-pytest python3-pyside6.qtcore python3-pyside6.qtgui python3-pyside6.qtqml python3-pyside6.qtquick python3-pyside6.qtquickcontrols2 python3-pyside6.qtwidgets python3-pyside6.qtnetwork qt6-svg-plugins qml6-module-qtquick qml6-module-qtquick-window qml6-module-qtquick-layouts qml6-module-qtquick-controls qml6-module-qtquick-dialogs qml6-module-qtquick-templates qml6-module-qtqml-workerscript dbus-daemon desktop-file-utils fonts-dejavu-core usbguard util-linux passwd
+              ;;
+            fedora)
+              dnf install -y python3 python3-pyside6 python3-gobject-base python3-pytest qt6-qtdeclarative qt6-qtsvg dbus-daemon desktop-file-utils dejavu-sans-fonts usbguard usbguard-dbus util-linux shadow-utils
+              ;;
+            arch)
+              pacman -Syu --noconfirm --needed python pyside6 python-gobject python-pytest qt6-declarative qt6-svg dbus desktop-file-utils ttf-dejavu usbguard util-linux shadow
+              ;;
+          esac
+      - name: Validate as an unprivileged user without USB hardware
+        run: |
+          useradd --create-home --shell /bin/sh usbguard-ci
+          cp -a . /tmp/usbguard-control-ci
+          chown -R usbguard-ci:usbguard-ci /tmp/usbguard-control-ci
+          runuser -u usbguard-ci -- sh -c 'cd /tmp/usbguard-control-ci && sh scripts/check_portability.sh'
+      - name: Verify Ubuntu Debian-package installation and launch
+        if: matrix.family == 'ubuntu'
+        run: |
+          runuser -u usbguard-ci -- python3 /tmp/usbguard-control-ci/scripts/build_deb.py
+          apt-get install -y --no-install-recommends /tmp/usbguard-control-ci/dist/usbguard-control_*_all.deb
+          dpkg --verify usbguard-control
+          runuser -u usbguard-ci -- env QT_QPA_PLATFORM=offscreen QT_QPA_PLATFORMTHEME=generic QT_QUICK_BACKEND=software usbguard-control --demo --language en-US --screenshot /tmp/usbguard-control-ci/.qa-evidence/portability/installed-en.png
+      - name: Preserve reports and rendered UI
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: compatibility-${{ matrix.family }}
+          path: /tmp/usbguard-control-ci/.qa-evidence/portability/
+          include-hidden-files: true
+          if-no-files-found: warn
