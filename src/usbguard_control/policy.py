@@ -5,7 +5,7 @@ from dataclasses import dataclass
 import hashlib
 import json
 import re
-from .domain import rule_tokens, parse_device, display_text
+from .domain import rule_tokens, parse_device, display_text, RULE_TOKEN
 
 LAST_RULE = 4294967293
 
@@ -85,6 +85,75 @@ def replace_target(rule, target):
     validate_edit(rule)
     if target not in ('allow', 'block'): raise ValueError("Acción no admitida")
     return target + rule.text[len(rule.text.split(' ', 1)[0]):]
+
+
+def canonical_rule(text):
+    """Normalize only the supported concrete grammar, never arbitrary policy.
+
+    Order and set formatting follow USBGuard RulePrivate::toString and
+    Rule::Attribute::toRuleString (1.1.3/1.1.4). The daemon validates the
+    normalized predicate again through the read-only listDevices call.
+    """
+    concrete_rule(text)
+    raw = RULE_TOKEN.findall(text)
+    tokens = rule_tokens(text)
+    if raw[0].startswith('"'):
+        raise ValueError('La decisión de la regla no debe ir entre comillas.')
+    if any(not c.isprintable() and c != '\t' for c in text):
+        raise ValueError('La regla debe ocupar una línea y no contener caracteres de control.')
+    attrs = {}
+    i = 1
+    while i < len(tokens):
+        key = tokens[i]
+        if raw[i].startswith('"'):
+            raise ValueError('Los atributos de la regla no deben ir entre comillas.')
+        i += 1
+        if key == 'with-interface':
+            if tokens[i] == 'equals': i += 1
+            if tokens[i] == '{':
+                i += 1; values = []
+                while tokens[i] != '}':
+                    if raw[i].startswith('"'): raise ValueError('Interfaz USB inválida')
+                    values.append(tokens[i].lower()); i += 1
+                i += 1
+            else:
+                if raw[i].startswith('"'): raise ValueError('Interfaz USB inválida')
+                values = [tokens[i].lower()]; i += 1
+            attrs[key] = tuple(values)
+        else:
+            if key == 'id':
+                if raw[i].startswith('"'): raise ValueError('El identificador USB no debe ir entre comillas.')
+                value = tokens[i].lower()
+            else:
+                if not raw[i].startswith('"'):
+                    raise ValueError('Los valores de texto deben ir entre comillas dobles.')
+                value = tokens[i]
+                if any(not c.isprintable() for c in value):
+                    raise ValueError('La regla debe ocupar una línea y no contener caracteres de control.')
+            attrs[key] = value; i += 1
+    parts = [tokens[0]]
+    for key in ('id', 'serial', 'name', 'hash', 'parent-hash', 'via-port', 'with-interface', 'with-connect-type', 'label'):
+        if key not in attrs: continue
+        value = attrs[key]
+        if key == 'with-interface': value = value[0] if len(value) == 1 else '{ ' + ' '.join(value) + ' }'
+        elif key != 'id': value = quote(value)
+        parts.extend((key, value))
+    return ' '.join(parts), attrs
+
+
+def validate_replacement(rule, text):
+    """Keep the original device anchor and exact interface set in text edits."""
+    validate_edit(rule)
+    before, old = canonical_rule(rule.text)
+    normalized, new = canonical_rule(text)
+    validate_edit(PolicyRule(rule.id, normalized))
+    if any(old.get(key) != new.get(key) for key in ('id', 'serial', 'hash', 'with-interface')):
+        raise ValueError('Conserva VID:PID, serie, huella e interfaces de la regla original.')
+    if new.get('label', '').startswith('GNOME_SETTINGS_DAEMON'):
+        raise ValueError('Esa etiqueta está reservada para la gestión USB del escritorio.')
+    if before == normalized:
+        raise ValueError('No hay cambios en la regla.')
+    return normalized
 
 
 def device_rule(device, target='allow'):

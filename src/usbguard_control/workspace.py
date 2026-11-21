@@ -28,6 +28,7 @@ class Workspace(QObject):
         self.data_dir = Path(data_dir) if data_dir else None
         self.rows = []
         self.rules_error = ''
+        self.editor_error = ''
         self.rule_query = ''
         self.selected_id = -1
         self.pending = None
@@ -255,6 +256,20 @@ class Workspace(QObject):
         if self.control.busy or not self.control.connected or self.rules_error: return
         self.control.dispatch('policy-preview', (operation, self.selected_id, target, None))
 
+    @Slot(int, str)
+    def previewRuleText(self, rule_id, text):
+        if self.control.busy or not self.control.connected or self.rules_error: return
+        self.resetRuleEditor()
+        # The editor captures the ID when opened; changing list selection must
+        # never redirect a draft to another rule.
+        self.control.dispatch('policy-preview', ('replace', rule_id, '', None, text))
+
+    @Property(str, notify=changed)
+    def editorError(self): return self.text(self.editor_error)
+
+    @Slot()
+    def resetRuleEditor(self): self.editor_error = ''; self.changed.emit()
+
     @Slot(str)
     def loadBackup(self, url):
         if self.control.busy or not self.control.connected: return
@@ -272,7 +287,9 @@ class Workspace(QObject):
         return {'operation': p['operation'], 'before': p['selected'].text if p['selected'] else '',
                 'after': p.get('replacement', '\n'.join(p['additions'])),
                 'affected': [display_text(d.name) for d in p['affected']], 'count': len(p['additions']),
-                'skipped': p['skipped']}
+                'skipped': p['skipped'],
+                'beforeMatches': [display_text(d.name) for d in p.get('affectedBefore', [])],
+                'afterMatches': [display_text(d.name) for d in p.get('affectedAfter', [])]}
 
     @Slot()
     def cancelRule(self): self.pending = None; self.confirmationChanged.emit()

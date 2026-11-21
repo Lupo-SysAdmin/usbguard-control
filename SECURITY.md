@@ -19,3 +19,7 @@ Solo se editan reglas concretas con VID:PID, huella e interfaces conocidas, excl
 La recuperación agrega al final como permanentes las reglas específicas faltantes, omitiendo reglas protegidas/avanzadas. No reemplaza toda la política ni restaura configuración del daemon, permisos o unidades systemd. Las reglas anteriores conservan prioridad. El listado D-Bus no informa la persistencia de cada regla: se presenta como política cargada, no como prueba de que todas sus entradas estén guardadas en disco.
 
 El inicio de sesión crea únicamente la entrada XDG del usuario para esta aplicación. La instancia única usa un socket local de acceso de usuario y un bloqueo de proceso. Cerrar el observador no modifica servicios ni reglas. La integración iPhone solo ejecuta `idevicepair validate`, sin emparejar ni instalar paquetes; su salida detallada no se exporta.
+
+## Editor de texto 0.5
+
+El editor normaliza únicamente reglas específicas con identidad fijada (VID:PID, serie, huella e interfaces). No admite condiciones, comodines ni varias reglas. Se comprueban las coincidencias de la regla anterior y de la propuesta y se revalida antes de escribir. El predicado se consulta al daemon sin mutación; las escrituras mantienen autenticación, respaldo obligatorio y detección de cambios parciales. No se promete una transacción atómica.

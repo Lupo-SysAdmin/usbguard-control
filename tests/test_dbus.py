@@ -149,3 +149,14 @@ def test_policy_partial_write_reports_failure(backend, tmp_path):
     change(backend, 'deny-remove')
     with pytest.raises(ValueError, match='Cambios parciales'): backend.commit_policy(preview, tmp_path)
     assert len(backend.policy_snapshot()['rules']) == 2
+
+
+def test_text_rule_edit_uses_readonly_preview_then_authenticated_persistent_write(backend,tmp_path):
+    old=backend.list_rules(backend.owner())[0]
+    preview=backend.preview_policy('replace',old.id,draft=old.text+' label "QA"')
+    assert preview['affectedBefore']==preview['affectedAfter']
+    assert backend.list_rules(backend.owner())==[old]
+    result=backend.commit_policy(preview,tmp_path)
+    assert result['rules'][0].text.endswith('label "QA"')
+    assert backend.snapshot()['devices'][3].target=='allow'
+    assert list(tmp_path.glob('*.json'))

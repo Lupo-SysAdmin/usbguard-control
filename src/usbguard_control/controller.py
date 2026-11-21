@@ -495,6 +495,7 @@ class Controller(QObject):
             self.add_event("Simulación" if self._demo else "Acción", self._notice)
             self.refresh()
         elif operation == 'policy-preview':
+            self._workspace.resetRuleEditor()
             self._workspace.pending = result
             self._workspace.confirmationChanged.emit()
         elif operation == 'policy-commit':
@@ -533,6 +534,9 @@ class Controller(QObject):
             self._busy = False
         if operation == "notify": return
         self._error = message
+        if operation == 'policy-preview':
+            self._workspace.editor_error = message
+            self._workspace.changed.emit()
         if operation == 'policy-commit':
             self._workspace.cancelRule()
             self.add_event('Error', message)

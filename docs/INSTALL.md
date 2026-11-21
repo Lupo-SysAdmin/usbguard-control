@@ -27,7 +27,7 @@ O construye e instala el paquete de la interfaz:
 
 ```bash
 python3 scripts/build_deb.py
-sudo apt install ./dist/usbguard-control_0.3.0-1_all.deb
+sudo apt install ./dist/usbguard-control_0.5.0-1_all.deb
 usbguard-control --demo
 ```
 

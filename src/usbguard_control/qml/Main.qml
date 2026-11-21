@@ -283,7 +283,7 @@ ApplicationWindow {
         RowLayout {
             UiText { text: qsTr("Desarrollado por Jan Herrera"); font.pixelSize: 10; color: control.workspace.colors["#8295af"] }
             Item { Layout.fillWidth: true }
-            UiText { text: qsTr("Cliente independiente  ·  v0.3.0  ·  GPL-3.0-or-later"); font.pixelSize: 10; color: control.workspace.colors["#8295af"] }
+            UiText { text: qsTr("Cliente independiente  ·  v0.5.0  ·  GPL-3.0-or-later"); font.pixelSize: 10; color: control.workspace.colors["#8295af"] }
         }
     }
 
@@ -335,7 +335,7 @@ ApplicationWindow {
             Image { source: "../assets/shield.svg"; Layout.preferredWidth: 56; Layout.preferredHeight: 56 }
             UiText { text: "Jan Herrera"; font.pixelSize: 23; font.weight: Font.DemiBold }
             UiText { text: qsTr("Desarrollador de la interfaz · Lupo-SysAdmin"); color: control.workspace.colors["#a3b9d6"] }
-            UiText { Layout.fillWidth: true; text: qsTr("USBGuard Control 0.3.0\nCopyright © 2026 Jan Herrera\nGPL-3.0-or-later · Software libre, sin garantía.\n\nCliente independiente. El motor USBGuard pertenece a sus respectivos autores. Qt y PySide6 pertenecen a sus respectivos titulares."); wrapMode: Text.WordWrap; elide: Text.ElideNone }
+            UiText { Layout.fillWidth: true; text: qsTr("USBGuard Control 0.5.0\nCopyright © 2026 Jan Herrera\nGPL-3.0-or-later · Software libre, sin garantía.\n\nCliente independiente. El motor USBGuard pertenece a sus respectivos autores. Qt y PySide6 pertenecen a sus respectivos titulares."); wrapMode: Text.WordWrap; elide: Text.ElideNone }
             RowLayout {
                 ActionButton { text: qsTr("GitHub de Jan"); onClicked: Qt.openUrlExternally("https://github.com/Lupo-SysAdmin") }
                 ActionButton { text: qsTr("Leer licencia"); onClicked: Qt.openUrlExternally("https://www.gnu.org/licenses/gpl-3.0.html") }

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.0 — 2026-11-21
+
+- Consolida las funciones de historial, diagnóstico, segundo plano, asistente guiado y respaldos introducidas en 0.3.0.
+- Editor de texto para reglas específicas: formato normalizado, comparación de coincidencias actuales antes/después, borrador estable y restauración del texto inicial.
+- Conserva VID:PID, serie, huella e interfaces; rechaza reglas amplias, condiciones, sintaxis desconocida, controles y etiquetas reservadas.
+- Revalida ambas coincidencias antes de confirmar; mantiene respaldo obligatorio, prioridad y avisos de cambios parciales.
+- La demostración evalúa también puerto, padre, nombre, serie, interfaces y tipo de conexión. El tipo de conexión se incorpora a la identidad comprobada.
+- 117 pruebas automatizadas, documentación y capturas ES/EN. El alcance real de esta versión se registra en docs/VALIDATION-0.5.md.
+
 ## 0.3.0 — 2026-11-21
 
 - Gestión guiada de reglas por D-Bus con vista previa, comprobación de identidad de política y respaldo obligatorio.
