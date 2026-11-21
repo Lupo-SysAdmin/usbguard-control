@@ -14,8 +14,8 @@ Button {
     opacity: enabled ? 1 : 0.38
     background: Rectangle {
         radius: 8
-        color: button.down ? "#29496d" : button.tone === "primary" ? "#2d69ce" : button.tone === "danger" ? "#36242c" : button.selected ? "#223b58" : button.hovered ? "#283344" : "#1c2634"
-        border.color: button.activeFocus ? "#a6caff" : button.tone === "danger" ? "#70404a" : button.selected ? "#4876aa" : "#334155"
+        color: button.down ? control.workspace.colors["#29496d"] : button.tone === "primary" ? control.workspace.colors["#2d69ce"] : button.tone === "danger" ? control.workspace.colors["#36242c"] : button.selected ? control.workspace.colors["#223b58"] : button.hovered ? control.workspace.colors["#283344"] : control.workspace.colors["#1c2634"]
+        border.color: button.activeFocus ? control.workspace.colors["#a6caff"] : button.tone === "danger" ? control.workspace.colors["#70404a"] : button.selected ? control.workspace.colors["#4876aa"] : control.workspace.colors["#334155"]
         border.width: button.activeFocus ? 2 : 1
     }
     contentItem: UiText {
@@ -23,6 +23,6 @@ Button {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         font.weight: Font.Medium
-        color: button.tone === "danger" ? "#ffb3ba" : "#edf3fd"
+        color: button.tone === "primary" ? "#ffffff" : button.tone === "danger" ? control.workspace.colors["#ffb3ba"] : control.workspace.colors["#edf3fd"]
     }
 }

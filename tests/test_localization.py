@@ -9,7 +9,8 @@ from usbguard_control.translations import EN_US, message, translate
 
 def test_every_qml_translation_is_in_the_english_catalog():
     qml = Path(__file__).parents[1] / "src/usbguard_control/qml/Main.qml"
-    keys = re.findall(r'qsTr\(("(?:[^"\\]|\\.)*")\)', qml.read_text())
+    source = "\n".join(p.read_text() for p in qml.parent.glob("*.qml"))
+    keys = re.findall(r'qsTr\(("(?:[^"\\]|\\.)*")\)', source)
     assert len(keys) > 50
     assert all(json.loads(key) in EN_US for key in keys)
 

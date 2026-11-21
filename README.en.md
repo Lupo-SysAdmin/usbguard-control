@@ -14,7 +14,9 @@ An independent Python / PySide6 / Qt Quick client for USBGuard. USBGuard remains
 
 ## Status
 
-**0.2.0 · first stable release.** Functional D-Bus client, Debian package and **62 passing automated tests**. Tested with physical devices on Kali 2026.3 / GNOME Shell 50.4 / Wayland, and in KVM guests running Kali 2026.1 / Xfce 4.20.3 / X11 and Parrot 7.4 / KDE Plasma 6.3.6 / Wayland. Tests cover installation/removal, service controls, authentication, reboots, recovery, reconnection and rule revocation. PySide6 versions tested: 6.8.2.1, 6.10.3 and 6.11.2. Primary daemon: USBGuard 1.1.4; Parrot's 1.1.3 API was also exercised. See [validation results and limits](docs/VALIDATION.md). Available in Latin American Spanish and US English.
+**Development branch: 0.3.0.dev1.** Adds guided policy management, backups, persistent local activity, diagnostics, and desktop preferences. The published [0.2.0 stable release](https://github.com/Lupo-SysAdmin/usbguard-control/releases/tag/v0.2.0) remains unchanged.
+
+This branch is tested with demo data and an isolated D-Bus service. Previous physical-device and desktop validation applies to 0.2.0, not automatically to these new features. See [0.3 development scope](docs/DEVELOPMENT-0.3.md) and the [previous validation report](docs/VALIDATION.md).
 
 ## Features
 
@@ -23,7 +25,12 @@ An independent Python / PySide6 / Qt Quick client for USBGuard. USBGuard remains
 - Explicit temporary allow, persistent allow and temporary block actions.
 - Protected HID/Bluetooth/hub handling and device identity revalidation before changes.
 - D-Bus events, reconnect attempts and grouped desktop notifications.
-- Session activity export (up to 200 events; not a complete audit log).
+- Ordered policy browser, custom names, guided allow/block editing and revocation of device-specific rules.
+- Previews, policy revalidation, mandatory backups and selective recovery of missing device-specific rules.
+- Persistent local history with 7/30/90-day retention, search/date filters and JSON/CSV export with optional detail redaction.
+- Service and connection diagnostics, optional iPhone pairing validation, and a guided setup checklist.
+- Light/dark/system themes, saved preferences and window size.
+- Optional background observer, notification activation, single instance and packaged-app sign-in startup.
 - Standalone demo with simulated hotplug and policy persistence.
 - Settings with wrapped text and scrolling, explicit service start/stop, and optional startup persistence through systemd and Polkit.
 - No root GUI, shell commands, direct system policy writes, or implicit service activation.
@@ -52,7 +59,7 @@ python3 scripts/diagnose.py
 python3 scripts/build_deb.py
 ```
 
-Tests use an isolated bus and a mock service, never USB hardware. The package is written to `dist/usbguard-control_0.2.0-1_all.deb`. USBGuard is a suggested dependency, intentionally installed and configured separately. GitHub Actions runs tests and packaging on Debian for each push. See the [CI results](https://github.com/Lupo-SysAdmin/usbguard-control/actions/workflows/ci.yml).
+Tests use an isolated bus and a mock service, never USB hardware. The package is written to `dist/usbguard-control_0.3.0~dev1-1_all.deb`. USBGuard is a suggested dependency, intentionally installed and configured separately. GitHub Actions runs tests and packaging on Debian for each push. See the [CI results](https://github.com/Lupo-SysAdmin/usbguard-control/actions/workflows/ci.yml).
 
 The [validation checklist](docs/VALIDATION.md) distinguishes completed checks from pending physical and desktop-session tests.
 
