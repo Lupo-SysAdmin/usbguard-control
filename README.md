@@ -1,102 +1,77 @@
 # USBGuard Control
 
+[![Español](https://img.shields.io/badge/Language-Espa%C3%B1ol-39D3C5?style=for-the-badge)](README.es.md)
+
 [![Linux validation](https://github.com/Lupo-SysAdmin/usbguard-control/actions/workflows/ci.yml/badge.svg)](https://github.com/Lupo-SysAdmin/usbguard-control/actions/workflows/ci.yml)
 
-**Una interfaz de escritorio para decidir qué conectas a tu Linux.**
+**A Linux desktop interface for deciding what you connect.**
 
-Desarrollador de la interfaz: **Jan Herrera** · [Lupo-SysAdmin](https://github.com/Lupo-SysAdmin)
+UI developer: **Jan Herrera** · [Lupo-SysAdmin](https://github.com/Lupo-SysAdmin)
 
-[Descargar versión estable](https://github.com/Lupo-SysAdmin/usbguard-control/releases/latest) · [English](README.en.md) · [Instalación en Kali](docs/INSTALL.md) · [Arquitectura](docs/ARCHITECTURE.md) · [Licencia y créditos](docs/LICENSING.md)
+[Download stable release](https://github.com/Lupo-SysAdmin/usbguard-control/releases/latest) · [Kali setup](docs/INSTALL.md) · [Architecture](docs/ARCHITECTURE.md)
 
-![USBGuard Control: demostración con dispositivos ficticios](docs/images/usbguard-control-demo.png)
+![USBGuard Control running with simulated devices](docs/images/usbguard-control-demo-en.png)
 
-USBGuard Control es un cliente independiente para [USBGuard](https://github.com/USBGuard/usbguard), construido con Python, PySide6 y Qt Quick/QML. Presenta el estado del servicio, los dispositivos USB y sus decisiones de autorización en una ventana compacta. El motor de seguridad sigue siendo USBGuard.
+An independent Python / PySide6 / Qt Quick client for USBGuard. USBGuard remains responsible for device authorization and policy enforcement. This application is not affiliated with the upstream USBGuard project.
 
-## Estado del proyecto
+## Status
 
-**Versión estable 0.5.0.** Reúne las funciones de 0.3.0 y añade edición de texto de reglas específicas, con validación y comparación antes/después. Descarga el paquete `.deb` en [Releases](https://github.com/Lupo-SysAdmin/usbguard-control/releases/latest).
+**Stable version 0.5.0.** Combines the features introduced in 0.3.0 with validated text editing and before/after matching for device-specific rules. Download the `.deb` from [Releases](https://github.com/Lupo-SysAdmin/usbguard-control/releases/latest).
 
-Validada en escritorios reales: **Kali 2026.3 / Xfce 4.20.4 / X11** y **Parrot 7.4 / KDE Plasma 6.3.6 / Wayland**. En 0.5.0 se comprobaron la actualización del paquete, la interfaz, el editor con autenticación y la reconexión de USB de prueba. El arranque automático tras reiniciar y la interfaz GNOME/Wayland se probaron en 0.3.0; esa evidencia se conserva por separado. La instalación del host permanece en 0.2.0.
+Validated on real **Kali 2026.3 / Xfce 4.20.4 / X11**, and **Parrot 7.4 / KDE Plasma 6.3.6 / Wayland** desktops. Version 0.5.0 checks covered package upgrades, the UI, native authenticated text editing and test USB reconnects. Observer startup after reboot/sign-in and GNOME UI/observer coverage belong to 0.3.0 and remain documented separately; the host package is still 0.2.0. The VM named “Kali 2026.1” now runs 2026.3; previous 0.2.0 results on 2026.1 remain historical evidence.
 
-Consulta [resultados y alcance de 0.5.0](docs/VALIDATION-0.5.md) y [funciones y límites](docs/FEATURES-0.5.md). La VM conserva el nombre «Kali 2026.1», pero su sistema instalado ahora es 2026.3. Las pruebas históricas de 0.2.0 en 2026.1 siguen documentadas por separado. La aplicación no es una extensión de GNOME Shell.
+See [0.5.0 validation and scope](docs/VALIDATION-0.5.md) and [features and limits](docs/FEATURES-0.5.md).
 
-**Otras distribuciones:** Ubuntu 26.04, Fedora 45 y Arch rolling pasaron 117 pruebas cada una con dependencias nativas en GitHub Actions. Ubuntu también pasó instalación y apertura del `.deb`; Fedora/Arch se probaron desde código. Son pruebas automatizadas sin escritorio ni USB real. Consulta la [matriz de compatibilidad y límites de instalación](docs/COMPATIBILITY.md).
+**Other distributions:** Ubuntu 26.04, Fedora 45 and Arch rolling passed 117 tests each with native dependencies in GitHub Actions. Ubuntu also passed Debian-package installation and demo launch; Fedora/Arch were tested from source. These automated jobs do not include a live desktop or real USB. See the [compatibility and installation limits](docs/COMPATIBILITY.md).
 
-## Qué incluye
+## Features
 
-- Diseño oscuro, escalable y redimensionable, con controles de teclado y estados identificados por texto e iconos.
-- Selector **ES / EN**: español latinoamericano (`es-419`) e inglés estadounidense (`en-US`), cambio inmediato y preferencia guardada.
-- Búsqueda por nombre, tipo o VID:PID y filtros de autorización.
-- Panel de detalles con serie, puerto e interfaces USB.
-- **Permitir ahora**, **Permitir siempre** y **Bloquear ahora**, con confirmación y errores explícitos.
-- Configuración con texto ajustado y desplazamiento; iniciar/detener los servicios y recordar la elección al arrancar mediante systemd y Polkit.
-- Restricción de bloqueo para HID, adaptadores Bluetooth, concentradores y dispositivos con interfaces desconocidas.
-- Eventos D-Bus, reconexión periódica y notificaciones agrupadas mientras el observador está en ejecución.
-- **Reglas y confianza:** reglas activas en su orden, búsqueda, nombres personalizados incluso desconectados, edición guiada permitir/bloquear y retirada de reglas específicas.
-- Editor de texto de reglas específicas con normalización, comparación de coincidencias, borrador independiente de la selección y protección de identidad.
-- Vista previa con dispositivos coincidentes, revalidación de la política y respaldo local obligatorio antes de modificar reglas.
-- Exportación de respaldos y recuperación selectiva de reglas específicas faltantes; las reglas protegidas y avanzadas se conservan para revisión administrativa.
-- Historial local entre sesiones, retención de 7/30/90 días, búsqueda por mensaje/fecha y exportación JSON/CSV con ocultación de detalles.
-- Diagnóstico de servicios/conexión/reglas, comprobación opcional del emparejamiento del iPhone y asistente inicial guiado.
-- Temas claro, oscuro y del sistema; preferencias, nombres y tamaño de ventana guardados.
-- Observador opcional en segundo plano, apertura desde notificaciones compatibles, instancia única e inicio de sesión opcional desde el paquete instalado.
-- Modo demostración separado del sistema: permite simular desconexiones y comparar decisiones temporales con persistentes.
-- Paquete `.deb` sin scripts administrativos ni instalación automática del daemon.
+- Searchable device list, authorization filters and device details.
+- Instant **ES / EN** language switch with a saved preference, including existing session activity.
+- Explicit temporary allow, persistent allow and temporary block actions.
+- Protected HID/Bluetooth/hub handling and device identity revalidation before changes.
+- D-Bus events, reconnect attempts and grouped desktop notifications.
+- Ordered policy browser, custom names, guided allow/block editing and revocation of device-specific rules.
+- Device-specific text editor with normalized previews, before/after matches, stable drafts and fixed identity attributes.
+- Previews, policy revalidation, mandatory backups and selective recovery of missing device-specific rules.
+- Persistent local history with 7/30/90-day retention, search/date filters and JSON/CSV export with optional detail redaction.
+- Service and connection diagnostics, optional iPhone pairing validation, and a guided setup checklist.
+- Light/dark/system themes, saved preferences and window size.
+- Optional background observer, notification activation, single instance and packaged-app sign-in startup.
+- Standalone demo with simulated hotplug and policy persistence.
+- Settings with wrapped text and scrolling, explicit service start/stop, and optional startup persistence through systemd and Polkit.
+- No root GUI, shell commands, direct system policy writes, or implicit service activation.
 
-Los servicios solo se inician o detienen mediante una acción explícita y confirmada en Configuración. La GUI sigue ejecutándose como usuario normal, sin shell ni escritura directa de reglas; systemd y Polkit gestionan los permisos. Cerrar la ventana no desactiva USBGuard. “Servicio disponible” describe la comunicación; no certifica que todos los dispositivos sean seguros. Las políticas pueden cambiar por otros clientes, incluida la integración de GNOME.
+## Run
 
-## Ejecutar la demostración
-
-Con las dependencias de Qt/Python instaladas (ver la [guía](docs/INSTALL.md)):
+Install distribution dependencies using the [setup guide](docs/INSTALL.md), then:
 
 ```bash
-PYTHONPATH=src python3 -m usbguard_control --demo
+PYTHONPATH=src python3 -m usbguard_control --demo --language en-US
 ```
 
-Todos los nombres, números de serie y huellas del modo demostración son ficticios. Las decisiones de demostración permanecen solo durante esa ejecución.
+Use **ES / EN** in the toolbar to switch between `es-419` and `en-US` and save your preference. `--language` overrides the language for that launch only. Hardware names are never translated. External system dialogs such as Polkit follow the desktop language.
 
-El selector de idioma está en la barra superior. Traduce controles, estados, confirmaciones, errores propios, notificaciones e incluso los eventos ya registrados. Conserva intactos los nombres e identificadores del hardware. La elección se guarda mediante QSettings en la configuración del usuario. Puedes iniciar una sesión concreta con `--language en-US` o `--language es-419`; ese argumento no sobrescribe por sí solo la preferencia guardada. Los diálogos externos del sistema, como Polkit, siguen el idioma del escritorio.
+Omit `--demo` only when USBGuard is already configured. Run as a regular user. The app relies on the existing USBGuard D-Bus bridge and its Polkit policy; it never changes permissions to bypass authentication.
 
-Para usar un servicio USBGuard **ya configurado**, como usuario normal:
+In Settings, **Remember this choice at system startup** makes Start enable both USBGuard services at boot and Stop disable their automatic startup. Uncheck it to change only the current state. Every operation requires confirmation and may request desktop authentication. Current and startup states are read from systemd, including after partial failures. Masked, missing, or specially configured units require manual setup. Stopping USBGuard preserves saved rules and does not necessarily unblock connected devices. Opening or closing the app does not change the service state.
 
-```bash
-PYTHONPATH=src python3 -m usbguard_control
-```
+Kali's USBGuard package may start services during installation. Prepare and review initial rules to avoid disabling input devices; see the setup guide before installing the daemon.
 
-No inicies USBGuard por primera vez sin revisar la política y un mecanismo de recuperación. El paquete oficial de Kali puede iniciar los servicios durante su instalación; la guía explica cómo preparar una instalación nueva.
-
-## Desarrollo y comprobación
+## Validate and package
 
 ```bash
 sh scripts/check.sh
 python3 scripts/diagnose.py
-```
-
-Las pruebas cubren el análisis de dispositivos compuestos, protección de HID/concentradores, identidades cambiadas, desconexiones, persistencia simulada, errores de autorización, señales D-Bus, el flujo QML y la selección/persistencia del idioma. La prueba D-Bus necesita permiso para crear un socket local privado; no usa el bus del sistema.
-
-Para construir el paquete sin privilegios:
-
-```bash
 python3 scripts/build_deb.py
 ```
 
-El resultado es `dist/usbguard-control_0.5.0-1_all.deb`. GitHub Actions ejecuta las pruebas y el empaquetado en Debian con cada envío. Consulta el [resultado de CI](https://github.com/Lupo-SysAdmin/usbguard-control/actions/workflows/ci.yml).
+Tests use an isolated bus and a mock service, never USB hardware. The package is written to `dist/usbguard-control_0.5.0-1_all.deb`. USBGuard is a suggested dependency, intentionally installed and configured separately. GitHub Actions runs tests and packaging on Debian for each push. See the [CI results](https://github.com/Lupo-SysAdmin/usbguard-control/actions/workflows/ci.yml).
 
-Atajos: **Ctrl+F** buscar, **Ctrl+R** actualizar, **Ctrl+Q** salir. Tab y Shift+Tab recorren los controles. Los paneles tienen desplazamiento cuando la ventana es pequeña.
+The [0.5.0 validation report](docs/VALIDATION-0.5.md) distinguishes automated, real-desktop, VM USB, and historical physical-device evidence.
 
-## Hoja de ruta
+## Credits and license
 
-1. **Prototipo visual:** implementado con demostración funcional y captura real de QML.
-2. **Integración:** daemon real, Polkit, recuperación, revocación y cambios externos probados; las pruebas físicas históricas y las nuevas pruebas USB en VMs se distinguen en la matriz.
-3. **Instalación:** actualización a 0.5.0 ensayada en VMs Kali/Xfce y Parrot/KDE. Las pruebas de desinstalación/reinstalación, reinicio y GNOME desde el código pertenecen a 0.3.0. La instalación del host permanece en 0.2.0.
-4. **Portafolio:** repositorio público con documentación bilingüe, autoría, licencia, capturas y CI. Consulta las versiones en Descargas.
+**Jan Herrera — USBGuard Control UI developer.** Copyright © 2026 Jan Herrera.
 
-Ver [validación de 0.5.0](docs/VALIDATION-0.5.md) y [funciones y límites](docs/FEATURES-0.5.md). El historial del observador no equivale al registro completo del servicio.
-
-## Autoría y licencia
-
-**Jan Herrera — desarrollador de la interfaz USBGuard Control.**
-
-Copyright © 2026 Jan Herrera. El código de esta interfaz se distribuye bajo **GPL-3.0-or-later**. Puedes usarlo, estudiarlo, modificarlo y redistribuirlo cumpliendo la licencia, conservando los avisos aplicables y proporcionando el código fuente correspondiente cuando corresponda.
-
-USBGuard Control es independiente y no está afiliado oficialmente al proyecto USBGuard. USBGuard, Qt, PySide6 y sus dependencias conservan sus autores y licencias. Jan Herrera no se atribuye la creación de esos proyectos. Consulta [LICENSE](LICENSE), [NOTICE](NOTICE) y [AUTHORS](AUTHORS).
+GPL-3.0-or-later. See [LICENSE](LICENSE), [AUTHORS](AUTHORS), [NOTICE](NOTICE) and the [license rationale](docs/LICENSING.md). Attribution applies to this independent interface; USBGuard, Qt, PySide6 and their dependencies retain their respective ownership and licensing. Distributed without warranty.

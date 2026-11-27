@@ -1,12 +1,14 @@
 # USBGuard Control
 
+[![Español](https://img.shields.io/badge/Language-Espa%C3%B1ol-39D3C5?style=for-the-badge)](README.es.md)
+
 [![Linux validation](https://github.com/Lupo-SysAdmin/usbguard-control/actions/workflows/ci.yml/badge.svg)](https://github.com/Lupo-SysAdmin/usbguard-control/actions/workflows/ci.yml)
 
 **A Linux desktop interface for deciding what you connect.**
 
 UI developer: **Jan Herrera** · [Lupo-SysAdmin](https://github.com/Lupo-SysAdmin)
 
-[Download stable release](https://github.com/Lupo-SysAdmin/usbguard-control/releases/latest) · [Español](README.md) · [Kali setup](docs/INSTALL.md) · [Architecture](docs/ARCHITECTURE.md)
+[Download stable release](https://github.com/Lupo-SysAdmin/usbguard-control/releases/latest) · [Kali setup](docs/INSTALL.md) · [Architecture](docs/ARCHITECTURE.md)
 
 ![USBGuard Control running with simulated devices](docs/images/usbguard-control-demo-en.png)
 
