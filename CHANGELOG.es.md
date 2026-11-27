@@ -1,0 +1,62 @@
+[![English](https://img.shields.io/badge/Language-English-39D3C5?style=for-the-badge)](CHANGELOG.md)
+
+# Changelog
+
+## 0.5.0 — 2026-11-21
+
+- Consolida las funciones de historial, diagnóstico, segundo plano, asistente guiado y respaldos introducidas en 0.3.0.
+- Editor de texto para reglas específicas: formato normalizado, comparación de coincidencias actuales antes/después, borrador estable y restauración del texto inicial.
+- Conserva VID:PID, serie, huella e interfaces; rechaza reglas amplias, condiciones, sintaxis desconocida, controles y etiquetas reservadas.
+- Revalida ambas coincidencias antes de confirmar; mantiene respaldo obligatorio, prioridad y avisos de cambios parciales.
+- La demostración evalúa también puerto, padre, nombre, serie, interfaces y tipo de conexión. El tipo de conexión se incorpora a la identidad comprobada.
+- 117 pruebas automatizadas, documentación y capturas ES/EN. El alcance real de esta versión se registra en docs/VALIDATION-0.5.md.
+- Matriz CI con dependencias nativas y usuario normal en Ubuntu 26.04, Fedora 45 y Arch rolling: 117 pruebas por sistema. Ubuntu también verifica instalación e inicio del `.deb`; Fedora/Arch se validan desde código, sin prometer paquetes nativos ni pruebas de escritorio/hardware.
+
+## 0.3.0 — 2026-11-21
+
+- Gestión guiada de reglas por D-Bus con vista previa, comprobación de identidad de política y respaldo obligatorio.
+- Recuperación selectiva de reglas específicas; reglas avanzadas, HID, Bluetooth y concentradores protegidos.
+- Alias locales, funciones compuestas de dispositivos y explicación del origen solo cuando fue observado.
+- Historial SQLite privado, retención configurable, filtros y exportación JSON/CSV con privacidad.
+- Diagnóstico guiado y comprobación de emparejamiento del iPhone sin modificarlo.
+- Temas claro/oscuro/sistema, preferencias persistentes, observador en segundo plano, instancia única e inicio de sesión opcional.
+- Nueva dependencia de QtWidgets y QtNetwork para la integración del escritorio.
+- Validación real en GNOME/Wayland, Xfce/X11 y KDE/Wayland; operaciones de política autenticadas, reconexión de USB de prueba, reinicio/inicio de sesión, instancia única y reinstalación del paquete en las VMs.
+- Advertencia previa sobre varias operaciones y posibles cambios parciales al cancelar una autenticación posterior. La release 0.2.0 se conserva como historial.
+
+## 0.2.0 — 2026-11-09
+
+- Primera publicación estable, promovida desde `v0.2.0-rc.1` sin cambios en el código de la aplicación. Documentación y metadatos actualizados; se conservan el alcance y los límites de validación documentados.
+
+- Publicación en GitHub y CI en Debian mínimo; dependencia SVG de Qt declarada explícitamente tras la primera ejecución remota.
+
+- Descriptores USB Unicode/escapados interpretados según el protocolo del daemon; sin doble decodificación de barras literales y con regresiones para entradas malformadas.
+- Filas de dispositivos accesibles mediante Tab/Espacio, desplazamiento al foco y avisos de error alcanzables por teclado.
+- Las consultas automáticas conservan los errores de acciones para que puedan leerse; la recuperación de conexión y la actualización manual los limpian.
+- Estilo Basic inicializado también para el selector de archivos de Qt.
+- Validación adicional de autenticación KDE, 40 eventos USB agrupados en 10 notificaciones y nombres especiales mediante USB emulados en el kernel.
+
+- Validación en VMs KVM: Kali 2026.1/Xfce/X11 y Parrot 7.4/KDE/Wayland, instalación/desinstalación, controles reales de servicios, reinicios y recuperación.
+- Controles QML con estilo Basic explícito para evitar bucles de geometría introducidos por Breeze en KDE.
+- Etiquetas accesibles de las casillas y contraste mejorado de botones principales; regresiones de teclado y accesibilidad en ES/EN.
+- Lanzador Debian con `-B`: no genera caché de Python propiedad de root que quede después de desinstalar.
+- Consulta automática silenciosa cada cinco segundos, sin atenuar controles ni volver a notificar detalles que no cambiaron; los clics durante la consulta se procesan en orden.
+
+- Configuración con casillas multilínea, ancho limitado y desplazamiento en ventanas pequeñas.
+- Controles explícitos para iniciar y detener USBGuard y su puente D-Bus, con confirmación y autenticación de systemd/Polkit.
+- Elección opcional persistente al arrancar; estados de ejecución y arranque consultados por separado.
+- Verificación de jobs, detección de cambios externos y errores parciales, sin retirar máscaras ni modificar reglas USB.
+- Flujo completo de servicios simulado, traducciones ES/EN y pruebas aisladas de transporte D-Bus.
+
+## 0.1.0 — 2026-11-08
+
+- Primera interfaz Qt Quick en español latinoamericano e inglés estadounidense con autoría de Jan Herrera.
+- Selector ES / EN con cambio inmediato y preferencia guardada.
+- Demostración aislada, filtros, detalles, confirmaciones y actividad exportable.
+- Cliente D-Bus para USBGuard 1.1.4 y pruebas de integración con servicio simulado.
+- Restricciones para dispositivos sensibles y revalidación de identidad.
+- Restricción adicional para adaptadores Bluetooth que pueden transportar teclado o mouse.
+- Los avisos de éxito caducan y se retiran cuando dejan de coincidir con el estado actual; desconectar un dispositivo no selecciona automáticamente otro.
+- Documentación bilingüe, GPL-3.0-or-later, paquete Debian y flujo de CI.
+- Primera validación física en Kali/GNOME con iPhone y receptor de mouse: autorización temporal, persistencia y reconexiones.
+- Estado alpha: reinicio completo, recuperación, otros escritorios y publicación pendientes.

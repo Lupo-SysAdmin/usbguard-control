@@ -1,25 +1,33 @@
-# Seguridad
+[![Español](https://img.shields.io/badge/Language-Espa%C3%B1ol-39D3C5?style=for-the-badge)](SECURITY.es.md)
 
-USBGuard Control es un cliente independiente de USBGuard. No certifica dispositivos, detecta malware ni sustituye USBGuard. Los atributos USB pueden falsificarse. Autorizar un dispositivo permite que sus interfaces interactúen con el equipo.
+<a id="seguridad"></a>
 
-El proceso gráfico se ejecuta sin root. No modifica directamente reglas ni instala excepciones generales de Polkit. El motor upstream conserva la autorización y la persistencia. Los controles de servicios usan D-Bus de systemd y su política Polkit existente, únicamente para `usbguard.service` y `usbguard-dbus.service`, tras una confirmación explícita. Abrir la aplicación o consultar estados no inicia USBGuard.
+# Security
 
-Los cambios de servicio y arranque requieren varias operaciones y no son atómicos. Una cancelación o un error pueden dejar cambios parciales; la interfaz vuelve a consultar el estado y no informa éxito sin verificar el resultado. No elimina máscaras administrativas, no genera reglas iniciales ni reemplaza unidades. Detener el daemon no garantiza desbloquear dispositivos; iniciarlo aplica las reglas existentes y puede afectar periféricos sin una regla adecuada.
+USBGuard Control is a standalone USBGuard client. It does not certify devices, detect malware, or replace USBGuard. USB attributes can be spoofed. Authorizing a device allows its interfaces to interact with the computer.
 
-Las decisiones requieren confirmación y una nueva consulta de identidad. La API de USBGuard no ofrece comparación y aplicación atómicas; existe una ventana entre ambas operaciones. Se restringe bloquear dispositivos de entrada, adaptadores Bluetooth USB y hubs desde esta versión.
+The GUI process runs without root. It does not directly modify rules or install general Polkit exceptions. The upstream engine preserves authorization and persistence. Service controls use systemd D-Bus and your existing Polkit policy, only for `usbguard.service` and `usbguard-dbus.service`, after explicit confirmation. Opening the application or checking statuses does not start USBGuard.
 
-Desde la versión 0.3, el observador guarda un historial SQLite local (archivo 0600), con retención de 7/30/90 días y hasta 10000 registros; la vista muestra hasta 2000. Los respaldos de reglas se guardan antes de cada edición y pueden contener identificadores personales. El modo demostración no crea historial persistente. Las exportaciones ofrecen ocultar los detalles de eventos; los respaldos conservan la política completa cargada y no son anónimos. No hay telemetría ni conexión de red automática. Los enlaces externos se abren únicamente desde botones explícitos. Las exportaciones pueden contener nombres de dispositivos.
+Service and boot changes require multiple operations and are not atomic. A cancellation or error may leave partial changes; the interface queries the status again and does not report success without checking the result. It does not remove administrative masks, generate initial rules, or replace units. Stopping the daemon does not guarantee unlocking devices; starting it applies existing rules and may affect peripherals without an appropriate rule.
 
-Antes de informar un problema, elimina números de serie, hashes y datos personales de los registros. El repositorio aún no tiene un canal privado de reporte configurado. No publiques detalles explotables ni secretos en incidencias públicas; coordina un canal con el mantenedor [Jan Herrera](https://github.com/Lupo-SysAdmin) antes de compartirlos.
+Decisions require confirmation and a new identity query. The USBGuard API does not offer atomic comparison and application; There is a window between both operations. Blocking input devices, USB Bluetooth adapters and hubs is restricted from this version.
 
-## Gestión guiada de reglas (0.3)
+Since version 0.3, the observer saves a local SQLite history (file 0600), with retention of 7/30/90 days and up to 10000 records; the view shows up to 2000. Rule backups are saved before each edit and may contain personal identifiers. Demo mode does not create persistent history. Exports offer to hide event details; backups retain the entire policy loaded and are not anonymous. There is no telemetry or automatic network connection. External links are opened only from explicit buttons. Exports can contain device names.
 
-Solo se editan reglas concretas con VID:PID, huella e interfaces conocidas, excluyendo HID, Bluetooth y concentradores. La política y el propietario D-Bus se releen antes de escribir. Esto no constituye una transacción atómica: otros administradores pueden modificar la política entre operaciones. Un error después de una escritura se informa como cambio parcial y conserva el respaldo; no se declara éxito sin releer el resultado.
+Before reporting a problem, remove serial numbers, hashes, and personal data from the logs. The repository does not yet have a private reporting channel configured. Don't post exploitable details or secrets in public issues; coordinate a channel with maintainer [Jan Herrera](https://github.com/Lupo-SysAdmin) before sharing them.
 
-La recuperación agrega al final como permanentes las reglas específicas faltantes, omitiendo reglas protegidas/avanzadas. No reemplaza toda la política ni restaura configuración del daemon, permisos o unidades systemd. Las reglas anteriores conservan prioridad. El listado D-Bus no informa la persistencia de cada regla: se presenta como política cargada, no como prueba de que todas sus entradas estén guardadas en disco.
+<a id="gestión-guiada-de-reglas-03"></a>
 
-El inicio de sesión crea únicamente la entrada XDG del usuario para esta aplicación. La instancia única usa un socket local de acceso de usuario y un bloqueo de proceso. Cerrar el observador no modifica servicios ni reglas. La integración iPhone solo ejecuta `idevicepair validate`, sin emparejar ni instalar paquetes; su salida detallada no se exporta.
+## Guided rule management (0.3)
 
-## Editor de texto 0.5
+Only specific rules with VID:PID, fingerprint and known interfaces are edited, excluding HID, Bluetooth and hubs. The D-Bus policy and service owner are re-read before writing. This is not an atomic transaction: other administrators can modify the policy between operations. An error after a write is reported as a partial change and preserves the backup; success is not declared without rereading the result.
 
-El editor normaliza únicamente reglas específicas con identidad fijada (VID:PID, serie, huella e interfaces). No admite condiciones, comodines ni varias reglas. Se comprueban las coincidencias de la regla anterior y de la propuesta y se revalida antes de escribir. El predicado se consulta al daemon sin mutación; las escrituras mantienen autenticación, respaldo obligatorio y detección de cambios parciales. No se promete una transacción atómica.
+Recovery adds the missing specific rules to the end as permanent, skipping protected/advanced rules. It does not replace the entire policy or restore daemon configuration, permissions, or systemd units. The previous rules retain priority. The D-Bus listing does not report the persistence of each rule: it is presented as a loaded policy, not as proof that all its entries are saved on disk.
+
+Login creates only the user's XDG entry for this application. The single instance uses a local user access socket and a process lock. Closing the observer does not modify services or rules. iPhone integration only runs `idevicepair validate`, without pairing or installing packages; its detailed output is not exported.
+
+<a id="editor-de-texto-05"></a>
+
+## Text editor 0.5
+
+The editor normalizes only specific rules with fixed identity (VID:PID, serial number, fingerprint and interfaces). It does not support conditions, wildcards or various rules. The previous rule and the proposed rule are checked for matches and revalidated before writing. The predicate is queried to the daemon without mutation; writes maintain authentication, mandatory backup, and partial change detection. An atomic transaction is not promised.

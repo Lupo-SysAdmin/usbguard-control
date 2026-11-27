@@ -8,7 +8,7 @@
 
 Desarrollador de la interfaz: **Jan Herrera** · [Lupo-SysAdmin](https://github.com/Lupo-SysAdmin)
 
-[Descargar versión estable](https://github.com/Lupo-SysAdmin/usbguard-control/releases/latest) · [Instalación en Kali](docs/INSTALL.md) · [Arquitectura](docs/ARCHITECTURE.md) · [Licencia y créditos](docs/LICENSING.md)
+[Descargar versión estable](https://github.com/Lupo-SysAdmin/usbguard-control/releases/latest) · [Instalación en Kali](docs/INSTALL.es.md) · [Arquitectura](docs/ARCHITECTURE.es.md) · [Licencia y créditos](docs/LICENSING.es.md)
 
 ![USBGuard Control: demostración con dispositivos ficticios](docs/images/usbguard-control-demo.png)
 
@@ -20,9 +20,9 @@ USBGuard Control es un cliente independiente para [USBGuard](https://github.com/
 
 Validada en escritorios reales: **Kali 2026.3 / Xfce 4.20.4 / X11** y **Parrot 7.4 / KDE Plasma 6.3.6 / Wayland**. En 0.5.0 se comprobaron la actualización del paquete, la interfaz, el editor con autenticación y la reconexión de USB de prueba. El arranque automático tras reiniciar y la interfaz GNOME/Wayland se probaron en 0.3.0; esa evidencia se conserva por separado. La instalación del host permanece en 0.2.0.
 
-Consulta [resultados y alcance de 0.5.0](docs/VALIDATION-0.5.md) y [funciones y límites](docs/FEATURES-0.5.md). La VM conserva el nombre «Kali 2026.1», pero su sistema instalado ahora es 2026.3. Las pruebas históricas de 0.2.0 en 2026.1 siguen documentadas por separado. La aplicación no es una extensión de GNOME Shell.
+Consulta [resultados y alcance de 0.5.0](docs/VALIDATION-0.5.es.md) y [funciones y límites](docs/FEATURES-0.5.es.md). La VM conserva el nombre «Kali 2026.1», pero su sistema instalado ahora es 2026.3. Las pruebas históricas de 0.2.0 en 2026.1 siguen documentadas por separado. La aplicación no es una extensión de GNOME Shell.
 
-**Otras distribuciones:** Ubuntu 26.04, Fedora 45 y Arch rolling pasaron 117 pruebas cada una con dependencias nativas en GitHub Actions. Ubuntu también pasó instalación y apertura del `.deb`; Fedora/Arch se probaron desde código. Son pruebas automatizadas sin escritorio ni USB real. Consulta la [matriz de compatibilidad y límites de instalación](docs/COMPATIBILITY.md).
+**Otras distribuciones:** Ubuntu 26.04, Fedora 45 y Arch rolling pasaron 117 pruebas cada una con dependencias nativas en GitHub Actions. Ubuntu también pasó instalación y apertura del `.deb`; Fedora/Arch se probaron desde código. Son pruebas automatizadas sin escritorio ni USB real. Consulta la [matriz de compatibilidad y límites de instalación](docs/COMPATIBILITY.es.md).
 
 ## Qué incluye
 
@@ -49,7 +49,7 @@ Los servicios solo se inician o detienen mediante una acción explícita y confi
 
 ## Ejecutar la demostración
 
-Con las dependencias de Qt/Python instaladas (ver la [guía](docs/INSTALL.md)):
+Con las dependencias de Qt/Python instaladas (ver la [guía](docs/INSTALL.es.md)):
 
 ```bash
 PYTHONPATH=src python3 -m usbguard_control --demo
@@ -93,7 +93,7 @@ Atajos: **Ctrl+F** buscar, **Ctrl+R** actualizar, **Ctrl+Q** salir. Tab y Shift+
 3. **Instalación:** actualización a 0.5.0 ensayada en VMs Kali/Xfce y Parrot/KDE. Las pruebas de desinstalación/reinstalación, reinicio y GNOME desde el código pertenecen a 0.3.0. La instalación del host permanece en 0.2.0.
 4. **Portafolio:** repositorio público con documentación bilingüe, autoría, licencia, capturas y CI. Consulta las versiones en Descargas.
 
-Ver [validación de 0.5.0](docs/VALIDATION-0.5.md) y [funciones y límites](docs/FEATURES-0.5.md). El historial del observador no equivale al registro completo del servicio.
+Ver [validación de 0.5.0](docs/VALIDATION-0.5.es.md) y [funciones y límites](docs/FEATURES-0.5.es.md). El historial del observador no equivale al registro completo del servicio.
 
 ## Autoría y licencia
 

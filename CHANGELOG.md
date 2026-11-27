@@ -1,60 +1,62 @@
+[![Español](https://img.shields.io/badge/Language-Espa%C3%B1ol-39D3C5?style=for-the-badge)](CHANGELOG.es.md)
+
 # Changelog
 
 ## 0.5.0 — 2026-11-21
 
-- Consolida las funciones de historial, diagnóstico, segundo plano, asistente guiado y respaldos introducidas en 0.3.0.
-- Editor de texto para reglas específicas: formato normalizado, comparación de coincidencias actuales antes/después, borrador estable y restauración del texto inicial.
-- Conserva VID:PID, serie, huella e interfaces; rechaza reglas amplias, condiciones, sintaxis desconocida, controles y etiquetas reservadas.
-- Revalida ambas coincidencias antes de confirmar; mantiene respaldo obligatorio, prioridad y avisos de cambios parciales.
-- La demostración evalúa también puerto, padre, nombre, serie, interfaces y tipo de conexión. El tipo de conexión se incorpora a la identidad comprobada.
-- 117 pruebas automatizadas, documentación y capturas ES/EN. El alcance real de esta versión se registra en docs/VALIDATION-0.5.md.
-- Matriz CI con dependencias nativas y usuario normal en Ubuntu 26.04, Fedora 45 y Arch rolling: 117 pruebas por sistema. Ubuntu también verifica instalación e inicio del `.deb`; Fedora/Arch se validan desde código, sin prometer paquetes nativos ni pruebas de escritorio/hardware.
+- Consolidates the history, diagnostics, background, guided assistant and backup functions introduced in 0.3.0.
+- Text editor for specific rules: normalized formatting, before/after comparison of current matches, stable draft and restoration of initial text.
+- Preserves VID:PID, serial number, fingerprint and interfaces; rejects broad rules, conditions, unknown syntax, controls, and reserved tags.
+- Revalidate both matches before confirming; maintains mandatory backup, priority and partial change notices.
+- The demo also evaluates port, parent, name, serial, interfaces and connection type. The connection type is incorporated into the verified identity.
+- 117 automated tests, documentation and ES/EN captures. The actual scope of this version is recorded in docs/VALIDATION-0.5.md.
+- CI matrix with native dependencies and normal user in Ubuntu 26.04, Fedora 45 and Arch rolling: 117 tests per system. Ubuntu also verifies installation and startup of `.deb`; Fedora/Arch are validated from code, without promising native packages or desktop/hardware testing.
 
 ## 0.3.0 — 2026-11-21
 
-- Gestión guiada de reglas por D-Bus con vista previa, comprobación de identidad de política y respaldo obligatorio.
-- Recuperación selectiva de reglas específicas; reglas avanzadas, HID, Bluetooth y concentradores protegidos.
-- Alias locales, funciones compuestas de dispositivos y explicación del origen solo cuando fue observado.
-- Historial SQLite privado, retención configurable, filtros y exportación JSON/CSV con privacidad.
-- Diagnóstico guiado y comprobación de emparejamiento del iPhone sin modificarlo.
-- Temas claro/oscuro/sistema, preferencias persistentes, observador en segundo plano, instancia única e inicio de sesión opcional.
-- Nueva dependencia de QtWidgets y QtNetwork para la integración del escritorio.
-- Validación real en GNOME/Wayland, Xfce/X11 y KDE/Wayland; operaciones de política autenticadas, reconexión de USB de prueba, reinicio/inicio de sesión, instancia única y reinstalación del paquete en las VMs.
-- Advertencia previa sobre varias operaciones y posibles cambios parciales al cancelar una autenticación posterior. La release 0.2.0 se conserva como historial.
+- Guided rule management over D-Bus with preview, policy identity checking and mandatory backup.
+- Selective recovery of specific rules; advanced rules, HID, Bluetooth and protected hubs.
+- Local aliases, device composite functions and explanation of the origin only when it was observed.
+- Private SQLite history, configurable retention, filters and JSON/CSV export with privacy.
+- Guided diagnosis and pairing verification of the iPhone without modifying it.
+- Light/Dark/System themes, persistent preferences, background watcher, single instance and optional startup at sign-in.
+- New dependency on QtWidgets and QtNetwork for desktop integration.
+- Real validation in GNOME/Wayland, Xfce/X11 and KDE/Wayland; authenticated policy operations, test USB reconnection, reboot/login, single instance and package reinstallation on VMs.
+- Advance warning about various operations and possible partial changes when canceling a subsequent authentication. Release 0.2.0 is preserved as history.
 
 ## 0.2.0 — 2026-11-09
 
-- Primera publicación estable, promovida desde `v0.2.0-rc.1` sin cambios en el código de la aplicación. Documentación y metadatos actualizados; se conservan el alcance y los límites de validación documentados.
+- First stable release, promoted from `v0.2.0-rc.1` with no changes to the app code. Updated documentation and metadata; The documented scope and validation limits are preserved.
 
-- Publicación en GitHub y CI en Debian mínimo; dependencia SVG de Qt declarada explícitamente tras la primera ejecución remota.
+- Publishing on GitHub and CI on Debian minimum; Qt SVG dependency explicitly declared upon first remote execution.
 
-- Descriptores USB Unicode/escapados interpretados según el protocolo del daemon; sin doble decodificación de barras literales y con regresiones para entradas malformadas.
-- Filas de dispositivos accesibles mediante Tab/Espacio, desplazamiento al foco y avisos de error alcanzables por teclado.
-- Las consultas automáticas conservan los errores de acciones para que puedan leerse; la recuperación de conexión y la actualización manual los limpian.
-- Estilo Basic inicializado también para el selector de archivos de Qt.
-- Validación adicional de autenticación KDE, 40 eventos USB agrupados en 10 notificaciones y nombres especiales mediante USB emulados en el kernel.
+- Unicode/escaped USB descriptors interpreted according to the daemon protocol; without double decoding of literal backslashes and with regressions for malformed inputs.
+- Rows of devices accessible via Tab/Space, moving to focus and error messages accessible via keyboard.
+- Automatic queries preserve action errors so they can be read; connection recovery and manual update clean them up.
+- Basic style also initialized for the Qt file selector.
+- Additional KDE authentication validation, 40 USB events grouped into 10 notifications and special names using USB emulated in the kernel.
 
-- Validación en VMs KVM: Kali 2026.1/Xfce/X11 y Parrot 7.4/KDE/Wayland, instalación/desinstalación, controles reales de servicios, reinicios y recuperación.
-- Controles QML con estilo Basic explícito para evitar bucles de geometría introducidos por Breeze en KDE.
-- Etiquetas accesibles de las casillas y contraste mejorado de botones principales; regresiones de teclado y accesibilidad en ES/EN.
-- Lanzador Debian con `-B`: no genera caché de Python propiedad de root que quede después de desinstalar.
-- Consulta automática silenciosa cada cinco segundos, sin atenuar controles ni volver a notificar detalles que no cambiaron; los clics durante la consulta se procesan en orden.
+- Validation in KVM VMs: Kali 2026.1/Xfce/X11 and Parrot 7.4/KDE/Wayland, installation/uninstallation, real service controls, reboots and recovery.
+- QML controls with explicit Basic style to avoid geometry loops introduced by Breeze in KDE.
+- Accessible box labels and improved contrast of main buttons; keyboard regressions and accessibility in ES/EN.
+- Debian launcher with `-B`: does not generate root-owned Python cache left after uninstall.
+- Silent auto-query every five seconds, without fading controls or re-notifying details that haven't changed; Clicks during the query are processed in order.
 
-- Configuración con casillas multilínea, ancho limitado y desplazamiento en ventanas pequeñas.
-- Controles explícitos para iniciar y detener USBGuard y su puente D-Bus, con confirmación y autenticación de systemd/Polkit.
-- Elección opcional persistente al arrancar; estados de ejecución y arranque consultados por separado.
-- Verificación de jobs, detección de cambios externos y errores parciales, sin retirar máscaras ni modificar reglas USB.
-- Flujo completo de servicios simulado, traducciones ES/EN y pruebas aisladas de transporte D-Bus.
+- Configuration with multi-line boxes, limited width and scrolling in small windows.
+- Explicit controls for starting and stopping USBGuard and its D-Bus bridge, with systemd/Polkit confirmation and authentication.
+- Optional choice persistent on boot; execution and boot states consulted separately.
+- Verification of jobs, detection of external changes and partial errors, without removing masks or modifying USB rules.
+- Complete simulated service flow, ES/EN translations and isolated D-Bus transport tests.
 
 ## 0.1.0 — 2026-11-08
 
-- Primera interfaz Qt Quick en español latinoamericano e inglés estadounidense con autoría de Jan Herrera.
-- Selector ES / EN con cambio inmediato y preferencia guardada.
-- Demostración aislada, filtros, detalles, confirmaciones y actividad exportable.
-- Cliente D-Bus para USBGuard 1.1.4 y pruebas de integración con servicio simulado.
-- Restricciones para dispositivos sensibles y revalidación de identidad.
-- Restricción adicional para adaptadores Bluetooth que pueden transportar teclado o mouse.
-- Los avisos de éxito caducan y se retiran cuando dejan de coincidir con el estado actual; desconectar un dispositivo no selecciona automáticamente otro.
-- Documentación bilingüe, GPL-3.0-or-later, paquete Debian y flujo de CI.
-- Primera validación física en Kali/GNOME con iPhone y receptor de mouse: autorización temporal, persistencia y reconexiones.
-- Estado alpha: reinicio completo, recuperación, otros escritorios y publicación pendientes.
+- First Qt Quick interface in Latin American Spanish and American English authored by Jan Herrera.
+- ES / EN selector with immediate change and saved preference.
+- Isolated demo, filters, details, confirmations and exportable activity.
+- D-Bus client for USBGuard 1.1.4 and integration tests with simulated service.
+- Restrictions for sensitive devices and identity revalidation.
+- Additional restriction for Bluetooth adapters that can carry keyboard or mouse.
+- Success notices expire and are removed when they no longer match the current status; Disconnecting one device does not automatically select another.
+- Bilingual documentation, GPL-3.0-or-later, Debian package and CI flow.
+- First physical validation in Kali/GNOME with iPhone and mouse receiver: temporary authorization, persistence and reconnections.
+- Alpha status: full reboot, recovery, other desktops and publishing pending.

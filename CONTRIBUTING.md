@@ -1,7 +1,15 @@
-# Contribuir
+[![Español](https://img.shields.io/badge/Language-Espa%C3%B1ol-39D3C5?style=for-the-badge)](CONTRIBUTING.es.md)
 
-Ejecuta `sh scripts/check.sh` con las dependencias de docs/INSTALL.md. Trabaja con `--demo` y el bus privado de pruebas; los tests nunca deben cambiar autorización USB real.
+<a id="contribuir"></a>
 
-Mantén la separación QML/controlador/transporte. No añadas ejecución de shell, una GUI como root ni políticas que permitan todas las acciones. Cada nueva operación real debe manejar denegación, desconexión y fallos de persistencia.
+# Contribute
 
-Documenta las pruebas de sesión y hardware por separado de los mocks. Conserva los avisos existentes y añade los de contribuciones nuevas cuando corresponda. Las contribuciones se distribuyen bajo GPL-3.0-or-later.
+Run `sh scripts/check.sh` with the dependencies from docs/INSTALL.md. Works with `--demo` and the private test bus; Tests should never change actual USB authorization.
+
+Maintain QML/controller/transport separation. Don't add shell execution, a GUI as root, or policies that allow all actions. Every new real operation must handle denial, disconnection, and persistence failures.
+
+Document session and hardware tests separately from mocks. Retain existing notices and add notices of new contributions where appropriate. Contributions are distributed under GPL-3.0-or-later.
+
+## Documentation languages
+
+Write the default README and project documentation in American English. Maintain Latin American Spanish counterparts in `.es.md` files and keep both language buttons working. Update both languages when behavior or validation scope changes. `README.en.md` remains an English compatibility copy of `README.md`.

@@ -1,53 +1,67 @@
-# Funciones de USBGuard Control 0.3.0
+[![Español](https://img.shields.io/badge/Language-Espa%C3%B1ol-39D3C5?style=for-the-badge)](FEATURES-0.3.es.md)
 
-**Versión estable 0.3.0.** El alcance probado y sus límites están en [Validación 0.3.0](VALIDATION-0.3.md). La versión 0.2.0 se conserva como publicación anterior.
+<a id="funciones-de-usbguard-control-030"></a>
 
-## Funciones implementadas
+# Features of USBGuard Control 0.3.0
 
-| Área | Comportamiento |
+**Stable version 0.3.0.** The tested scope and its limits are in [Validation 0.3.0](VALIDATION-0.3.md). Version 0.2.0 is retained as a previous release.
+
+<a id="funciones-implementadas"></a>
+
+## Functions implemented
+
+| Area | Behavior |
 |---|---|
-| Reglas y confianza | Lista ordenada, búsqueda, alias locales para dispositivos conectados o desconectados, contenido legible y detección de duplicados exactos |
-| Edición guiada | Cambiar permitir/bloquear y retirar reglas específicas con huella e interfaces conocidas; vista previa de dispositivos coincidentes |
-| Protección de entrada | Las reglas de HID, Bluetooth, concentradores y sintaxis avanzada quedan para consulta/revisión administrativa |
-| Respaldos | Respaldo local obligatorio previo a editar; exportación JSON y apertura de la carpeta de respaldos |
-| Recuperación | Añade como permanentes las reglas específicas faltantes al final; omite las protegidas/avanzadas y conserva las reglas existentes |
-| Explicaciones | Origen observado por acción o señal de USBGuard; un origen desconocido se indica explícitamente |
-| Dispositivos compuestos | Muestra varias funciones USB; los alias no cambian la identidad ni las reglas |
-| Historial | SQLite local, 7/30/90 días de retención, máximo 10000 registros y vista de los 2000 últimos; búsqueda y fecha |
-| Exportación | JSON o CSV del filtro actual, ocultación opcional de todos los detalles de eventos y neutralización de fórmulas en CSV |
-| Diagnóstico | Estados de daemon/puente, lectura de reglas y orientación para acceso a archivos; validación opcional de emparejamiento iPhone sin modificarlo |
-| Asistente inicial | Lista guiada de periféricos, recuperación, política y reconexión; conduce a Configuración tras revisión del usuario |
-| Escritorio | Claro/oscuro/sistema, preferencias, alias y geometría persistentes; observador opcional al cerrar la ventana |
-| Segundo plano | Instancia única, reapertura desde el menú y acción en notificaciones compatibles; bandeja opcional y arranque XDG de usuario desde el paquete instalado |
+| Rules and trust | Sorted list, search, local aliases for connected or disconnected devices, readable content and exact duplicate detection |
+| Guided Editing | Change allow/block and remove specific rules with known fingerprint and interfaces; preview matching devices |
+| Input-device protection | HID, Bluetooth, Hubs, and Advanced Syntax rules are for administrative review/consultation |
+| Backups | Mandatory local backup prior to editing; JSON export and opening backup folder |
+| Recovery | Add missing specific rules to the end as permanent; skip protected/advanced ones and keep existing rules |
+| Explanations | Origin observed by USBGuard action or signal; an unknown origin is explicitly stated |
+| Composite devices | Shows various USB functions; aliases do not change identity or rules |
+| History | Local SQLite, 7/30/90 day retention, maximum 10000 records and view of last 2000; search and date |
+| Export | JSON or CSV of the current filter, optional hiding of all event details and neutralization of formulas in CSV |
+| Diagnosis | Daemon/bridge states, rule reading, and file access guidance; optional validation of iPhone pairing without modifying it |
+| Initial assistant | Guided list of peripherals, recovery, policy and reconnection; leads to Configuration after user review |
+| Desktop | Light/Dark/System, preferences, aliases and persistent geometry; optional observer when closing window |
+| Background | Single instance, reopen from menu and action on notifications supported; optional tray and user XDG boot from installed package |
 
-Todos los textos propios tienen catálogo español latinoamericano/inglés estadounidense. Los nombres del hardware no se traducen. `Ctrl+Q` termina el observador; la protección de USBGuard sigue independiente.
+All application text has Latin American Spanish and American English translations. Hardware names are not translated. `Ctrl+Q` terminates the observer; USBGuard protection remains independent.
 
-## Límites intencionales
+<a id="límites-intencionales"></a>
 
-- El editor es guiado, no un editor arbitrario de toda la gramática de USBGuard. Las reglas globales o con condiciones no se modifican desde esta versión.
-- La recuperación no sustituye la política completa ni restaura opciones del daemon, unidades o permisos. Las reglas anteriores pueden ocultar las recuperadas. El respaldo representa reglas **cargadas**; D-Bus no distingue las temporales de las guardadas en disco.
-- Una retirada de regla no modifica el estado actual de un dispositivo. Otra regla puede seguir autorizándolo. Las explicaciones no prometen identificar retrospectivamente el origen de todas las decisiones.
-- Las escrituras D-Bus no son transacciones atómicas. Se comprueba la política antes de cada etapa y se informa de cambios parciales; queda una ventana de concurrencia propia de la API.
-- El asistente acompaña la configuración, pero no instala paquetes, genera automáticamente reglas de confianza ni retira máscaras administrativas.
-- El historial solo cubre eventos observados con la aplicación en ejecución. Los cierres normales se registran; después de una caída no se inventa una hora de cierre ni se reconstruyen eventos perdidos.
-- El observador puede ejecutarse sin bandeja en GNOME. Las acciones de notificación dependen del servidor del escritorio. La entrada de inicio de sesión se ofrece para el paquete instalado, no para una ruta temporal de código fuente.
-- Los respaldos contienen identificadores USB, se guardan con permisos privados y no se eliminan automáticamente. La opción de privacidad del historial oculta sus detalles completos, no solo las series.
+## Intentional limits
 
-## Capturas de demostración
+- The editor is guided, not an arbitrary editor of the entire USBGuard grammar. Global rules or rules with conditions are not modified from this version.
+- Recovery does not replace the entire policy or restore daemon options, units, or permissions. Previous rules may shadow the retrieved ones. Backup represents **loaded** rules; D-Bus does not distinguish temporary ones from those saved on disk.
+- A rule withdrawal does not modify the current state of a device. Another rule may still authorize it. Explanations do not promise to retrospectively identify the origin of all decisions.
+- D-Bus writes are not atomic transactions. The policy is checked before each stage and partial changes are reported; There remains a concurrency window of the API.
+- The wizard accompanies the configuration, but does not install packages, automatically generate trust rules or remove administrative masks.
+- History only covers events observed with the application running. Normal closures are recorded; After a crash, no closing time is invented or lost events are reconstructed.
+- Observer can run trayless in GNOME. Notification actions depend on the desktop server. The login entry is offered for the installed package, not for a temporary source code path.
+- Backups contain USB identifiers, are saved with private permissions and are not automatically deleted. The history privacy option hides your complete details, not just serial numbers.
 
-![Reglas y confianza en español](images/usbguard-control-rules.png)
+<a id="capturas-de-demostración"></a>
 
-![Reglas en inglés con tema claro](images/usbguard-control-rules-light.png)
+## Demo screenshots
 
-![Diagnóstico y primeros pasos](images/usbguard-control-diagnostics.png)
+![Rules and trust in Spanish](images/usbguard-control-rules.png)
 
-## Validación
+![English rules with light theme](images/usbguard-control-rules-light.png)
 
-La suite automatizada incluye 91 pruebas de reglas, revalidación, denegación, cambios parciales, respaldos, recuperación selectiva, persistencia, privacidad, traducción e interfaz. `sh scripts/check.sh` ejecuta las pruebas, genera capturas de demostración y construye `dist/usbguard-control_0.3.0-1_all.deb`.
+![Diagnosis and first steps](images/usbguard-control-diagnostics.png)
 
-Las pruebas reales de escritorio, autenticación y ciclo de instalación se documentan en [Validación 0.3.0](VALIDATION-0.3.md). Las operaciones D-Bus se contrastaron con XML e implementación de USBGuard 1.1.4: el booleano de `appendRule` significa `temporary`, por lo que se envía `False` para persistir. También se verificaron contra USBGuard 1.1.3 en Parrot.
+<a id="validación"></a>
 
-## English
+## Validation
+
+The automated suite includes 91 rule tests, revalidation, denial, partial changes, backups, selective recovery, persistence, privacy, translation and interface. `sh scripts/check.sh` runs the tests, generates demo screenshots, and builds `dist/usbguard-control_0.3.0-1_all.deb`.
+
+Actual desktop testing, authentication, and installation cycle are documented in [Validation 0.3.0](VALIDATION-0.3.md). D-Bus operations were checked against XML and USBGuard 1.1.4 implementation: the boolean of `appendRule` means `temporary`, so `False` is sent to persist. They were also verified against USBGuard 1.1.3 on Parrot.
+
+<a id="english"></a>
+
+## Summary
 
 Stable **0.3.0** adds guided rule management and selective recovery, local activity history, diagnostics, saved preferences, light/dark/system themes, and an optional single-instance background observer. Rules with advanced syntax or sensitive input interfaces remain read-only. The setup guide does not install packages or generate trusted policy automatically. Policy snapshots do not expose per-rule persistence; recovered rules are deliberately made permanent. Recovery preserves existing rules and connected-device authorization.
 

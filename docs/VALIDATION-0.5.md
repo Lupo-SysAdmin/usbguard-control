@@ -1,44 +1,58 @@
-# USBGuard Control 0.5.0 — Validación / Validation
+[![Español](https://img.shields.io/badge/Language-Espa%C3%B1ol-39D3C5?style=for-the-badge)](VALIDATION-0.5.es.md)
 
-Fecha: **21 de noviembre de 2026**. Desarrollador: **Jan Herrera**.
+<a id="usbguard-control-050--validación--validation"></a>
 
-## Entornos de esta versión
+# USBGuard Control 0.5.0 — Validation
 
-| Entorno | Paquete y sesión | Pruebas nuevas |
+Date: **November 21, 2026**. Developer: **Jan Herrera**.
+
+<a id="entornos-de-esta-versión"></a>
+
+## Environments of this version
+
+| Environment | Package and session | New tests |
 |---|---|---|
-| Kali 2026.3, Xfce 4.20.4, X11, USBGuard 1.1.4, PySide6 6.11.2 | Actualización 0.3.0 → 0.5.0, usuario normal | Interfaz, editor con Polkit, cambio de alcance, reconexión y recuperación |
-| Parrot 7.4, KDE Plasma 6.3.6, Wayland, USBGuard 1.1.3, PySide6 6.8.2.1 | Actualización 0.3.0 → 0.5.0, usuario normal | Interfaz, editor con Polkit, cambio de alcance, reconexión y recuperación |
+| Kali 2026.3, Xfce 4.20.4, X11, USBGuard 1.1.4, PySide6 6.11.2 | Update 0.3.0 → 0.5.0, normal user | Interface, editor with Polkit, scope change, reconnection and recovery |
+| Parrot 7.4, KDE Plasma 6.3.6, Wayland, USBGuard 1.1.3, PySide6 6.8.2.1 | Update 0.3.0 → 0.5.0, normal user | Interface, editor with Polkit, scope change, reconnection and recovery |
 
-La VM llamada «Kali 2026.1» ejecuta actualmente Kali 2026.3. No se declara una prueba nueva sobre 2026.1. El host mantiene el paquete 0.2.0: no se sustituyó ni se modificó su política.
+The VM named “Kali 2026.1” is currently running Kali 2026.3. No new test is declared regarding 2026.1. The host maintains package 0.2.0: its policy has not been replaced or changed.
 
-## Automatización
+<a id="automatización"></a>
 
-- **117 pruebas pasadas** en la suite local, con tres avisos de obsolescencia ya existentes de PyGObject/asyncio. Las pruebas no usan el bus del sistema ni USB físicos.
-- Nuevos casos para normalización, escapes UTF-8, atributos de identidad fijos, reglas amplias o inválidas, controles, etiquetas reservadas y cambios que solo alteran el formato.
-- Vista previa sin escrituras, coincidencias anteriores y posteriores, cambio de dispositivos sensibles entre vista previa y confirmación, política obsoleta, respaldo obligatorio, posición y cambios parciales.
-- Contrato D-Bus aislado para la operación de sustitución.
-- Flujo QML completo: error de validación, borrador conservado durante actualización/idioma/tema/cambio de selección, ID capturado, cancelación de la comparación y confirmación. Sin avisos QML a 900 × 620.
-- Demostraciones ES/EN, validación del lanzador y construcción del `.deb`. GitHub Actions ejecuta la misma suite en Debian trixie; sus resultados están en [CI](https://github.com/Lupo-SysAdmin/usbguard-control/actions/workflows/ci.yml).
+## Automation
 
-## Pruebas con el paquete y escritorios reales
+- **117 tests passed** in the local suite, with three existing PyGObject/asyncio deprecation notices. The tests do not use the system bus or physical USB.
+- New cases for normalization, UTF-8 escapes, fixed identity attributes, broad or invalid rules, checks, reserved tags, and formatting-only changes.
+- Read-only preview, before and after matches, switching sensitive devices between preview and commit, stale policy, mandatory backup, position and partial changes.
+- Isolated D-Bus contract for the replacement operation.
+- Complete QML flow: validation error, draft preserved during update/language/theme/selection change, captured ID, cancel comparison and commit. No QML warnings at 900×620.
+- ES/EN demos, launcher validation and construction of the `.deb`. GitHub Actions runs the same suite on Debian trixie; its results are in [CI](https://github.com/Lupo-SysAdmin/usbguard-control/actions/workflows/ci.yml).
 
-Además de la suite Debian, **Ubuntu 26.04, Fedora 45 y Arch rolling pasaron 117 pruebas cada una** en GitHub Actions con dependencias nativas y usuario sin privilegios. Ubuntu pasó instalación, integridad y apertura del `.deb` en modo demostración. Estos contenedores no son escritorios ni hardware: consulta el [inventario y alcance de compatibilidad](COMPATIBILITY.md).
+<a id="pruebas-con-el-paquete-y-escritorios-reales"></a>
 
-- La actualización conservó la política de ambas VMs. Las cuatro páginas renderizaron en ES/EN y claro/oscuro sin errores QML. Se comprobaron cierre al segundo plano, reapertura con instancia única, creación/retirada de la entrada XDG y exportación de respaldo.
-- Se utilizaron dispositivos de almacenamiento USB del kernel con `dummy_hcd`/`libcomposite`, imágenes vacías de solo lectura y nombres especiales. No son periféricos físicos.
-- El editor rechazó un VID:PID con comodín antes de escribir. El borrador válido añadió una restricción de puerto y una etiqueta. La vista previa mostró un dispositivo coincidente antes y ninguno después, sin cambiar la política.
-- El guardado desde la sesión normal solicitó Polkit para añadir la sustitución y retirar la regla anterior. El texto devuelto por USBGuard coincidió con el formato normalizado en ambas versiones del daemon. Se conservaron posición, cantidad de reglas y autorización del dispositivo conectado.
-- Al reconectar el USB de prueba, la restricción persistida lo bloqueó. En ambas VMs, retirar esa restricción desde el editor conservó el estado bloqueado actual y volvió a permitirlo al reconectar. Se conservaron respaldos de todas las ediciones.
-- Ambas VMs quedaron sin reglas ni gadgets de prueba; los hashes de sus políticas originales coincidieron exactamente y ambos servicios siguieron activos y habilitados. Las entradas de autoarranque creadas por la prueba se retiraron.
-- El primer intento de recuperación en Parrot mostró un aviso de cambios parciales durante la autenticación. La comprobación posterior encontró la sustitución completa y la reconexión correcta. Se conservó esa evidencia y se repitió únicamente la recuperación: terminó sin errores con autenticación nativa y reconexión correcta. No se ocultó ni se declaró exitoso el primer resultado de la interfaz.
+## Testing with the package and real desktops
 
-## Evidencia heredada y límites
+In addition to the Debian suite, **Ubuntu 26.04, Fedora 45 and Arch rolling passed 117 tests each** on GitHub Actions with native dependencies and unprivileged user. Ubuntu passed installation, integrity and opening of `.deb` in demo mode. These containers are not desktops or hardware: see [inventory and compatibility scope](COMPATIBILITY.md).
 
-Las funciones de historial, diagnóstico, asistente guiado, respaldos y segundo plano provienen de 0.3.0. Sus pruebas de **GNOME/Wayland, desinstalación/reinstalación, reinicio e inicio de sesión automático** se documentan en [VALIDATION-0.3.md](VALIDATION-0.3.md); no se presentan como nuevas pruebas de 0.5.0. Las pruebas físicas de iPhone, teclado y mouse pertenecen a [0.2.0](VALIDATION.md).
+- The update preserved the policy of both VMs. All four pages rendered in ES/EN and light/dark without QML errors. Closing to background, reopening with single instance, creation/removal of XDG entry and backup export were checked.
+- Used kernel USB storage devices with `dummy_hcd`/`libcomposite`, empty read-only images and special names. They are not physical peripherals.
+- The editor rejected a wildcarded VID:PID before writing. The valid draft added a port restriction and a label. The preview showed one matching device before and none after, without changing the policy.
+- Saving from the normal session prompted Polkit to add the substitution and remove the old rule. The text returned by USBGuard matched the normalized format in both versions of the daemon. Position, number of rules and authorization of the connected device were preserved.
+- When reconnecting the test USB, the persisted restriction blocked it. On both VMs, removing that restriction from the editor preserved the current locked state and re-allowed it upon reconnection. Backups of every edit were preserved.
+- Both VMs were left without test rules or gadgets; their original policy hashes matched exactly and both services remained active and enabled. The autostart entries created by the test were removed.
+- The first recovery attempt on Parrot showed a partial changes notice during authentication. Subsequent checking found replacement complete and reconnection correct. That evidence was preserved and only the recovery was repeated: it finished without errors with native authentication and successful reconnection. The first interface result was not hidden or declared successful.
 
-El nuevo editor admite únicamente reglas específicas con identidad fija; no toda la gramática de USBGuard. La comparación considera los dispositivos conectados en ese momento. Las operaciones D-Bus de añadir/retirar no son atómicas y una denegación posterior puede dejar cambios parciales. El asistente sigue siendo una guía y los respaldos recuperan reglas selectivamente, sin reemplazar toda la configuración del sistema. Consulta [funciones y límites](FEATURES-0.5.md).
+<a id="evidencia-heredada-y-límites"></a>
 
-## English
+## Legacy evidence and limits
+
+History, diagnostics, guided assistant, backups and background functions come from 0.3.0. Its testing of **GNOME/Wayland, uninstall/reinstall, reboot, and automatic startup at sign-in** is documented in [VALIDATION-0.3.md](VALIDATION-0.3.md); They are not presented as new tests of 0.5.0. iPhone, keyboard and mouse physical tests belong to [0.2.0](VALIDATION.md).
+
+The new editor supports only specific rules with fixed identity; not all USBGuard grammar. The comparison considers the devices connected at that time. D-Bus add/remove operations are not atomic and a subsequent denial may leave partial changes. The wizard remains a guide and backups recover rules selectively, without replacing the entire system configuration. See [functions and limits](FEATURES-0.5.md).
+
+<a id="english"></a>
+
+## Summary
 
 The local suite passed **117 tests**, including bounded rule text validation, read-only before/after previews, stale-policy and sensitive-device checks, mandatory backups, partial-write handling and the full bilingual QML editor flow. Three existing PyGObject/asyncio deprecation warnings remain. Debian CI runs the same checks.
 

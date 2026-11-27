@@ -1,20 +1,24 @@
-# Licencia y reconocimiento
+[![Español](https://img.shields.io/badge/Language-Espa%C3%B1ol-39D3C5?style=for-the-badge)](LICENSING.es.md)
 
-La interfaz USBGuard Control utiliza **GPL-3.0-or-later**. La elección mantiene el proyecto libre y exige que las versiones derivadas distribuidas cumplan el copyleft y las obligaciones de proporcionar el código fuente correspondiente. La licencia requiere conservar los avisos aplicables de copyright y licencia y marcar las modificaciones pertinentes.
+<a id="licencia-y-reconocimiento"></a>
 
-El crédito del proyecto es **Jan Herrera, desarrollador de la interfaz USBGuard Control**, enlazado a [Lupo-SysAdmin](https://github.com/Lupo-SysAdmin). Se encuentra en README, AUTHORS, NOTICE, avisos de código, metadatos y la ventana Acerca de.
+# License and recognition
 
-GPL no significa dominio público. Tampoco prohíbe forks, venta o uso comercial, ni garantiza una mención publicitaria en cada aparición del software. No añadimos una cláusula improvisada de “prohibido modificar créditos” ni prometemos exclusividad sobre una idea de interfaz. Los derechos dependen de la legislación aplicable y las contribuciones protegibles; el aviso identifica al responsable del proyecto y su licencia, no sustituye esa evaluación.
+The USBGuard Control interface uses **GPL-3.0-or-later**. The choice keeps the project free and requires that distributed derivative versions comply with copyleft and obligations to provide the corresponding source code. The license requires you to retain applicable copyright and license notices and mark appropriate modifications.
 
-MIT también conservaría avisos, pero permitiría derivados distribuidos bajo condiciones propietarias; GPL encaja mejor con el objetivo de mantener abierta esta herramienta. No se usa una licencia Creative Commons para el código.
+Project credit goes to **Jan Herrera, developer of the USBGuard Control interface**, linked to [Lupo-SysAdmin](https://github.com/Lupo-SysAdmin). Found in README, AUTHORS, NOTICE, code notices, metadata, and the About window.
 
-USBGuard es GPL-2.0-or-later y conserva su propia autoría. Esta interfaz es un cliente separado que se comunica por D-Bus; no contiene su daemon ni modifica su licencia. Qt/PySide6 y PyGObject se instalan como dependencias de la distribución y conservan sus licencias. Al publicar binarios, se debe acompañar el código correspondiente de esta versión y mantener los avisos; el `.deb` no incorpora binarios de esas dependencias.
+GPL does not mean public domain. It also does not prohibit forks, sale or commercial use, nor does it guarantee an advertising mention in each appearance of the software. We do not add an improvised “no modification of credits” clause nor do we promise exclusivity on an interface idea. Rights depend on applicable legislation and protectable contributions; The notice identifies the person responsible for the project and its license, it does not replace that evaluation.
 
-Fuentes revisadas el 8 de noviembre de 2026:
+MIT would also retain notices, but allow derivatives distributed under proprietary conditions; GPL better fits the goal of keeping this tool open. A Creative Commons license is not used for the code.
 
-- [GPLv3, condiciones de distribución y avisos](https://www.gnu.org/licenses/gpl-3.0.html).
-- [Cómo aplicar las licencias GNU](https://www.gnu.org/licenses/gpl-howto.html).
-- [USBGuard: licencia upstream](https://github.com/USBGuard/usbguard/blob/usbguard-1.1.4/LICENSE).
-- [Licencias de Qt for Python](https://doc.qt.io/qtforpython-6/licenses.html).
+USBGuard is GPL-2.0-or-later and retains its own authorship. This interface is a separate client that communicates over D-Bus; it does not contain the upstream daemon or modify its license. Qt/PySide6 and PyGObject are installed as dependencies of the distribution and retain their licenses. When publishing binaries, you must accompany the corresponding code of this version and maintain the notices; `.deb` does not incorporate binaries of those dependencies.
 
-El archivo LICENSE contiene el texto íntegro de GPLv3; los avisos del proyecto conceden la opción de usar versiones posteriores. No se han añadido restricciones adicionales.
+Sources reviewed on November 8, 2026:
+
+- [GPLv3, distribution conditions and notices](https://www.gnu.org/licenses/gpl-3.0.html).
+- [How to apply GNU licenses](https://www.gnu.org/licenses/gpl-howto.html).
+- [USBGuard: upstream license](https://github.com/USBGuard/usbguard/blob/usbguard-1.1.4/LICENSE).
+- [Qt for Python Licenses](https://doc.qt.io/qtforpython-6/licenses.html).
+
+The LICENSE file contains the full text of GPLv3; project notices grant the option to use later versions. No additional restrictions have been added.

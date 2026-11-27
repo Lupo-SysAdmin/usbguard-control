@@ -1,13 +1,19 @@
+[![Español](https://img.shields.io/badge/Language-Espa%C3%B1ol-39D3C5?style=for-the-badge)](INSTALL.es.md)
 
-# Instalación y prueba en Kali
 
-Objetivo inicial: Kali 2026.3. La revisión candidata observada el 8 de noviembre de 2026 es `usbguard 1.1.4+ds-10`; consulta siempre `apt policy usbguard` en tu equipo. El paquete incluye `usbguard-dbus` y su unidad systemd; no existe la necesidad de instalar otro paquete llamado `usbguard-dbus` en esta revisión.
+<a id="instalación-y-prueba-en-kali"></a>
 
-Las pruebas históricas de 0.2.0 incluyeron instalación/desinstalación en Kali 2026.1/Xfce y Parrot 7.4/KDE. La VM Kali ahora ejecuta 2026.3. La actualización y el editor de 0.5.0 se probaron en ambas VMs; consulta la [validación actual](VALIDATION-0.5.md). Parrot conserva `1.1.3+ds-3`; no se sustituyeron sus paquetes con los de Kali. La [matriz de compatibilidad](COMPATIBILITY.md) distingue las pruebas automatizadas adicionales en Ubuntu, Fedora y Arch. Estas instrucciones APT son para Kali/sistemas Debian compatibles. Para el escalado, reserva al menos 900×620 píxeles lógicos de área útil: al 200 % son 1800×1240 píxeles físicos, además de los paneles del escritorio.
+# Installation and testing in Kali
 
-## 1. Probar solo la interfaz
+Initial objective: Kali 2026.3. The candidate revision observed on November 8, 2026 is `usbguard 1.1.4+ds-10`; always check `apt policy usbguard` on your computer. The package includes `usbguard-dbus` and its systemd unit; There is no need to install another package called `usbguard-dbus` in this revision.
 
-Instala las dependencias gráficas, sin instalar todavía el daemon:
+Historical testing of 0.2.0 included install/uninstall on Kali 2026.1/Xfce and Parrot 7.4/KDE. The Kali VM is now running 2026.3. The 0.5.0 update and editor were tested on both VMs; see [current validation](VALIDATION-0.5.md). Parrot retains `1.1.3+ds-3`; Their packages were not replaced with Kali ones. The [compatibility matrix](COMPATIBILITY.md) distinguishes additional automated testing on Ubuntu, Fedora, and Arch. These APT instructions are for supported Kali/Debian systems. For scaling, reserve at least 900x620 logical pixels of usable area: at 200% that's 1800x1240 physical pixels, plus the desktop panels.
+
+<a id="1-probar-solo-la-interfaz"></a>
+
+## 1. Test only the interface
+
+Install the graphical dependencies, without installing the daemon yet:
 
 ```bash
 sudo apt update
@@ -21,9 +27,9 @@ sudo apt install python3 python3-gi \
 PYTHONPATH=src python3 -m usbguard_control --demo
 ```
 
-Para pruebas automatizadas: `sudo apt install python3-pytest dbus-daemon desktop-file-utils`.
+For automated tests: `sudo apt install python3-pytest dbus-daemon desktop-file-utils`.
 
-O construye e instala el paquete de la interfaz:
+Or build and install the interface package:
 
 ```bash
 python3 scripts/build_deb.py
@@ -31,30 +37,32 @@ sudo apt install ./dist/usbguard-control_0.5.0-1_all.deb
 usbguard-control --demo
 ```
 
-USBGuard figura como `Suggests`, no como dependencia que se instale automáticamente. El `.deb` no contiene scripts postinst, servicios ni cambios Polkit. El menú de aplicaciones ofrece una acción “Abrir demostración”.
+USBGuard is listed as `Suggests`, not as a dependency that is installed automatically. `.deb` does not contain postinst scripts, services, or Polkit changes. The applications menu offers an “Open Demo” action.
 
-No mezcles `sudo pip` con paquetes del sistema. Para desarrollo en un entorno virtual, usa `python3 -m venv --system-site-packages .venv` para conservar acceso a PyGObject instalado por APT. `pip install -e . --no-deps` puede registrar el comando si las dependencias ya están instaladas.
+Do not mix `sudo pip` with system packages. For development in a virtual environment, use `python3 -m venv --system-site-packages .venv` to retain access to PyGObject installed by APT. `pip install -e . --no-deps` can register the command if the dependencies are already installed.
 
-## 2. Preparar USBGuard en una instalación nueva
+<a id="2-preparar-usbguard-en-una-instalación-nueva"></a>
 
-Realiza esta etapa en una VM con instantánea o con un acceso de recuperación que no dependa de los USB que vas a filtrar. Conecta únicamente dispositivos de confianza. No uses esta secuencia para sobrescribir una configuración que ya administras.
+## 2. Prepare USBGuard on a fresh installation
 
-El `postinst` del paquete oficial puede generar una política y arrancar servicios. Para una **primera instalación**, el instalador incluido instala la interfaz y USBGuard y deja ambos servicios enmascarados hasta revisar las reglas:
+Perform this stage on a VM with a snapshot or with recovery access that does not depend on the USBs you are going to filter. Only connect trusted devices. Do not use this sequence to override a configuration that you already manage.
+
+The `postinst` in the official package can generate a policy and start services. For a **first time installation**, the included installer installs the interface and USBGuard and leaves both services masked until you review the rules:
 
 ```bash
 sudo sh scripts/install_kali.sh
 ```
 
-Se detiene si USBGuard ya está instalado o encuentra unidades administrativas preexistentes. Para hacer los mismos pasos manualmente, bloquea el arranque durante la preparación:
+Stops if USBGuard is already installed or finds pre-existing administrative units. To do the same steps manually, prevent startup during preparation:
 
 ```bash
 sudo systemctl mask usbguard.service usbguard-dbus.service
 sudo apt install usbguard
 ```
 
-Comprueba con `systemctl is-active usbguard.service usbguard-dbus.service` que no estén ejecutándose. Las máscaras persisten después de reiniciar hasta que las retires explícitamente. No actives el servicio mientras la política siga pendiente.
+Check with `systemctl is-active usbguard.service usbguard-dbus.service` that they are not running. Service masks persist after reboot until you explicitly remove them. Do not activate the service while the policy is pending.
 
-Respalda el directorio existente antes de editarlo. Genera una política candidata en un archivo privado:
+Back up the existing directory before editing it. Generate a candidate policy in a private file:
 
 ```bash
 umask 077
@@ -63,9 +71,9 @@ sudo usbguard generate-policy > "$policy_candidate"
 less "$policy_candidate"
 ```
 
-Revisa que estén contemplados teclado, ratón, hubs y dispositivos internos necesarios. La política generada confía en lo conectado en ese momento; no determina si los dispositivos son benignos. Confirma `RuleFile` y `RuleFolder` en `/etc/usbguard/usbguard-daemon.conf` y revisa reglas preexistentes en ambos lugares.
+Check that the keyboard, mouse, hubs and necessary internal devices are included. The generated policy relies on what is connected at that moment; it does not determine whether the devices are benign. Confirm `RuleFile` and `RuleFolder` in `/etc/usbguard/usbguard-daemon.conf` and review pre-existing rules in both places.
 
-Solo después de revisar y respaldar, instala la candidata:
+Only after reviewing and backing up, install the candidate:
 
 ```bash
 sudo install -m 0600 -o root -g root "$policy_candidate" /etc/usbguard/rules.conf
@@ -74,35 +82,41 @@ sudo systemctl unmask usbguard.service usbguard-dbus.service
 sudo systemctl start usbguard.service usbguard-dbus.service
 ```
 
-Prueba los dispositivos y un USB prescindible. Comprueba `systemctl is-enabled usbguard.service usbguard-dbus.service`: el paquete puede haberlos habilitado durante la instalación. Conserva el arranque automático solo después de la validación. No otorgues acceso general al grupo `users` ni añadas reglas Polkit que permitan todas las acciones.
+Test the devices and a dispensable USB. Check `systemctl is-enabled usbguard.service usbguard-dbus.service`: the package may have enabled them during installation. Retain autostart only after validation. Do not grant general access to the `users` group or add Polkit rules that allow all actions.
 
-## 3. Conectar la interfaz
+<a id="3-conectar-la-interfaz"></a>
+
+## 3. Connect the interface
 
 ```bash
 usbguard-control
 ```
 
-Desde el código fuente: `PYTHONPATH=src python3 -m usbguard_control`.
+From source code: `PYTHONPATH=src python3 -m usbguard_control`.
 
-Ejecuta como usuario normal en una sesión local activa con agente Polkit. Las acciones administrativas pueden mostrar la autenticación del escritorio. La aplicación no solicita ni guarda contraseñas.
+Run as a normal user in an active local session with Polkit agent. Administrative actions can display desktop authentication. The app does not ask for or save passwords.
 
-“Permitir ahora” no guarda una regla: al reconectar o reiniciar se reevalúa la política. “Permitir siempre” pide a USBGuard guardar una regla; fallará si su almacenamiento de reglas no es escribible o no está configurado. “Bloquear ahora” tampoco elimina reglas persistentes. Para revocar una regla específica, abre **Reglas**, selecciona la entrada y usa **Retirar regla** tras revisar la vista previa. La aplicación guarda un respaldo antes de cambiarla. Las reglas sensibles o avanzadas requieren revisión con las herramientas oficiales. Retirar una regla no cambia la autorización actual: reconecta el dispositivo para evaluar la política resultante.
+“Allow now” does not save a rule: reconnecting or rebooting reevaluates the policy. “Always allow” asks USBGuard to save a rule; will fail if your rule storage is not writable or configured. “Block now” also does not remove persistent rules. To revoke a specific rule, open **Rules**, select the entry, and use **Remove Rule** after reviewing the preview. The application saves a backup before changing it. Sensitive or advanced rules require review with official tools. Removing a rule does not change the current authorization: reconnect the device to evaluate the resulting policy.
 
-Antes de bloquear almacenamiento, desmonta el volumen. Bloquear autorización USB no es una operación de expulsión segura. Esta versión no administra montajes.
+Before blocking a storage device, unmount the volume. Blocking USB authorization is not a secure eject operation. This version does not manage mounts.
 
-### Iniciar, detener y recordar la elección
+<a id="iniciar-detener-y-recordar-la-elección"></a>
 
-En **Configuración**, las tarjetas muestran por separado el estado actual y el inicio automático de la protección USB y de su conexión con la interfaz.
+### Start, stop and remember the choice
 
-- **Iniciar servicio** inicia ambos componentes con las reglas existentes.
-- **Detener servicio** detiene ambos componentes sin borrar las reglas. No equivale a desbloquear todos los USB: algunos dispositivos pueden seguir sin autorización.
-- **Recordar esta elección al iniciar el sistema**, marcada por defecto, hace que Iniciar habilite ambos servicios al arrancar y que Detener deshabilite su inicio automático. Desmárcala para cambiar solo el estado actual.
+In **Settings**, the cards separately show the current status and automatic start of USB protection and its connection to the interface.
 
-El diálogo confirma el alcance antes de solicitar los permisos de systemd mediante Polkit. Puede aparecer más de una solicitud de autenticación. La preferencia vive en systemd y no depende de mantener la interfaz abierta. Otros administradores aún pueden iniciar los servicios o cambiar esta configuración.
+- **Start Service** starts both components with the existing rules.
+- **Stop Service** stops both components without deleting the rules. It is not equivalent to unlocking all USBs: some devices may remain unauthorized.
+- **Remember this choice when starting the system**, checked by default, causes Start to enable both services at startup and Stop to disable their automatic startup. Uncheck it to change only the current state.
 
-Estos controles requieren una instalación ya preparada, systemd y un agente Polkit. No retiran máscaras de la primera instalación ni modifican configuraciones especiales como unidades estáticas o habilitadas únicamente en `/run`. Si una operación falla a mitad, se muestran los estados consultados de nuevo y el error; revisa ambos antes de reintentar. Detener USBGuard no deshabilita otros mecanismos de protección USB, como el de GNOME.
+The dialog confirms the scope before requesting systemd permissions using Polkit. More than one authentication request may appear. The preference lives in systemd and does not depend on keeping the interface open. Other administrators can still start the services or change these settings.
 
-## Diagnóstico y recuperación
+These checks require a configured installation, systemd, and a Polkit agent. They do not remove masks from the first installation or modify special settings such as static units or enabled only in `/run`. If an operation fails midway, the re-queried states and the error are displayed; check both before retrying. Stopping USBGuard does not disable other USB protection mechanisms, such as GNOME.
+
+<a id="diagnóstico-y-recuperación"></a>
+
+## Diagnosis and recovery
 
 ```bash
 python3 scripts/diagnose.py
@@ -110,29 +124,31 @@ systemctl status usbguard.service usbguard-dbus.service
 journalctl -u usbguard -u usbguard-dbus -b
 ```
 
-Si existe servicio pero falta autorización, revisa el agente Polkit y las políticas suministradas por USBGuard. No ejecutes la GUI con sudo para resolverlo. Si GNOME gestiona protección USB, su política puede coexistir o cambiar: inspecciona `gsettings get org.gnome.desktop.privacy usb-protection` y, si existe, `usb-protection-level`; no cambiamos estos valores automáticamente.
+If service exists but authorization is missing, review the Polkit agent and the policies provided by USBGuard. Don't run the GUI with sudo to resolve it. If GNOME manages USB protection, its policy can coexist or change: inspects `gsettings get org.gnome.desktop.privacy usb-protection` and, if it exists, `usb-protection-level`; We do not change these values ​​automatically.
 
-En GNOME, el gestor de protección puede añadir una regla que autoriza todos los dispositivos en el modo `lockscreen`. Para administrar una lista explícita con un cliente independiente, coordina ese gestor antes del primer arranque y comprueba las reglas resultantes. Cambiar `usb-protection` a `false` mientras el daemon está activo también puede provocar que GNOME inserte una regla de autorización general. No basta con cambiar la preferencia sin revisar el estado. [Código del gestor de GNOME en Debian](https://browse.dgit.debian.org/gnome-settings-daemon.git/tree/plugins/usb-protection/gsd-usb-protection-manager.c).
+In GNOME, the protection manager can add a rule that authorizes all devices in `lockscreen` mode. To manage an explicit list with a standalone client, coordinate that manager before the first boot and check the resulting rules. Changing `usb-protection` to `false` while the daemon is active can also cause GNOME to insert a general authorization rule. It is not enough to change the preference without reviewing the status. [Debian GNOME manager code](https://browse.dgit.debian.org/gnome-settings-daemon.git/tree/plugins/usb-protection/gsd-usb-protection-manager.c).
 
-Si pierdes el acceso al teclado, utiliza el acceso de recuperación preparado. El README.Debian del paquete examinado documenta los parámetros de arranque `usbguard=0` o `usbguard=false` para impedir que USBGuard se inicie. Verifica estas instrucciones en `/usr/share/doc/usbguard/README.Debian` de tu versión antes de necesitarlas. Detener un servicio no garantiza restaurar instantáneamente todos los dispositivos; puede ser necesaria una reconexión o un reinicio tras reparar la política.
+If you lose access to the keyboard, use the prepared recovery access. The README.Debian of the examined package documents the `usbguard=0` or `usbguard=false` boot parameters to prevent USBGuard from starting. Check these instructions at `/usr/share/doc/usbguard/README.Debian` for your version before you need them. Stopping a service does not guarantee instantly restoring all devices; A reconnection or reboot may be required after repairing the policy.
 
-En la unidad `usbguard.service` del paquete `1.1.4+ds-10` examinado, `ConditionKernelCommandLine` y `ConditionPathExists` están bajo `[Service]`; systemd las ignora allí. En la instalación de prueba se añadieron sus equivalentes en `[Unit]` mediante `/etc/systemd/system/usbguard.service.d/10-usbguard-control-conditions.conf`, conservando el archivo del paquete. No confíes en los parámetros de recuperación hasta comprobar que las condiciones se aplican en tu instalación.
+In unit `usbguard.service` of package `1.1.4+ds-10` examined, `ConditionKernelCommandLine` and `ConditionPathExists` are under `[Service]`; systemd ignores them there. Their equivalents in `[Unit]` were added in the test installation using `/etc/systemd/system/usbguard.service.d/10-usbguard-control-conditions.conf`, preserving the package file. Do not trust the recovery parameters until you verify that the conditions apply to your installation.
 
-La desinstalación de la interfaz con `sudo apt remove usbguard-control` deja el daemon y sus reglas bajo administración independiente.
+Uninstalling the interface with `sudo apt remove usbguard-control` leaves the daemon and its rules under separate management.
 
-### iPhone permitido, pero Archivos muestra «Lockdown (-21)»
+<a id="iphone-permitido-pero-archivos-muestra-lockdown--21"></a>
 
-«Permitido» indica autorización USB; el acceso a los documentos del iPhone requiere además el emparejamiento de iOS y el montaje de GVfs. El código `-21` corresponde a `LOCKDOWN_E_INVALID_HOST_ID`: el teléfono rechaza la identidad del equipo en esa sesión. [Definición en libimobiledevice](https://github.com/libimobiledevice/libimobiledevice/blob/1.4.0/include/libimobiledevice/lockdown.h).
+### iPhone allowed, but Files shows “Lockdown (-21)”
 
-Con el iPhone autorizado en USBGuard, desbloquéalo y mantenlo conectado. Acepta «Confiar en este ordenador» si aparece en el teléfono. Para comprobar el emparejamiento, instala las utilidades opcionales y ejecuta la validación como usuario normal:
+"Allowed" indicates USB authorization; Accessing iPhone documents additionally requires iOS pairing and GVFS mounting. The code `-21` corresponds to `LOCKDOWN_E_INVALID_HOST_ID`: the phone rejects the identity of the device in that session. [Definition in libimobiledevice](https://github.com/libimobiledevice/libimobiledevice/blob/1.4.0/include/libimobiledevice/lockdown.h).
+
+With the iPhone authorized in USBGuard, unlock it and keep it connected. Accept “Trust this computer” if it appears on your phone. To verify the pairing, install the optional utilities and run validation as a normal user:
 
 ```bash
 sudo apt install --no-install-recommends libimobiledevice-utils
 idevicepair validate
 ```
 
-Si la validación indica que no está emparejado, ejecuta `idevicepair pair`, confirma la confianza en el iPhone y vuelve a validar. Con varios dispositivos Apple conectados, selecciona el correcto mediante `-u` según `idevicepair --help`. Estas herramientas pueden mostrar el identificador del teléfono: ocúltalo antes de compartir sus salidas.
+If validation indicates that it is not paired, run `idevicepair pair`, confirm trust on the iPhone, and validate again. With multiple Apple devices connected, select the correct one using `-u` based on `idevicepair --help`. These tools can show the phone's identifier: hide it before sharing its outputs.
 
-Después de una validación correcta, cierra el aviso anterior de Archivos y abre de nuevo «Documents on …». No hace falta cambiar una regla USB que ya autoriza el dispositivo. Esta ubicación muestra documentos compartidos por aplicaciones compatibles, no todo el sistema de archivos de iOS. La interfaz USBGuard Control no administra el emparejamiento ni los montajes.
+After successful validation, close the previous Files prompt and open “Documents on…” again. There is no need to change a USB rule that already authorizes the device. This location shows documents shared by supported apps, not the entire iOS file system. The USBGuard Control interface does not handle pairing or mounts.
 
-Fuentes: [USBGuard 1.1.4](https://github.com/USBGuard/usbguard/releases/tag/usbguard-1.1.4), [paquetes Kali](https://http.kali.org/pool/main/u/usbguard/) y archivos README.Debian/postinst del paquete `1.1.4+ds-10` inspeccionado sin instalarlo.
+Sources: [USBGuard 1.1.4](https://github.com/USBGuard/usbguard/releases/tag/usbguard-1.1.4), [Kali packages](https://http.kali.org/pool/main/u/usbguard/) and README.Debian/postinst files from the `1.1.4+ds-10` package inspected without installing it.

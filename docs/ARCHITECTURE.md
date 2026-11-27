@@ -1,4 +1,8 @@
-# Arquitectura
+[![Español](https://img.shields.io/badge/Language-Espa%C3%B1ol-39D3C5?style=for-the-badge)](ARCHITECTURE.es.md)
+
+<a id="arquitectura"></a>
+
+# Architecture
 
 ```mermaid
 flowchart LR
@@ -15,54 +19,56 @@ flowchart LR
     E --> K[Autorización USB del kernel]
 ```
 
-- `domain.py`: interpreta snapshots concretos de dispositivos, clasifica interfaces y valida acciones. No es un parser general para editar políticas.
-- `demo.py`: simulación en memoria, sin importar GIO ni acceder al bus del sistema.
-- `backend.py`: llamadas con tipos explícitos, sin shell, sin autoactivación y dirigidas al propietario único del servicio.
-- `services.py`: lectura de las dos unidades USBGuard y acciones explícitas de systemd, con autenticación interactiva, comprobación de jobs y relectura del estado. La demostración usa un administrador en memoria.
-- `controller.py`: estado observable para QML, confirmaciones, actividad y trabajo bloqueante fuera del hilo gráfico.
-- `qml/`: interfaz, componentes, navegación y diálogos.
-- `translations.py` / `localization.py`: catálogos `es-419` y `en-US`, traducción Qt en caliente y preferencia de idioma en QSettings. Los eventos conservan plantillas y valores separados para cambiar el idioma sin traducir nombres de hardware.
+- `domain.py`: interprets specific snapshots of devices, classifies interfaces and validates actions. It is not a general parser for editing policies.
+- `demo.py`: in-memory simulation, without importing GIO or accessing the system bus.
+- `backend.py`: calls with explicit types, without shell, without autoactivation and directed to the sole owner of the service.
+- `services.py`: reading of the two USBGuard units and explicit systemd actions, with interactive authentication, job verification and status rereading. The demo uses an in-memory manager.
+- `controller.py`: Observable state for QML, confirmations, activity and blocking work outside of the GUI thread.
+- `qml/`: interface, components, navigation and dialogs.
+- `translations.py` / `localization.py`: `es-419` and `en-US` catalogs, hot Qt translation and language preference in QSettings. Events retain separate templates and values ​​to change the language without translating hardware names.
 
-Contrato consultado directamente en el [tag USBGuard 1.1.4](https://github.com/USBGuard/usbguard/blob/usbguard-1.1.4/src/DBus/DBusInterface.xml):
+Contract consulted directly in the [tag USBGuard 1.1.4](https://github.com/USBGuard/usbguard/blob/usbguard-1.1.4/src/DBus/DBusInterface.xml):
 
-| Elemento | Valor |
+| Element | Value |
 |---|---|
-| Nombre de servicio | `org.usbguard1` |
-| Objeto de dispositivos | `/org/usbguard1/Devices` |
-| Interfaz de dispositivos | `org.usbguard.Devices1` |
-| Listado | `listDevices(s) → a(us)` |
-| Decisión | `applyDevicePolicy(u, u, b) → u` |
-| Parámetros | `/org/usbguard1`, `org.usbguard1.getParameter(s) → s` |
+| Service name | `org.usbguard1` |
+| Devices object | `/org/usbguard1/Devices` |
+| Device interface | `org.usbguard.Devices1` |
+| Listing | `listDevices(s) → a(us)` |
+| Decision | `applyDevicePolicy(u, u, b) → u` |
+| Parameters | `/org/usbguard1`, `org.usbguard1.getParameter(s) → s` |
 
-No usar sin comprobar los ejemplos antiguos de la web que omiten el sufijo `1`. Se solicita autenticación interactiva al aplicar una decisión USB o un cambio explícito de servicio; las políticas instaladas deciden si procede. El daemon serializa y persiste las reglas. La GUI no instala reglas Polkit permisivas.
+Do not use old web examples that omit the `1` suffix without checking them. Interactive authentication is requested when applying a USB decision or explicit service change; installed policies decide whether to proceed. The daemon serializes and persists the rules. The GUI does not install permissive Polkit rules.
 
-GIO se ejecuta en un QThread con un contexto GLib propio; un temporizador despacha señales. Un snapshot inicial y la reconciliación cada cinco segundos cubren señales perdidas y reinicios. Los eventos se agrupan durante 900 ms antes de notificar. El servicio nunca se inicia al abrir la GUI.
+GIO runs on a QThread with its own GLib context; a timer dispatches signals. An initial snapshot and reconciliation every five seconds covers lost signals and reboots. Events are grouped for 900 ms before notifying. The service never starts when opening the GUI.
 
-Antes de cambiar un dispositivo se comprueba el propietario D-Bus y se vuelve a leer su identidad: VID:PID, serie, hash, padre, puerto e interfaces. Esto reduce errores por snapshots obsoletos. La API upstream solo acepta el ID al aplicar, por lo que no proporciona una operación atómica “comprobar identidad y cambiar”; sigue existiendo una ventana entre lectura y escritura. No se presenta el hash como prueba criptográfica de que un hardware sea confiable.
+Before changing a device, the D-Bus owner is checked and its identity is read again: VID:PID, serial, hash, parent, port and interfaces. This reduces errors due to outdated snapshots. The upstream API only accepts the ID when applying, so it does not provide an atomic “check identity and change” operation; There is still a window between reading and writing. The hash is not presented as cryptographic proof that hardware is trustworthy.
 
-La autorización de dispositivos restringe el bloqueo de cualquier interfaz HID, adaptadores Bluetooth USB (HCI `e0:01:01`), hubs y tipos desconocidos. Un teclado Bluetooth puede depender de ese adaptador aunque no aparezca como teclado USB. No ofrece rechazo, reglas arbitrarias ni un interruptor global ambiguo. El estado “permitido” describe autorización, no ausencia de malware.
+Device authorization restricts blocking any HID interfaces, USB Bluetooth adapters (HCI `e0:01:01`), hubs, and unknown types. A Bluetooth keyboard can depend on that adapter even if it does not appear as a USB keyboard. It offers no rejection, no arbitrary rules, and no ambiguous global switch. The “allowed” state describes authorization, not absence of malware.
 
-El idioma, filtros, vista avanzada, notificaciones, alias, tema y tamaño de ventana se guardan en QSettings. El workspace puede conservar actividad en SQLite; la demostración utiliza memoria. La GUI utiliza texto plano para nombres suministrados por USB, elimina caracteres de control al mostrarlos y no interpola nombres en comandos. Las exportaciones contienen actividad de sesión en el idioma seleccionado y pueden incluir nombres de dispositivos; no se envían a ningún servidor.
+The language, filters, advanced view, notifications, aliases, theme and window size are saved in QSettings. The workspace can retain activity in SQLite; The demo uses memory. The GUI uses plain text for USB-supplied names, removes control characters when displaying them, and does not interpolate names in commands. Exports contain session activity in the selected language and may include device names; They are not sent to any server.
 
-La elección de arranque se guarda en systemd, no en QSettings: `EnableUnitFiles` o `DisableUnitFiles` persistentes y `Reload`. El controlador consulta el estado incluso si el puente USBGuard está detenido, permitiendo iniciarlo desde Configuración. Solo acepta unidades instaladas con estados de habilitación ordinarios; conserva máscaras y configuraciones especiales. Inicia primero el daemon y luego el puente; detiene primero el puente y luego el daemon. Espera cada job y comprueba el estado final antes de declarar éxito. Revalida el snapshot confirmado, pero las operaciones no son atómicas: ante un fallo parcial muestra el error y vuelve a leer ambos estados sin intentar una reversión automática. [API de systemd](https://www.freedesktop.org/software/systemd/man/latest/org.freedesktop.systemd1.html).
+The boot choice is saved in systemd, not in QSettings: persistent `EnableUnitFiles` or `DisableUnitFiles` and `Reload`. The controller queries the status even if the USBGuard bridge is stopped, allowing it to be started from Settings. Only accepts installed units with ordinary enable states; preserves service masks and settings. Start the daemon first and then the bridge; it stops the bridge first and then the daemon. Wait for each job and check the final status before declaring success. It revalidates the confirmed snapshot, but the operations are not atomic: in the event of a partial failure, it displays the error and reads both states again without attempting an automatic rollback. [systemd API](https://www.freedesktop.org/software/systemd/man/latest/org.freedesktop.systemd1.html).
 
 ## Workspace 0.3
 
-- `workspace.py`: preferencias, alias, explicaciones observadas, previews y consultas de historial.
-- `policy.py`: gramática conservadora para edición guiada; las reglas desconocidas se muestran solo para consulta.
-- `policy_backend.py`: operaciones de reglas con revalidación, respaldo previo y reporte explícito de cambios parciales.
-- `storage.py`: escritura atómica de exportaciones, historial privado y retención.
-- `desktop.py`: socket local de instancia única, indicador opcional y entrada XDG de inicio de sesión. GNOME sin bandeja permite reabrir desde el menú.
-- `appearance.py` y componentes QML: paleta común para temas claro/oscuro y controles accesibles.
+- `workspace.py`: preferences, aliases, observed explanations, previews and history queries.
+- `policy.py`: conservative grammar for guided editing; unknown rules are displayed for reference only.
+- `policy_backend.py`: rule operations with revalidation, prior backup and explicit reporting of partial changes.
+- `storage.py`: Atomic write of exports, private history and retention.
+- `desktop.py`: Single instance local socket, optional tray indicator and login XDG entry. Trayless GNOME allows reopening from the menu.
+- `appearance.py` and QML components: common palette for light/dark themes and accessible controls.
 
-Se consulta `org.usbguard.Policy1` en `/org/usbguard1/Policy`: `listRules(s) → a(us)`, `appendRule(s,u,b) → u`, `removeRule(u)`. En **appendRule** el booleano significa **temporary**, al contrario del booleano **permanent** de applyDevicePolicy. Para persistir se envía `False`; esto se contrastó con [DBusBridge.cpp de 1.1.4](https://github.com/USBGuard/usbguard/blob/usbguard-1.1.4/src/DBus/DBusBridge.cpp).
+See `org.usbguard.Policy1` in `/org/usbguard1/Policy`: `listRules(s) → a(us)`, `appendRule(s,u,b) → u`, `removeRule(u)`. In **appendRule** the boolean means **temporary**, as opposed to the **permanent** boolean in applyDevicePolicy. To persist, send `False`; this was contrasted with [DBusBridge.cpp from 1.1.4](https://github.com/USBGuard/usbguard/blob/usbguard-1.1.4/src/DBus/DBusBridge.cpp).
 
-Editar inserta la sustitución después de la regla original y luego retira la original, conservando la posición relativa al resto. Si la segunda operación falla, se informa el resultado parcial y se mantiene el respaldo. Recuperar añade reglas faltantes al final, sin borrar la política vigente. Estas operaciones no reautorizan los dispositivos conectados.
+Edit inserts the substitution after the original rule and then removes the original, preserving the position relative to the rest. If the second operation fails, the partial result is reported and the backup is maintained. Recover adds missing rules at the end, without deleting the current policy. These operations do not reauthorize connected devices.
 
-Las explicaciones proceden de decisiones realizadas por esta instancia o de las señales DevicePolicyApplied/Changed, contrastadas con la identidad y el estado actuales. Un snapshot inicial no se interpreta como evidencia de qué regla causó la autorización.
+Explanations come from decisions made by this instance or from DevicePolicyApplied/Changed signals, checked against the current identity and state. An initial snapshot is not interpreted as evidence of which rule caused the authorization.
 
-## Editor de texto 0.5
+<a id="editor-de-texto-05"></a>
 
-`RuleEditor.qml` captura el ID y el texto original al abrirse. El borrador permanece separado de la selección y de las actualizaciones periódicas. `canonical_rule` normaliza únicamente la gramática concreta admitida; `validate_replacement` conserva VID:PID, serie, huella e interfaces y rechaza reglas sensibles o sintaxis no soportada.
+## Text editor 0.5
 
-La operación `replace` consulta `listDevices` con ambos predicados para mostrar coincidencias antes/después sin escribir. Al confirmar, vuelve a comprobar política, propietario D-Bus y coincidencias; después crea el respaldo y utiliza la secuencia existente de insertar/retirar. No modifica la autorización actual del dispositivo ni convierte esa secuencia en una transacción atómica. El backend de demostración evalúa también los atributos editables para que la comparación de alcance sea coherente.
+`RuleEditor.qml` captures the ID and original text when opened. The draft remains separate from the selection and periodic updates. `canonical_rule` normalizes only the supported concrete grammar; `validate_replacement` preserves VID:PID, serial, fingerprint and interfaces and rejects sensitive rules or unsupported syntax.
+
+Operation `replace` queries `listDevices` with both predicates to return before/after matches without writing. Upon confirmation, it rechecks policy, D-Bus owner and matches; then creates the backup and uses the existing insert/remove sequence. It does not modify the device's current authorization or convert that sequence into an atomic transaction. The demo backend also evaluates editable attributes for consistent scope comparison.

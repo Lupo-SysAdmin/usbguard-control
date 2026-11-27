@@ -1,41 +1,53 @@
-# USBGuard Control 0.3.0 — Validación / Validation
+[![Español](https://img.shields.io/badge/Language-Espa%C3%B1ol-39D3C5?style=for-the-badge)](VALIDATION-0.3.es.md)
 
-Fecha: **21 de noviembre de 2026**. Desarrollador: **Jan Herrera**.
+<a id="usbguard-control-030--validación--validation"></a>
 
-## Entornos y alcance
+# USBGuard Control 0.3.0 — Validation
 
-| Entorno real | Ejecución | Resultado |
+Date: **November 21, 2026**. Developer: **Jan Herrera**.
+
+<a id="entornos-y-alcance"></a>
+
+## Environments and scope
+
+| Real environment | Execution | Result |
 |---|---|---|
-| Host Kali 2026.3, GNOME Shell 50.4, Wayland | Código de la versión nueva, usuario normal, configuración/historial de prueba separados | Navegación, ES/EN, claro/oscuro, cierre al segundo plano y reapertura con instancia única |
-| VM Kali 2026.3, Xfce 4.20.4, X11, USBGuard 1.1.4, PySide6 6.11.2 | Paquete Debian instalado, sesión activa de usuario | Interfaz, política con Polkit, USB de prueba, persistencia, instalación y arranque de sesión |
-| VM Parrot 7.4, KDE Plasma 6.3.6, Wayland, USBGuard 1.1.3, PySide6 6.8.2.1 | Paquete Debian instalado, sesión activa de usuario | Interfaz, política con Polkit, USB de prueba, persistencia, instalación y arranque de sesión |
+| Host Kali 2026.3, GNOME Shell 50.4, Wayland | New version code, normal user, separate configuration/test history | Navigation, ES/EN, light/dark, close to background and reopen with single instance |
+| VM Kali 2026.3, Xfce 4.20.4, X11, USBGuard 1.1.4, PySide6 6.11.2 | Debian package installed, active user session | Interface, policy with Polkit, test USB, persistence, installation and session boot |
+| VM Parrot 7.4, KDE Plasma 6.3.6, Wayland, USBGuard 1.1.3, PySide6 6.8.2.1 | Debian package installed, active user session | Interface, policy with Polkit, test USB, persistence, installation and session boot |
 
-El nombre de la VM «Kali 2026.1» se conservó, pero `/etc/os-release` informa **2026.3** después de sus actualizaciones. No se presenta como una prueba nueva de 0.3.0 sobre Kali 2026.1. Los resultados físicos y de compatibilidad de 0.2.0 se conservan en [VALIDATION.md](VALIDATION.md).
+The VM name "Kali 2026.1" was retained, but `/etc/os-release` reports **2026.3** after its updates. It is not presented as a new test of 0.3.0 on Kali 2026.1. The physical and compatibility results from 0.2.0 are preserved in [VALIDATION.md](VALIDATION.md).
 
-## Pruebas completadas
+<a id="pruebas-completadas"></a>
 
-- **91 pruebas automatizadas**: demostración y D-Bus aislado; contratos y errores de la API, identidad, reglas sensibles, política obsoleta, respaldo fallido, cambio parcial, recuperación, preferencias, retención, privacidad de exportaciones, instancia única y traducciones. El CI se ejecuta en Debian trixie.
-- Recorrido visual de las cuatro páginas en español latinoamericano e inglés estadounidense, con temas claro y oscuro. Sin errores QML en los recorridos. Se revisaron las capturas y los controles desplazables.
-- Instalar el paquete sobre 0.2.0 conservó la política. Desinstalar y reinstalar conservó reglas, preferencias e historial y dejó ambos servicios activos. `dpkg --verify usbguard-control` pasó.
-- Cada VM utilizó cuatro dispositivos de almacenamiento USB de prueba creados con `dummy_hcd`/`libcomposite`, con imágenes vacías de solo lectura y nombres con Unicode, comillas, barra inversa, texto parecido a HTML y control bidireccional. Se verificó su lectura y saneamiento visual.
-- Desde la aplicación de usuario normal, **editar, retirar y recuperar una regla específica** solicitó la autenticación nativa. La contraseña se introdujo en la VM. No se cambiaron las reglas Polkit para conceder acceso sin autenticación.
-- La edición permitir→bloquear se guardó en disco, mantuvo la autorización actual y bloqueó al reconectar el dispositivo. Retirar y recuperar desde JSON conservaron el estado conectado; después de recuperar, la reconexión volvió a permitirlo.
-- Se crearon respaldos antes de cada escritura. La cancelación de Polkit en Xfce conservó la política y mostró el error de autorización. Una cancelación posterior a la primera etapa de edición también ejercitó el caso de cambio parcial; la interfaz advierte de este límite antes de confirmar.
-- Historial y preferencias sobrevivieron al cierre y reapertura. El archivo SQLite tuvo permisos `0600`. Retención, filtro por fecha y ocultación de exportaciones se verifican adicionalmente en la suite automatizada.
-- Cerrar al segundo plano y volver a abrir no creó dos observadores. Se verificó en GNOME/Wayland, Xfce/X11 y KDE/Wayland.
-- En ambas VMs, tras **reiniciar e iniciar sesión**, la entrada XDG arrancó el paquete con `--background` como usuario normal. Reabrirlo reutilizó el mismo PID. USBGuard y el puente D-Bus continuaron activos.
-- Se retiraron las reglas y gadgets de prueba. El contenido de `/etc/usbguard/rules.conf` volvió a coincidir exactamente con su hash anterior. Se retiró la entrada de autoarranque creada para la prueba, conservando la elección previa.
+## Tests completed
 
-## Límites y observaciones
+- **91 automated tests**: demonstration and isolated D-Bus; contracts and API errors, identity, sensitive rules, stale policy, failed backup, partial change, recovery, preferences, retention, export privacy, single instance and translations. The CI runs on Debian trixie.
+- Visual tour of the four pages in Latin American Spanish and American English, with light and dark themes. No QML errors in the tours. Revised captures and scrollable controls.
+- Installing the package over 0.2.0 preserved the policy. Uninstalling and reinstalling preserved rules, preferences, and history and left both services active. `dpkg --verify usbguard-control` passed.
+- Each VM used four test USB storage devices created with `dummy_hcd`/`libcomposite`, with empty read-only images and names with Unicode, quotes, backslash, HTML-like text, and bidirectional control. Its reading and visual sanitation were verified.
+- From the normal user application, **editing, removing, and restoring a device-specific rule** requested native authentication. The password was entered into the VM. Polkit rules were not changed to grant access without authentication.
+- The allow→block edit was saved to disk, kept the current authorization and blocked when reconnecting the device. Removal and recovery from JSON preserved the connected state; after recovering, reconnection allowed it again.
+- Backups were created before each write. Canceling Polkit in Xfce preserved the policy and showed the authorization error. A cancellation after the first editing stage also exercised the case of partial change; the interface warns of this limit before confirming.
+- History and preferences survived closure and reopening. The SQLite file had `0600` permissions. Retention, filtering by date and hiding exports are additionally checked in the automated suite.
+- Closing to background and reopening did not create two observers. Verified in GNOME/Wayland, Xfce/X11 and KDE/Wayland.
+- On both VMs, after **reboot and login**, the XDG entry booted the package with `--background` as the normal user. Reopening it reused the same PID. USBGuard and the D-Bus bridge remained active.
+- Test rules and gadgets removed. The content of `/etc/usbguard/rules.conf` again exactly matched its previous hash. The autostart input created for the test was removed, retaining the previous choice.
 
-- No se sustituyó el paquete estable del host ni se modificaron sus servicios o reglas. La prueba GNOME usó el código de la nueva versión; la instalación y el inicio XDG después de reiniciar se probaron en Xfce y KDE.
-- Los USB de esta ronda son dispositivos del kernel dentro de las VMs, no una repetición de pruebas físicas con iPhone, teclado o mouse. La integración de archivos del iPhone requiere además desbloqueo, confianza y soporte de montaje.
-- Se verificaron bandejas disponibles en estas sesiones. Las acciones de notificaciones y un GNOME sin extensión de bandeja pueden variar con el servidor de notificaciones; la reapertura desde el lanzador permanece disponible.
-- No se promete compatibilidad con todos los escritorios/versiones ni una auditoría de seguridad completa. El editor protege reglas de entrada/infraestructura y sintaxis avanzada; consulta [funciones y límites](FEATURES-0.3.md).
-- Las escrituras D-Bus no son atómicas. Cancelar una autenticación posterior puede dejar una regla añadida; se informa de cambios parciales y se conserva el respaldo. No se aplica una reversión automática que pueda sobrescribir cambios externos.
-- Se observaron avisos no fatales del portal de Xfce y EGL de la VM KDE en el arnés de pruebas. Las ventanas renderizaron y el paquete normal abrió después del inicio de sesión. La suite local conserva tres avisos de obsolescencia de PyGObject/asyncio.
+<a id="límites-y-observaciones"></a>
 
-## English
+## Limits and observations
+
+- The host's stable package was not replaced nor were its services or rules modified. The GNOME test used the code from the new version; installing and starting XDG after reboot was tested on Xfce and KDE.
+- The USBs in this round are kernel devices inside the VMs, not a repeat of physical tests with iPhone, keyboard or mouse. iPhone file integration also requires unlocking, trust, and mounting support.
+- Available trays were verified in these sessions. Notification actions and a GNOME without a tray extension may vary with the notification server; reopening from the launcher remains available.
+- Compatibility with all desktops/versions or a full security audit is not promised. The editor protects input/infrastructure rules and advanced syntax; see [functions and limits](FEATURES-0.3.md).
+- D-Bus writes are not atomic. Canceling a subsequent authentication may leave an added rule; partial changes are reported and the backup is preserved. An automatic rollback that can overwrite external changes is not applied.
+- Observed non-fatal Xfce portal warnings and EGL warnings in the KDE VM in the test harness. Windows rendered and normal package opened after login. The local suite retains three PyGObject/asyncio deprecation notices.
+
+<a id="english"></a>
+
+## Summary
 
 Version 0.3.0 was tested in real GNOME/Wayland, Xfce/X11, and KDE/Wayland sessions. GNOME used the new source with separate test data and did not replace the host package. Installed Debian-package tests ran on Kali 2026.3/Xfce and Parrot 7.4/KDE, including native Polkit rule editing/removal/recovery, kernel USB gadget reconnects, private persistent history, remove/reinstall, and automatic observer startup after reboot and sign-in. Launching again reused the same process. Test gadgets/rules were removed and original policy hashes restored.
 

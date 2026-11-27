@@ -1,35 +1,45 @@
-# USBGuard Control 0.5.0 — Editor de reglas
+[![Español](https://img.shields.io/badge/Language-Espa%C3%B1ol-39D3C5?style=for-the-badge)](FEATURES-0.5.es.md)
 
-La versión **0.5.0** reúne historial, diagnóstico, observador en segundo plano, asistente guiado y respaldos de 0.3.0, y añade un **editor de texto para reglas específicas**. No hace falta instalar una versión intermedia 0.4.0.
+<a id="usbguard-control-050--editor-de-reglas"></a>
 
-## Uso
+# USBGuard Control 0.5.0 — Rules Editor
 
-1. Abre **Reglas** y selecciona una regla específica editable.
-2. Pulsa **Editar texto de la regla**. El borrador conserva la regla seleccionada al abrirlo, aunque la lista cambie de selección o se actualice.
-3. Modifica la decisión `allow`/`block`, `name`, `via-port`, `parent-hash`, `with-connect-type` o `label`. Los valores de texto llevan comillas dobles. `name` es el nombre USB real; para un alias visual utiliza **Guardar nombre**.
-4. Pulsa **Validar y comparar**. Esta etapa no escribe la política. Se normaliza el formato y se consulta al daemon por las coincidencias actuales de la regla anterior y de la propuesta.
-5. Revisa ambas reglas y los dispositivos coincidentes. Cancelar la comparación devuelve al borrador. **Restablecer borrador** recupera el texto con el que se abrió el editor.
-6. Confirma el cambio y completa Polkit. Se crea un respaldo privado y se conserva la posición de la regla. La autorización actual del USB no cambia; una reconexión reevalúa la política.
+Version **0.5.0** brings together history, diagnostics, background watcher, guided wizard, and backups from 0.3.0, and adds a **text editor for specific rules**. There is no need to install an intermediate version 0.4.0.
 
-![Editor en español](images/usbguard-control-editor.png)
+<a id="uso"></a>
 
-![Editor en inglés con tema claro](images/usbguard-control-editor-light.png)
+## Usage
 
-## Límites del editor
+1. Open **Rules** and select a specific editable rule.
+2. Press **Edit rule text**. The draft retains the selected rule when you open it, even if the list changes selection or is updated.
+3. Modify decision `allow`/`block`, `name`, `via-port`, `parent-hash`, `with-connect-type`, or `label`. Text values ​​have double quotes. `name` is the actual USB name; for a visual alias use **Save Name**.
+4. Press **Validate and compare**. This stage does not write the policy. The format is normalized and the daemon is queried for the current matches of the previous rule and the proposed one.
+5. Review both rules and matching devices. Canceling the comparison returns you to the draft. **Reset draft** restores the text with which the editor was opened.
+6. Confirm the change and complete Polkit. A private backup is created and the position of the rule is preserved. The current USB authorization does not change; a reconnection reevaluates the policy.
 
-- VID:PID, presencia/valor de la serie, huella e interfaces se conservan respecto de la regla original. No sirve para sustituir la identidad de un dispositivo por otra.
-- Mantiene protegidas las reglas de HID, Bluetooth, concentradores e interfaces desconocidas. También comprueba los dispositivos coincidentes actuales antes de escribir.
-- No admite comodines, condiciones, varias reglas, `reject`, operadores de conjuntos distintos de exacto/`equals`, ni sintaxis desconocida. Es una ampliación del editor guiado, no un editor irrestricto de toda la gramática.
-- Las etiquetas reservadas de GNOME se rechazan. Los caracteres de control y reglas mal formadas no se guardan. El formato normalizado sigue la serialización de USBGuard, incluidos escapes UTF-8 y orden de atributos.
-- El daemon valida el predicado durante la consulta de coincidencias. Una vista previa válida no garantiza que el almacenamiento de reglas sea escribible: Polkit y USBGuard toman la decisión final al confirmar.
-- Una restricción de puerto puede dejar de coincidir al mover el dispositivo; eliminar esa restricción amplía el alcance a otros puertos conservando la identidad fijada. Las coincidencias mostradas corresponden solo a dispositivos conectados en ese momento.
-- Se revalida la política y el propietario D-Bus antes de escribir. La edición requiere añadir la regla nueva y retirar la anterior: no es atómica. Una denegación posterior puede dejar cambios parciales, con aviso y respaldo conservado.
+![Spanish editor](images/usbguard-control-editor.png)
 
-El [lenguaje oficial de USBGuard](https://usbguard.github.io/documentation/rule-language.html) tiene más posibilidades que este editor. El contrato de serialización se contrastó con [RulePrivate.cpp](https://github.com/USBGuard/usbguard/blob/usbguard-1.1.4/src/Library/RulePrivate.cpp) y [Rule.hpp](https://github.com/USBGuard/usbguard/blob/usbguard-1.1.4/src/Library/public/usbguard/Rule.hpp). Se conservan los créditos de USBGuard; esta interfaz es independiente.
+![English editor with light theme](images/usbguard-control-editor-light.png)
 
-El asistente inicial sigue siendo una guía: no instala automáticamente el daemon ni genera una lista de confianza sin revisión. Los respaldos recuperan selectivamente reglas específicas; no sustituyen la configuración completa del sistema. Consulta los [límites de las funciones heredadas](FEATURES-0.3.md).
+<a id="límites-del-editor"></a>
 
-## English
+## Editor limits
+
+- VID:PID, serial-number presence and value, fingerprint and interfaces are preserved with respect to the original rule. It is not used to replace the identity of a device with another.
+- Keeps rules for HID, Bluetooth, hubs and unknown interfaces protected. It also checks the current matching devices before writing.
+- Does not support wildcards, conditions, multiple rules, `reject`, set operators other than exact/`equals`, or unknown syntax. It is an extension of the guided editor, not an unrestricted editor of all grammar.
+- GNOME reserved tags are rejected. Control characters and malformed rules are not saved. The normalized format follows USBGuard serialization, including UTF-8 escaping and attribute ordering.
+- The daemon validates the predicate during the match query. A valid preview does not guarantee that the rule store is writable: Polkit and USBGuard make the final decision when committing.
+- A port restriction may no longer match when you move the device; removing that restriction expands the scope to other ports while preserving the fixed identity. Matches shown are only for currently connected devices.
+- D-Bus policy and service owner are revalidated before writing. Editing requires adding the new rule and removing the old one: it is not atomic. A subsequent denial may leave partial changes, with notice and backup preserved.
+
+The [official USBGuard language](https://usbguard.github.io/documentation/rule-language.html) has more capabilities than this editor. The serialization contract was checked against [RulePrivate.cpp](https://github.com/USBGuard/usbguard/blob/usbguard-1.1.4/src/Library/RulePrivate.cpp) and [Rule.hpp](https://github.com/USBGuard/usbguard/blob/usbguard-1.1.4/src/Library/public/usbguard/Rule.hpp). USBGuard credits are preserved; This interface is independent.
+
+The initial wizard is still a guide: it does not automatically install the daemon or generate an unreviewed trusted list. Backups selectively recover specific rules; They do not replace the complete system configuration. See [inherited feature limits](FEATURES-0.3.md).
+
+<a id="english"></a>
+
+## Summary
 
 Version **0.5.0** combines the history, diagnostics, background observer, setup guide and backups already available in 0.3.0 with a text editor for device-specific rules. No intermediate 0.4.0 installation is required.
 
